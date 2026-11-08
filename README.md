@@ -44,19 +44,9 @@ It is **decision support**: it ranks evidence and suggests interview questions. 
 
 ## How it works
 
-```mermaid
-flowchart TB
-    need(["Your hiring need<br/>e.g. own our database layer"]) --> plan["1 · hiring-plan<br/>asks follow-up questions, reads the code,<br/>proposes 2–3 role designs"]
-    plan --> profile["2 · repo-profile<br/>stack, conventions, gaps, hard problems"]
-    repo[("Your repo")] --> profile
-    profile --> rubric["3 · hiring-rubric<br/>weighted criteria with observable anchors"]
-    jd[("Job description<br/>optional")] --> rubric
-    rubric --> approve{{"You approve the rubric"}}
-    approve --> screen["4 · screen-candidates<br/>redact, score each CV with quotes, validate, rank"]
-    cvs[("CVs<br/>PDF · DOCX · MD")] --> screen
-    screen --> report(["report.md<br/>shortlist, strengths, gaps, interview probes"])
-    report -.->|role filled| close["5 · close-round<br/>delete candidate data, keep a pseudonymous audit"]
-```
+<p align="center">
+  <img src="docs/assets/how-it-works.png" alt="Flow: your hiring need goes to hiring-plan, then repo-profile reads the repo, hiring-rubric adds the job description, you approve the rubric, screen-candidates scores the CVs into report.md, and close-round deletes candidate data when the role is filled" width="560">
+</p>
 
 You talk to your agent in plain language. A planning session looks like this:
 
@@ -143,31 +133,9 @@ Then open your repo in Claude Code and say what you're hiring for:
 The model does what it's good at: understanding code and CVs. Everything that can be checked by a
 script *is* checked by a script, and each check blocks the next step until it passes.
 
-```mermaid
-flowchart TB
-    subgraph P["1 · Prepare"]
-        direction LR
-        cv[("CVs")] --> prep["prepare_cvs<br/>extract · redact<br/>injection scan"]:::code
-        prep --> names["Agent confirms<br/>each name"]:::model
-        names --> check{{"check_redaction<br/>anything identifying?"}}:::gate
-        check -- leak --> names
-    end
-    subgraph S["2 · Score"]
-        direction LR
-        score["Model scores each CV<br/>alone, quoting evidence"]:::model --> valid{{"validate_scores<br/>quotes in CV?<br/>injections flagged?"}}:::gate
-        valid -- invalid --> score
-    end
-    subgraph R["3 · Rank and report"]
-        direction LR
-        rank["rank.py<br/>gates · ties"]:::code --> rep["render_report"]:::code
-    end
-    check -- clean --> score
-    valid -- valid --> rank
-
-    classDef model fill:#1e3a8a,stroke:#7dd3fc,color:#f8fafc
-    classDef code fill:#134e4a,stroke:#5eead4,color:#f8fafc
-    classDef gate fill:#78350f,stroke:#fbbf24,color:#fffbeb
-```
+<p align="center">
+  <img src="docs/assets/safeguards.png" alt="Safeguards: prepare_cvs extracts and redacts, the agent confirms names, check_redaction blocks leaks; the model scores each CV with quotes and validate_scores blocks invalid scores; rank.py and render_report produce the report" width="88%">
+</p>
 
 <sub>🔵 model step · 🟢 deterministic script · 🟠 blocking check</sub>
 

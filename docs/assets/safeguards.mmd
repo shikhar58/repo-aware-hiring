@@ -1,0 +1,23 @@
+flowchart TB
+    subgraph P["1 · Prepare"]
+        direction LR
+        cv[("CVs")] --> prep["prepare_cvs<br/>extract · redact<br/>injection scan"]:::code
+        prep --> names["Agent confirms<br/>each name"]:::model
+        names --> check{{"check_redaction<br/>anything identifying?"}}:::gate
+        check -- leak --> names
+    end
+    subgraph S["2 · Score"]
+        direction LR
+        score["Model scores each CV<br/>alone, quoting evidence"]:::model --> valid{{"validate_scores<br/>quotes in CV?<br/>injections flagged?"}}:::gate
+        valid -- invalid --> score
+    end
+    subgraph R["3 · Rank and report"]
+        direction LR
+        rank["rank.py<br/>gates · ties"]:::code --> rep["render_report"]:::code
+    end
+    check -- clean --> score
+    valid -- valid --> rank
+
+    classDef model fill:#1e3a8a,stroke:#7dd3fc,color:#f8fafc
+    classDef code fill:#134e4a,stroke:#5eead4,color:#f8fafc
+    classDef gate fill:#78350f,stroke:#fbbf24,color:#fffbeb

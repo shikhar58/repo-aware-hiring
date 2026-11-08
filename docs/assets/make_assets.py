@@ -4,6 +4,7 @@
 Usage: python3 docs/assets/make_assets.py
 
 Writes docs/assets/{hero,shortlist,candidate-card,terminal}.svg. Standard library only.
+The two flow diagrams are rendered separately from their .mmd sources by render_diagrams.sh.
 """
 import json
 import subprocess
