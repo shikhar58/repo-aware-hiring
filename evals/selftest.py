@@ -448,10 +448,14 @@ def test_workspace(tmp):
     expect("rubric.json" in stale and "jd.md" not in stale, "artifacts written with an older focus are reported")
 
     print("decisions")
-    quiet(decisions.main, ["add", str(role), "--stage", "screen", "--key", "shortlist_size", "--value", "8", "--assumed"])
+    quiet(decisions.main, ["add", str(role), "--stage", "screen", "--key", "shortlist_size", "--skipped"])
     quiet(decisions.main, ["add", str(role), "--stage", "rubric", "--key", "scope", "--value", '{"payments-lib": 0.6, "checkout-svc": 0.4}'])
     rc, out = quiet(decisions.main, ["pending", str(role)])
-    expect("shortlist_size" in out and "scope" not in out, "assumed defaults are listed for confirmation")
+    expect("shortlist_size = none" in out and "scope" not in out, "skipped questions are recorded as none and listed as open")
+    items = json.loads((role / "decisions.json").read_text())
+    expect(items[0]["value"] is None and items[0]["status"] == "skipped", "a skip stores no guessed value")
+    rc, out = quiet(check_ready.main, [str(ws), "--role", "payments", "--stage", "screen"])
+    expect("1 skipped (none)" in out and "shortlist_size=none (skipped)" in out, "the gate tells each stage what was skipped")
     quiet(decisions.main, ["confirm", str(role), "shortlist_size", "--value", "6"])
     quiet(decisions.main, ["add", str(role), "--stage", "rubric", "--key", "scope", "--value", '{"payments-lib": 0.5, "checkout-svc": 0.5}'])
     items = json.loads((role / "decisions.json").read_text())
@@ -508,8 +512,12 @@ def test_question_style():
            if _re.search(r"\((?:recommended|Recommended)\b|recommended default|plan with recommended", p.read_text())]
     expect(not bad, "no skill tells the agent to label an option 'recommended'" + (f" ({', '.join(bad)})" if bad else ""))
     rule = (HERE.parent / "skills" / "hiring-workspace" / "CHECKPOINTS.md").read_text()
-    expect("Write my own answer" in rule and "Never label an option" in rule,
-           "the shared question rule asks for a write-your-own option and no 'recommended' labels")
+    expect("Write my own answer" in rule and '"Skip"' in rule and "No option is pre-selected" in rule
+           and "Skipped means none" in rule,
+           "the shared question rule: nothing pre-selected, write-your-own and skip options, skip recorded as none")
+    stale = [f"{p.parent.name}" for p in skills if _re.search(r"--assumed|approve all", p.read_text())
+             and p.name == "SKILL.md"]
+    expect(not stale, "no skill fills unanswered questions with assumed defaults" + (f" ({', '.join(stale)})" if stale else ""))
 
 
 def main():

@@ -27,26 +27,28 @@ multi-repo workspace.
 
 ## Planning checkpoint (stage `plan`)
 
-Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
-[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
-defaults as `--assumed` when nobody is there to answer. This stage decides:
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided or
+skipped, ask this stage's questions one at a time with nothing pre-selected and a write-your-own and a skip option
+([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), and record each answer with
+`decisions.py` (`--skipped` for a skip, stored as none; nothing is guessed in its place). This stage asks:
 
 1. **The focus.** If `focus.md` is empty, ask for one or two sentences on what the hire will work on, in the
-   manager's words, write them to `focus.md` and run `focus.py check`. Phase 1's questions count toward this
-   checkpoint: don't ask what the focus already answers.
+   manager's words; write them to `focus.md` and run `focus.py check`. Phase 1's questions count toward this
+   checkpoint: don't ask what the focus already answers. *If skipped:* no focus; every step uses the brief and maps.
 2. **Scope across repos** (workspace only): the share of the work per repo, e.g. `{"payments-lib": 0.5,
-   "checkout-svc": 0.3, "billing-svc": 0.2}`. Recommend it from the focus, the system map and, if the focus names a
-   library, its usage trace. Record `--key scope`; the brief's "Scope in the repo" section lists it.
-3. **Role design**: chosen in Phase 3, recorded as `--key role_design`.
+   "checkout-svc": 0.3, "billing-svc": 0.2}`. Offer splits drawn from the focus, the system map and, if the focus
+   names a library, its usage trace. Record `--key scope`. *If skipped:* no scope weights; the brief lists the repos
+   in scope without shares.
+3. **Role design**: chosen in Phase 3, recorded as `--key role_design`. *If skipped:* the brief lists the designs
+   side by side, and later stages ask again before relying on one.
 
 ## Principles
 
 - **One question per message.** Never send a list of questions. Wait for the answer.
-- **Prefer multiple choice.** Offer 2–4 concrete options (use the question tool if available), never labelled
-  "recommended", and always a last option to write their own answer (see
-  [How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). Open questions only when
-  options would be guesses.
+- **Prefer multiple choice.** Offer 2–4 concrete options (use the question tool if available), with nothing
+  pre-selected or labelled "recommended", followed by a write-your-own option and a skip option (see
+  [How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). A skip is recorded as none.
+  Open questions only when options would be guesses.
 - **Look before you ask.** If the repo can answer a question, read it instead of asking.
   Ask the user about intent, priorities and constraints, not facts the code shows.
 - **Show your evidence.** When you state something about the repo, name the path.
@@ -97,7 +99,7 @@ Their corrections are often the most important input.
 
 ## Phase 3 — Propose role designs
 
-Offer **2–3 distinct role shapes** with trade-offs and your recommendation. Example for a Rust migration:
+Offer **2–3 distinct role shapes** with their trade-offs. Example for a Rust migration:
 
 - **A. Senior Rust engineer, migration lead.** Owns design and delivery. Fastest, hardest to find, highest cost.
 - **B. Strong systems engineer (C++/Go) who has shipped some Rust.** Wider talent pool; needs
@@ -106,7 +108,8 @@ Offer **2–3 distinct role shapes** with trade-offs and your recommendation. Ex
   work is bounded and the team must own Rust afterwards.
 
 For each: who it suits, what it optimises for, main risk, and what must be true about the
-team for it to work. Put the one the evidence supports first and say why, tied to the evidence, without calling it "recommended".
+team for it to work, tied to the evidence. Don't pick one for the manager: no "recommended" label, nothing
+pre-selected, plus write-your-own and skip options. *If skipped:* the brief lists the designs side by side.
 
 ## Phase 4 — Write the brief in sections
 

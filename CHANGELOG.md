@@ -3,7 +3,20 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.4] — 2026-11-08
+## [0.9.5] — 2026-11-08
+
+### Changed
+- **No pre-selected answers, and every question can be skipped.** Questions list their options with nothing chosen
+  or marked as a default, followed by "Write my own answer" and "Skip".
+- **A skip is recorded as none** (`decisions.py add … --skipped`), and so is a question nobody answers. Nothing is
+  guessed in its place: each stage works from what is known and says what it did without the answer (a placeholder
+  in the job description, no scope weights in the rubric, no shortlist cut-off, one interviewer). A skip never
+  approves the rubric or deletes data. `check_ready.py` shows each stage what was skipped; `decisions.py pending`
+  lists skipped questions to answer later.
+- Checkpoints no longer show a plan of defaults to "approve all", and no longer record assumed defaults for
+  unattended runs.
+
+ — 2026-11-08
 
 ### Changed
 - **Follow-up questions** follow one rule in every skill ([How to ask a question](skills/hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)):

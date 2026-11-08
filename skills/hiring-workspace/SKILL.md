@@ -29,7 +29,8 @@ Ask in one message (skip what the user already said):
 - the repos: local paths, git URLs (`https://…`, `git@…`) or `owner/repo`;
 - which ones the hire will **mainly work in** (primary: full codebase map) and which only **matter for context**
   (supporting: a shorter service card); everything else can be left out or marked ignored;
-- where to put the workspace. Recommend a folder **outside every repo** (e.g. `~/hiring/<team>`): it will hold CVs.
+- where to put the workspace. It must be **outside every repo**, because it will hold CVs; offer locations such as
+  `~/hiring/<team>`. *If skipped:* stop and ask again: the workspace can't be created without a location.
 
 Record: `decisions.py add <ws> --stage workspace --key repos --value '[...]'`, and `primary_repos` the same way.
 
@@ -76,8 +77,8 @@ Graph: <hash from system-graph.md> · Generated: <date> · Repos: <n>
 ```
 
 Before writing Ownership, ask at most three questions: who owns each primary repo, what the unmatched internal
-hosts are, and which cross-repo flows matter most for this hire. Record answers (`--stage system`); unanswered
-ones are written as "unknown" and recorded `--assumed`.
+hosts are, and which cross-repo flows matter most for this hire. Record answers (`--stage system`); skipped or
+unanswered ones are recorded `--skipped` (none) and written as "unknown" in the map.
 
 `check_system.py <ws>` must pass: every repo described, every link explained, template groups named, current graph
 hash, no secrets. Links come from code, so a change in any repo makes the system map stale until updated.

@@ -109,6 +109,7 @@ Agent:  I looked at backend/app/models.py, crud.py and the alembic/ folder. One 
           B) Move the backend to async SQLAlchemy
           C) A multi-tenant schema
           D) Write my own answer
+          E) Skip
 You:    A
 Agent:  Noted. One thing I found: migrations run on every container start
         (backend/scripts/prestart.sh), which races with several replicas...
@@ -200,22 +201,25 @@ rejected, and so is anything that tries to switch off redaction or the rubric. *
 
 ## You decide at every stage
 
-Each stage opens with a short plan: at most three decisions, each with a default and the reason from
-your code. Reply *"approve all"* or change one line.
+Each stage asks at most three questions, one at a time, about things only you know or that would be costly to get
+wrong. Nothing is chosen for you: no option is pre-selected or labelled "recommended", each says what it's based
+on, and you can always write your own answer or skip.
 
 ```text
-Plan for the rubric
-1. Scope across repos: payments-lib 50% · checkout-svc 30% · billing-svc 20%
-   (the focus names the payment library; checkout charges, billing refunds)
-2. Must-haves: idempotent payment flows; production Python services
-3. Weight of on-call experience: 10% (infra is owned by the platform team)
-Reply "approve all", or change any item ("1: 60/20/20").
+Rubric · question 1 of 3
+How should the work split across the repos?
+  A) payments-lib 50% · checkout-svc 30% · billing-svc 20%
+     (the focus names the payment library; checkout charges, billing refunds)
+  B) Equal across the three repos
+  C) Write my own answer
+  D) Skip
 ```
 
-Answers go into a decisions log, so nothing is asked twice. If you're away, it takes the defaults, marks them as
-*assumed*, and labels what it builds as a draft until you confirm. It never assumes past an irreversible step
-(approving the rubric, deleting data). Interview panels work the same way: say who asks about what, and each kit
-shows every interviewer their questions.
+Answers go into a decisions log, so nothing is asked twice. A skipped question is recorded as **none**, and nothing
+is guessed in its place: the job description gets an `[insert: …]` placeholder, the rubric uses no scope weights,
+screening ranks everyone. You can answer it later and redo what depends on it. A skip never approves anything: the
+rubric still waits for you, and nothing is deleted without your answer. Interview panels work the same way: say who
+asks about what, and each kit shows every interviewer their questions.
 
 ## Write the job description
 
@@ -230,6 +234,7 @@ Agent:  From the brief: Backend Engineer owning the database layer, remote in EU
           B) Leave a placeholder for you to fill in
           C) Leave it out
           D) Write my own answer
+          E) Skip
 You:    A, €70–85k
         ...
 Agent:  Here's "What you'll work on". I've described the work without naming internal files
@@ -590,8 +595,8 @@ Several repos? Same role folders, in a workspace outside all of them:
 - **Independent scoring** against redacted text; candidates are never compared while scoring.
 - **CVs are untrusted.** Injection attempts are detected, flagged and ignored.
 - **Names are confirmed, not guessed.** Redaction is only as good as knowing whose CV it is.
-- **Ask what matters, once.** Each stage asks at most three decisions, with defaults but no "recommended" labels, and always a write-your-own
-  option; the log remembers.
+- **Ask what matters, once.** At most three questions per stage, nothing pre-selected, always a write-your-own
+  and a skip option; a skip is recorded as none, never filled with a guess.
 </details>
 
 ## Status and roadmap

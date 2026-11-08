@@ -17,12 +17,13 @@ The workspace's maps and system map hold no candidate data and stay.
 1. **Preview.** `python3 -I scripts/cleanup.py close hiring/<role-slug>`
    This prints what will be deleted and kept and deletes nothing (exit code 3).
 2. **Ask the user two questions** before deleting, unless they already answered (as in
-   [How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question): no "recommended" labels, always a
-   write-your-own option; give the reasons below in neutral words):
-   - Delete the original CVs in `cvs/` too? (`--include-cvs`.) Recommend yes, unless the CVs live
-     only here and their policy says to keep them for a period.
-   - Keep the report (`report.md` and `report.html`)? (`--keep-report`.) It names candidates and quotes their CVs, so recommend no,
-     unless they need it for a documented reason.
+   [How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question): nothing pre-selected,
+   write-your-own and skip options; give the facts below in neutral words):
+   - Delete the original CVs in `cvs/` too? (`--include-cvs`.) Facts to give: they are personal data; keep them only
+     if they live nowhere else and the organisation's policy sets a retention period.
+   - Keep the report (`report.md` and `report.html`)? (`--keep-report`.) Facts to give: it names candidates and
+     quotes their CVs; keep it only for a documented reason.
+   **If either is skipped, delete nothing** and say what is still waiting for an answer.
    Also check that nobody still needs the data, e.g. a candidate who asked for human review or
    for a copy of their data.
 3. **Close.** Re-run with the chosen flags and `--yes`. Tell the user what was deleted, in one line.

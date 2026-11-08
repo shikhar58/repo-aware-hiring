@@ -90,14 +90,18 @@ def main(argv=None):
         role_dec = decisions.load(rd) if rd.exists() else []
         all_dec = shared + role_dec
         assumed = [x for x in all_dec if x["status"] == "assumed"]
-        lines.append(f"Decisions: {len(all_dec) - len(assumed)} confirmed, {len(assumed)} assumed "
+        skipped = [x for x in all_dec if x["status"] == "skipped"]
+        lines.append(f"Decisions: {len(all_dec) - len(assumed) - len(skipped)} answered, {len(skipped)} skipped (none)"
+                     + (f", {len(assumed)} assumed" if assumed else "") + " "
                      f"(shared {ctx.shared_decisions}, role {decisions.path_for(rd)})")
         if a.stage:
             mine = [x for x in all_dec if x["stage"] == a.stage]
             if mine:
                 lines.append(f"  already decided for {a.stage}: " + "; ".join(
-                    f"{x['key']}={decisions.fmt(x['value'])[:40]}{' (assumed)' if x['status'] == 'assumed' else ''}"
+                    f"{x['key']}={decisions.fmt(x['value'])[:40]}{' (skipped)' if x['status'] == 'skipped' else ' (assumed)' if x['status'] == 'assumed' else ''}"
                     for x in mine))
+        for x in skipped[:8]:
+            lines.append(f"  skipped: [{x['stage']}] {x['key']} = none — work without it (CHECKPOINTS.md, 'Skipped means none')")
         for x in assumed[:6]:
             lines.append(f"  assumed: [{x['stage']}] {x['key']} = {decisions.fmt(x['value'])[:60]} — confirm when the "
                          "hiring manager is back")

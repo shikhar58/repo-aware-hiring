@@ -38,16 +38,17 @@ multi-repo workspace.
 
 ## Planning checkpoint (stage `interview`)
 
-Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
-[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
-defaults as `--assumed` when nobody is there to answer. This stage decides:
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided or
+skipped, ask this stage's questions one at a time with nothing pre-selected and a write-your-own and a skip option
+([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), and record each answer with
+`decisions.py` (`--skipped` for a skip, stored as none; nothing is guessed in its place). This stage asks:
 
-1. **Panel split**: one interviewer (default for a first interview), or several, each owning some criteria.
-   Write it to `core.json` as `"panel"` (see the schema below); `validate_kit.py` checks that every core question
-   has an interviewer and fits their slot.
-2. **Length and stage**: recommend 60 minutes, first technical interview.
-3. **Which candidates**: the shortlist size decided at screening (`decisions.py get <role> shortlist_size`).
+1. **Panel split**: one interviewer, or several, each owning some criteria. Write a panel to `core.json` as
+   `"panel"` (see the schema below); `validate_kit.py` checks that every core question has an interviewer and fits
+   their slot. *If skipped:* no panel; one interviewer asks everything.
+2. **Length and stage** of the interview. *If skipped:* 60 minutes, first technical interview, stated in the kit.
+3. **Which candidates**: the shortlist size from screening (`decisions.py get <role> shortlist_size`), or ask.
+   *If skipped:* kits for every ranked candidate who meets the must-haves.
 Core questions follow the focus: the parts of the system it names come first.
 
 ## Inputs

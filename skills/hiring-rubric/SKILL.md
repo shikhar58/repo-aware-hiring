@@ -26,16 +26,18 @@ multi-repo workspace.
 
 ## Planning checkpoint (stage `rubric`)
 
-Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
-[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
-defaults as `--assumed` when nobody is there to answer. This stage decides:
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided or
+skipped, ask this stage's questions one at a time with nothing pre-selected and a write-your-own and a skip option
+([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), and record each answer with
+`decisions.py` (`--skipped` for a skip, stored as none; nothing is guessed in its place). This stage asks:
 
-1. **Must-haves**: recommend the two or three the profile's hardest problems demand.
-2. **Criteria weights**: recommend from the order of the hard problems.
-3. **Scope weights per repo** (workspace): copy the plan's `scope` decision into `rubric.json` as `"scope"`
-   (repo → share, summing to 1), and tag criteria that belong to specific repos with `"repos": [...]`. `rank.py`
-   checks both. Add `"focus_version"` from `check_ready.py`.
+1. **Must-haves**: offer the two or three that the profile's hardest problems point to, each with its evidence.
+2. **Criteria weights**: offer weightings drawn from the order of the hard problems.
+3. **Scope weights per repo** (workspace): use the plan's `scope` decision in `rubric.json` as `"scope"` (repo →
+   share, summing to 1), and tag criteria that belong to specific repos with `"repos": [...]`. `rank.py` checks
+   both. Add `"focus_version"` from `check_ready.py`.
+*If skipped:* propose must-haves from the profile and equal weights, with no scope weights, and say so. The rubric
+still needs a person's approval before screening: a skip never approves it.
 
 ## Inputs
 

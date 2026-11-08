@@ -2,17 +2,19 @@
 """The decisions log: every planning checkpoint writes its answers here, so nothing is asked twice.
 
 Usage:
-  decisions.py add     <dir> --stage STAGE --key KEY --value VALUE [--assumed] [--note TEXT] [--by NAME]
+  decisions.py add     <dir> --stage STAGE --key KEY (--value VALUE | --skipped) [--note TEXT] [--by NAME]
   decisions.py get     <dir> KEY [--stage STAGE]        print the value (exit 1 if not decided)
   decisions.py list    <dir> [--stage STAGE] [--md]
-  decisions.py pending <dir>                              assumptions nobody has confirmed yet
+  decisions.py pending <dir>                              skipped questions (and older assumptions) still open
   decisions.py confirm <dir> KEY [--stage STAGE] [--value VALUE] [--by NAME]
 
 <dir> is a role folder (hiring/<role>/ or roles/<role>/) for role decisions, or the workspace folder
 (hiring/_repo/ in single-repo mode) for decisions shared by every role: repo tiers, ownership, mapping depth.
 VALUE may be JSON (a list, an object, a number) or plain text.
-"assumed" marks a default chosen without the hiring manager (they were away, or the session ran unattended):
-artifacts built on it say so, and `pending` lists them for confirmation.
+--skipped records the answer as none: the person skipped the question, or nobody was there to answer. Nothing is
+guessed in its place; each stage works without it (see CHECKPOINTS.md, "Skipped means none"). Answer it later with
+`add` (or `confirm KEY --value ...`).
+--assumed is kept for logs written by older versions; new checkpoints record skips instead.
 """
 import argparse
 import json
@@ -54,6 +56,8 @@ def find(items, key, stage=None):
 
 
 def fmt(v):
+    if v is None:
+        return "none"
     return v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
 
 
@@ -61,7 +65,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("add"); p.add_argument("dir"); p.add_argument("--stage", required=True, choices=STAGES)
-    p.add_argument("--key", required=True); p.add_argument("--value", required=True)
+    p.add_argument("--key", required=True)
+    v = p.add_mutually_exclusive_group(required=True)
+    v.add_argument("--value"); v.add_argument("--skipped", action="store_true")
     p.add_argument("--assumed", action="store_true"); p.add_argument("--note"); p.add_argument("--by")
     p = sub.add_parser("get"); p.add_argument("dir"); p.add_argument("key"); p.add_argument("--stage")
     p = sub.add_parser("list"); p.add_argument("dir"); p.add_argument("--stage"); p.add_argument("--md", action="store_true")
@@ -73,8 +79,9 @@ def main(argv=None):
 
     if a.cmd == "add":
         prev = find(items, a.key, a.stage)
-        entry = {"stage": a.stage, "key": a.key, "value": parse_value(a.value),
-                 "status": "assumed" if a.assumed else "confirmed", "at": wslib.now()}
+        status = "skipped" if a.skipped else "assumed" if a.assumed else "confirmed"
+        entry = {"stage": a.stage, "key": a.key, "value": None if a.skipped else parse_value(a.value),
+                 "status": status, "at": wslib.now()}
         if a.note:
             entry["note"] = a.note
         if a.by:
@@ -97,6 +104,9 @@ def main(argv=None):
         if not hit:
             print(f"no decision {a.key}")
             return 1
+        if a.value is None and hit["value"] is None:
+            print(f"{a.key} was skipped: give the answer with --value")
+            return 1
         if a.value is not None:
             hit["replaces"] = {"value": hit["value"], "status": hit["status"], "at": hit["at"]}
             hit["value"] = parse_value(a.value)
@@ -106,7 +116,7 @@ def main(argv=None):
         save(a.dir, items)
         print(f"confirmed: [{hit['stage']}] {a.key} = {fmt(hit['value'])}")
         return 0
-    rows = [x for x in items if (a.cmd != "pending" or x["status"] == "assumed")
+    rows = [x for x in items if (a.cmd != "pending" or x["status"] in ("assumed", "skipped"))
             and (getattr(a, "stage", None) in (None, x["stage"]))]
     if getattr(a, "md", False):
         print("| Stage | Decision | Value | Status | When |\n|---|---|---|---|---|")
@@ -117,7 +127,8 @@ def main(argv=None):
             print(f"{x['status']:<9} [{x['stage']}] {x['key']} = {fmt(x['value'])[:100]}"
                   + (f"  ({x['note']})" if x.get("note") else ""))
     if a.cmd == "pending":
-        print(f"{len(rows)} assumption(s) waiting for confirmation." if rows else "No pending assumptions.")
+        print(f"{len(rows)} open decision(s): skipped or assumed, answer them when you can." if rows
+              else "No open decisions.")
     return 0
 
 

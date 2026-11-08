@@ -104,8 +104,9 @@ differs. Mention what each repo publishes and which internal hosts it calls (the
 builds on that.
 
 **Planning checkpoint (stage `map`)**, per [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): before mapping, ask
-at most which areas to map in depth (recommend what the focus names) and whether template groups share one full map
-(recommend yes). Record with `decisions.py add <ws or hiring/_repo> --stage map …`.
+which areas to map in depth (options from the focus and the inventory) and whether template groups share one full
+map, nothing pre-selected, with write-your-own and skip options. *If skipped:* every area to the same depth, each
+repo mapped on its own. Record with `decisions.py add <ws or hiring/_repo> --stage map …` (`--skipped` for a skip).
 
 ## Keeping it current
 

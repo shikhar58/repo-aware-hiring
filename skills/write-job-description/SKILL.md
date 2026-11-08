@@ -26,23 +26,26 @@ multi-repo workspace.
 
 ## Planning checkpoint (stage `jd`)
 
-Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
-[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
-defaults as `--assumed` when nobody is there to answer. This stage decides:
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided or
+skipped, ask this stage's questions one at a time with nothing pre-selected and a write-your-own and a skip option
+([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), and record each answer with
+`decisions.py` (`--skipped` for a skip, stored as none; nothing is guessed in its place). This stage asks:
 
-1. **How much of the system to describe publicly**: recommend describing the work, with technologies only hinted at
-   inside the work, must-haves and nice-to-haves (no stack section).
-   In a workspace, `check_jd.py` also blocks distinctive repo, service and package names (`checkout-svc`,
-   `acme-payments`); say "our checkout service" instead.
-2. **Pay range** and 3. **location and working pattern**, if the brief doesn't have them (asked in step 2 below).
+1. **How much of the system to describe publicly**: options such as "the work only" or "the work plus the
+   product's purpose". Technologies are only ever hinted at inside the work, must-haves and nice-to-haves (no stack
+   section). In a workspace, `check_jd.py` also blocks distinctive repo, service and package names
+   (`checkout-svc`, `acme-payments`); say "our checkout service" instead. *If skipped:* describe the work; never name
+   internals.
+2. **Pay range** and 3. **location and working pattern**, if the brief doesn't have them (asked in step 1 below).
+   *If skipped:* `[insert: …]` placeholders in the draft.
 The focus shapes "What you'll work on"; it never adds requirements about the person.
 
 ## Principles
 
 - **One question per message, answered before the next.** Prefer multiple choice (use the question tool
-  if available), never labelled "recommended", with a last option to write their own answer
-  ([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). Never send a list of questions.
+  if available), with nothing pre-selected or labelled "recommended", followed by a write-your-own option and a skip
+  option ([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). A skipped fact becomes an
+  `[insert: …]` placeholder. Never send a list of questions.
 - **Look before you ask.** Read the brief and the repo first; ask only about intent, priorities, and facts
   the code cannot show (location, salary range, team, benefits).
 - **The JD is public.** Anything from the repo must be translated into general language before it goes in.
@@ -71,9 +74,9 @@ Ask only what you still need after reading the inputs, one at a time. Typical or
 2. **What success looks like in the first 6–12 months**, if there is no brief. Offer options from the repo.
 3. **Location and working model**: remote (which time zones), hybrid (where, how many days), on-site.
 4. **Employment type**: permanent, fixed-term, contract.
-5. **Pay range.** Recommend including one: it is required in some jurisdictions (for example under pay
-   transparency laws in several US states and the EU) and increases applications everywhere. Accept "leave
-   it out", and record that choice.
+5. **Pay range.** Say, as a fact, that a range is required in some jurisdictions (for example under pay
+   transparency laws in several US states and the EU) and tends to increase applications. Options: give a range,
+   leave it out, write their own answer, or skip. *If skipped:* `[insert: salary range]` in the draft.
 6. **Team and company context**: team size, who they report to, what the company does, in the user's words.
 7. **Benefits and anything the company always includes** (equal opportunity statement, visa sponsorship,
    accessibility of the hiring process). Offer to leave a placeholder.
@@ -167,7 +170,7 @@ building the screening rubric from it (`hiring-rubric`), or adjusting the existi
 
 ## Rules
 
-- The user owns the posting. Present facts and recommendations (pay range, shorter must-have list), then follow
+- The user owns the posting. Present facts (why a pay range helps, why a short must-have list works), then follow
   their decision.
 - Do not invent benefits, salaries, perks, hiring steps or company facts. Use placeholders like `[insert: benefits]` and list them
   for the user at the end.

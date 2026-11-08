@@ -27,16 +27,18 @@ multi-repo workspace.
 
 ## Planning checkpoint (stage `profile`)
 
-Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
-[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
-defaults as `--assumed` when nobody is there to answer. This stage decides:
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided or
+skipped, ask this stage's questions one at a time with nothing pre-selected and a write-your-own and a skip option
+([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), and record each answer with
+`decisions.py` (`--skipped` for a skip, stored as none; nothing is guessed in its place). This stage asks:
 
-1. **Order of the hard problems**: recommend the order the focus implies, then risk from the maps' hot spots.
-2. **Coverage** (workspace): primary repos in depth; supporting repos only where the focus or the system map's
-   connections touch them. Cross-repo problems (a contract between two services, a library used by both) count as
-   hard problems in their own right. Cite paths with the repo name: `checkout-svc:app/api/orders.py`.
-3. If the focus names a library and `usage-<library>.md` doesn't exist yet, run `trace_usage.py` first and cite it.
+1. **Order of the hard problems**: offer orderings drawn from the focus and from the risks in the maps.
+   *If skipped:* order by the risk the maps show, and say so in the profile.
+2. **Coverage** (workspace): which repos and modules to cover in depth. *If skipped:* primary repos in depth,
+   supporting repos where the system map's connections touch them. Cross-repo problems (a contract between two
+   services, a library used by both) count as hard problems. Cite paths with the repo name:
+   `checkout-svc:app/api/orders.py`.
+If the focus names a library and `usage-<library>.md` doesn't exist yet, run `trace_usage.py` first and cite it.
 
 ## Inputs
 

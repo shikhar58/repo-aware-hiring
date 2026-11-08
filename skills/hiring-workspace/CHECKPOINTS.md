@@ -10,52 +10,45 @@ Every follow-up question, in every skill, follows the same shape:
 
 - **Multiple choice, one question at a time**, with 2–4 concrete options drawn from the code, the brief or earlier
   answers. Use the question tool when there is one.
-- **Never label an option "recommended"** (nor "best", "suggested" or "default"). Put the option the evidence
-  supports first and give its reason in the option's description, in neutral words: "Matches the two hardest
-  problems in the profile". The person decides; the order and the reasons are enough.
-- **Always add a last option to write their own answer**, after all the other options: "Write my own answer".
-  If the question tool already adds a free-text choice of its own (such as "Other"), that is this option: don't show
-  it twice. In plain text, end the list with "Or write your own answer."
-- When several options can apply together, allow choosing more than one, and still offer the write-your-own option.
+- **Nothing is chosen for them.** No option is pre-selected, marked as a default, or labelled "recommended" (nor
+  "best" or "suggested"). Each option's description says, in neutral words, what it is based on ("Matches the two
+  hardest problems in the profile").
+- **After all the options, always two more:** "Write my own answer" and "Skip". If the question tool already adds a
+  free-text choice of its own (such as "Other"), that is the write-your-own option: don't show it twice. In plain
+  text, end the list with "Or write your own answer, or skip."
+- When several options can apply together, allow choosing more than one; the write-your-own and skip options stay.
 
-The same applies to a checkpoint plan: show each line's default value and its reason, without calling it
-recommended.
+## Skipped means none
+
+A skipped question, or one nobody answers (the person is away, or the session runs unattended), is recorded as
+**none**: `decisions.py add <folder> --stage <stage> --key <key> --skipped`. Nothing is guessed in its place.
+Every stage then works from what is actually known and leaves the rest open:
+
+- in a **public draft** (the job description), the missing fact becomes an `[insert: …]` placeholder;
+- in **internal work** (profile, rubric, screening, kits), the step uses only the code, the focus and the
+  answers it has, and says in one line what it did without the skipped answer (the "if none" column below);
+- anything that needs a person's approval (the rubric, deleting data) still waits for that person: a skip never
+  approves anything.
+
+A skipped decision can be answered later; record the answer and redo the outputs that depend on it.
 
 ## How to run a checkpoint
 
 1. **Run the gate first.** `check_ready.py <repo-or-workspace> --role <role> --stage <stage>` prints what is
-   already decided for this stage, and any assumptions still waiting for confirmation.
-2. **Reuse what is decided.** Never re-ask a recorded decision. Name it in one line instead ("Using the scope
-   weights you set on 8 Nov: payments-lib 50%, checkout-svc 30%, billing-svc 20%").
-3. **Show one plan with defaults.** At most three decisions, each with a default value and a
-   one-line reason drawn from the maps, the system map, the focus or the brief:
-
-   ```
-   Plan for the rubric
-   1. Scope across repos: payments-lib 50% · checkout-svc 30% · billing-svc 20%
-      (the focus names the payment library; the usage trace shows checkout charges and billing refunds)
-   2. Must-haves: idempotent payment flows; production Python services
-      (the two hardest problems in the profile)
-   3. Weight of on-call experience: 10% (supporting repo infra is owned by the platform team)
-   Also assuming: anchors from the profile's examples; rubric version 1.
-   Reply "approve all", or change any item ("1: 60/20/20").
-   ```
-
-   Ask only what a wrong guess would make expensive, or what needs the manager's knowledge (ownership, priorities,
-   pay). Everything else is a default listed under "Also assuming".
-4. **Take "approve all" or changes one at a time.** If they change one item, update the plan and show only the
-   changed line. Don't open new questions unless an answer creates one.
-5. **Record every answer** in the decisions log, in the folder it belongs to:
+   already decided for this stage, including what was skipped.
+2. **Reuse what is decided.** Never re-ask a recorded decision, including a skip, unless the person brings it up.
+   Name it in one line ("Using the scope you set on 8 Nov: payments-lib 50%, checkout-svc 30%, billing-svc 20%";
+   "Pay range was skipped, so the draft keeps a placeholder").
+3. **Ask the stage's questions** (at most three), one at a time, as above. Ask only what needs the person's
+   knowledge or would be expensive to get wrong; for everything else, say in one line what you will base it on.
+4. **Record every answer** in the decisions log, in the folder it belongs to:
    - shared by every role (workspace setup, repo tiers, ownership, mapping depth): the workspace folder, or
      `hiring/_repo/` for one repo
    - this role only: the role folder
 
-   `decisions.py add <folder> --stage <stage> --key <key> --value '<value>' [--by <name>] [--note <why>]`
-6. **Unattended or no answer?** Take the defaults, record each with `--assumed`, and start every output
-   built on them with a line: *Draft: based on N assumptions not yet confirmed (see decisions.json).*
-   `decisions.py pending` lists them for the manager later; `decisions.py confirm` clears them.
-   Never assume past an irreversible step: approving the rubric, deleting data, sending anything to candidates.
-7. **Changing an earlier answer** replaces it (the old value is kept in the log). Then say which outputs depend on
+   `decisions.py add <folder> --stage <stage> --key <key> --value '<value>' [--by <name>] [--note <why>]`, or
+   `--skipped` instead of `--value`.
+5. **Changing an earlier answer** replaces it (the old value is kept in the log). Then say which outputs depend on
    it and offer to redo them. For a focus change, `focus.py stale <role folder>` lists them.
 
 ## The focus
@@ -78,15 +71,15 @@ sentence and offer the work-based version ("strong fundamentals in distributed s
 
 ## Decisions per stage
 
-| Stage | Skill | Decisions (at most three) | Default |
+| Stage | Skill | Decisions (at most three) | If none (skipped or unanswered) |
 |---|---|---|---|
-| `workspace` | hiring-workspace | which repos are in scope; which are primary (full map) or supporting (service card); where the workspace lives | primary: the repos the focus or brief names, or the hire will change most; others supporting; workspace outside every repo |
-| `map` | map-codebase | which areas to map in depth; whether repos built from one template share one full map | areas the focus names; one full map per template group |
-| `system` | hiring-workspace | who owns each repo; what unmatched internal hosts are; which cross-repo flows matter for this hire | "unknown" for owners (recorded as assumed); flows that touch primary repos |
-| `plan` | hiring-plan | the focus text; scope across repos (share of the work per repo); role design | focus from the manager's words; scope from the focus and usage trace |
-| `profile` | repo-profile | order of the hard problems; which repos and modules the profile covers | order by focus, then by risk in the maps |
-| `jd` | write-job-description | how much of the system to describe publicly; pay range; location | describe the work, never internal names; the questions in that skill |
-| `rubric` | hiring-rubric | must-haves; criteria weights; scope weights per repo | from the profile's hard problems and the plan's scope |
-| `screen` | screen-candidates | which CVs (all or a subset); shortlist size; handling of flagged CVs | all CVs in `cvs/`; top 8 or a quarter, whichever is larger; flagged CVs go to human review, never silently excluded |
-| `interview` | interview-kit | panel split (who asks which criteria); length; stage | one interviewer, 60 minutes, first technical interview |
-| `close` | close-round | keep the report or not | always ask: deletion can't be undone |
+| `workspace` | hiring-workspace | which repos are in scope; which are primary (full map) or supporting (service card); where the workspace lives | can't continue without the repos; with no tiers, every repo is mapped in full; the workspace location must be given |
+| `map` | map-codebase | which areas to map in depth; whether repos built from one template share one full map | every area to the same depth; each repo mapped on its own |
+| `system` | hiring-workspace | who owns each repo; what unmatched internal hosts are; which cross-repo flows matter for this hire | ownership written as "unknown"; hosts listed under Gaps; every flow described equally |
+| `plan` | hiring-plan | the focus text; scope across repos (share of the work per repo); role design | no focus; no scope weights; the brief lists the role designs without choosing one |
+| `profile` | repo-profile | order of the hard problems; which repos and modules the profile covers | ordered by the risk the maps show; covers the whole scope at equal depth |
+| `jd` | write-job-description | how much of the system to describe publicly; pay range; location | work described, internals never named; `[insert: …]` placeholders for pay and location |
+| `rubric` | hiring-rubric | must-haves; criteria weights; scope weights per repo | must-haves and equal weights proposed from the profile for approval; no scope weights |
+| `screen` | screen-candidates | which CVs (all or a subset); shortlist size; handling of flagged CVs | every CV in `cvs/`; no shortlist cut-off, everyone ranked; flagged CVs listed for human review, never excluded |
+| `interview` | interview-kit | panel split (who asks which criteria); length; stage | no panel (one interviewer); 60 minutes; kits for every ranked candidate who meets the must-haves |
+| `close` | close-round | delete the CVs; keep the report | nothing is deleted until the person answers: deletion can't be undone |
