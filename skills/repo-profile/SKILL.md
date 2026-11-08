@@ -1,13 +1,22 @@
 ---
 name: repo-profile
-description: Build or refresh an engineering profile of the company codebase (stack, architecture, conventions, test culture, hard problems) to ground software engineer hiring. Use before creating a hiring rubric, or when the user asks what skills their codebase actually demands.
+description: Build or refresh a role-specific engineering profile on top of the codebase map (stack, architecture, conventions, test culture, hard problems for the role's area) to ground software engineer hiring. Use after map-codebase and before creating a hiring rubric, or when the user asks what skills a part of their codebase demands.
 ---
 
 # Repo Profile
 
-Produce `hiring/<role-slug>/repo-profile.md`: a compact, evidence-backed description of what
+Produce `hiring/<role-slug>/repo-profile.md`, built on top of the whole-system map from `map-codebase`: a compact,
+evidence-backed description of what
 working in this codebase actually requires. It is built **once per role** and reused for every
 candidate, so the repo is never re-read per CV.
+
+## Before anything else: a current map of the codebase
+
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
+to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
+run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
+missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+Read `hiring/_repo/codebase-map.md` before going on.
 
 ## Inputs
 
@@ -22,12 +31,12 @@ candidate, so the repo is never re-read per CV.
 
 ## Procedure
 
-1. **Map the repo cheaply first.** List top-level structure, manifests and config:
-   `package.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`,
-   `build.gradle`, `Dockerfile`, `docker-compose*`, `*.tf`, CI files (`.github/workflows`,
-   `.gitlab-ci.yml`), `Makefile`, lint/format configs. Do not read every source file.
-2. **Sample, don't scan.** For each major module in scope, read a handful of representative
-   files: an entry point, a core domain file, a test file, and the most-changed source files.
+1. **Start from the codebase map.** The whole-system picture (components, data, APIs, auth and security,
+   CI/CD, deployment, observability, testing) is already in `hiring/_repo/codebase-map.md`. Don't redo it:
+   select what matters for this role and cite the map's findings with their paths.
+2. **Go deep on the role's scope.** For each module in scope, read the entry points, the core domain files,
+   the tests, how it is built and deployed (from the map's CI/CD and deployment sections), and the most-changed
+   source files.
    To find churn, when git history is present (a shallow clone has none; skip this then), limit to the
    last two years, to files that still exist, and drop lockfiles and docs:
    ```bash

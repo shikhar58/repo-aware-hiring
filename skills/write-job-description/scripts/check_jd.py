@@ -4,7 +4,7 @@
 Usage: python3 check_jd.py hiring/<role-slug> [--jd path/to/jd.md]
 
 ERRORS (exit code 1): possible leaks of internal details. A JD is public.
-  - file paths, and any path or identifier named in repo-profile.md or brief.md
+  - file paths, and any path or identifier named in repo-profile.md, brief.md or the codebase map
   - environment-variable names, IP addresses, internal hostnames, credentials
   - statements of security weaknesses or missing safeguards ("no backups", "vulnerable", "breach")
 WARNINGS (exit code 0): fairness, structure and consistency.
@@ -94,8 +94,8 @@ def tokens(text):
 def internal_terms(role):
     """Paths and identifiers the profile and brief mention: none of these may appear in the JD."""
     terms = set()
-    for name in ("repo-profile.md", "brief.md"):
-        p = role / name
+    for p in (role / "repo-profile.md", role / "brief.md", role.parent / "_repo" / "codebase-map.md"):
+        name = p.name
         if not p.exists():
             continue
         t = p.read_text(encoding="utf-8")

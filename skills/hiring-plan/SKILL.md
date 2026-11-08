@@ -10,6 +10,14 @@ repo, what success looks like, and the role shape the user chose. Every later sk
 
 **Do not jump to a job description or rubric.** The value of this step is the conversation.
 
+## Before anything else: a current map of the codebase
+
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
+to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
+run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
+missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+Read `hiring/_repo/codebase-map.md` before going on.
+
 ## Principles
 
 - **One question per message.** Never send a list of questions. Wait for the answer.
@@ -58,7 +66,7 @@ Stop asking when you can propose designs. Usually 4–7 questions.
 
 ## Phase 2 — Investigate the scoped area
 
-Read the scoped paths with the mission lens from the table above. Summarise in 5–10 bullets
+Start from the codebase map's sections for the scoped area, then read the scoped paths with the mission lens from the table above. Summarise in 5–10 bullets
 with paths: size, complexity, risks, what a newcomer would struggle with first.
 Share this summary with the user and ask whether it matches their understanding.
 Their corrections are often the most important input.

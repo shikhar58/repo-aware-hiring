@@ -8,6 +8,14 @@ description: Write a job description for a software engineering role from the co
 Produce `hiring/<role-slug>/jd.md`: a public job posting that is specific because it is grounded in
 the repo, safe because it reveals nothing internal, and fair because it asks only for what the job needs.
 
+## Before anything else: a current map of the codebase
+
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
+to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
+run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
+missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+Read `hiring/_repo/codebase-map.md` before going on.
+
 ## Principles
 
 - **One question per message, answered before the next.** Prefer multiple choice (use the question tool

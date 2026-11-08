@@ -1,0 +1,1 @@
+CREATE TABLE orders (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, total_cents INTEGER NOT NULL);

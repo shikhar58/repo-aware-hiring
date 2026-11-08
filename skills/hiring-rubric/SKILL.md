@@ -9,6 +9,14 @@ Produce `hiring/<role-slug>/rubric.json` (machine-readable) and `rubric.md` (hum
 The rubric is the contract every candidate is scored against. **No candidate is scored until
 a human has approved it.**
 
+## Before anything else: a current map of the codebase
+
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
+to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
+run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
+missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+Read `hiring/_repo/codebase-map.md` before going on.
+
 ## Inputs
 
 - `hiring/<role-slug>/repo-profile.md` — run the `repo-profile` skill first if missing.

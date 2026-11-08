@@ -3,6 +3,28 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
+## [0.8.0] — 2026-11-08
+
+### Added
+- **`map-codebase` skill.** Builds `hiring/_repo/codebase-map.md`, a whole-system map with file citations in 13
+  sections: overview, components and services, data stores and schema, APIs and integrations, authentication and
+  security, CI/CD, deployment and infrastructure, observability, testing, dependencies, conventions, hot spots and
+  risks (INTERNAL, never published) and gaps.
+- **`inventory.py`.** Deterministic scan of languages, manifests, packages, compose services, containers, pipelines,
+  deployment and IaC files, migrations and schema, API specs, auth and security code and tooling, data stores, queues,
+  ORMs, proxies, observability and test frameworks. Lists env files without reading them. Records a fingerprint and
+  per-file hashes of the structurally important files.
+- **`check_map.py` gate.** Fails when a section is missing or cites nothing, a cited path doesn't exist, anything the
+  inventory found isn't explained, the risks section isn't marked INTERNAL, a secret was copied in, or the map is stale
+  (naming the changed files).
+- Example map of the FastAPI template (`docs/example-codebase-map.md`), a synthetic mini-repo fixture, and new
+  self-test checks.
+
+### Changed
+- `hiring-plan`, `repo-profile`, `write-job-description`, `hiring-rubric`, `screen-candidates` and `interview-kit` now run
+  the map gate first and refuse to start on a missing or stale map. `repo-profile` builds on the map instead of sampling.
+- `check_jd.py` (and so `validate_kit.py`) treats every path named in the map as internal.
+
 ## [0.7.0] — 2026-11-08
 
 ### Added

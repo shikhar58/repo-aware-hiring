@@ -21,6 +21,14 @@ predict job performance better and are fairer than free-form ones, and are easie
 challenged. Personal questions add depth: they test the claims on this candidate's CV and fill gaps the CV left open.
 They never replace the core questions.
 
+## Before anything else: a current map of the codebase
+
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
+to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
+run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
+missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+Read `hiring/_repo/codebase-map.md` before going on.
+
 ## Inputs
 
 - `rubric.json` (approved), `repo-profile.md`, and `brief.md` / `jd.md` if present.

@@ -15,6 +15,7 @@
   <a href="#try-it-in-2-minutes">Try the demo</a> ·
   <a href="#install">Install</a> ·
   <a href="#how-it-works">How it works</a> ·
+  <a href="#it-understands-your-codebase-first">Codebase map</a> ·
   <a href="#write-the-job-description">Job descriptions</a> ·
   <a href="#screen-candidates-against-it">Screening</a> ·
   <a href="#interview-each-candidate">Interviews</a> ·
@@ -70,6 +71,8 @@ That's the person you actually need.
 </tr>
 </table>
 
+All three start from the same place: a **full map of your codebase** (services, data, APIs, auth and security,
+CI/CD, deployment, tests), checked for completeness and kept current, so nothing is based on a quick glance.
 Use any of them on its own or all together. It runs inside your own coding agent (Claude Code, or any agent that
 supports Agent Skills), so your code and candidates' data never go to a separate hiring vendor.
 Screening is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
@@ -90,7 +93,7 @@ Screening is **decision support**: it ranks evidence and suggests interview ques
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/how-it-works.png" alt="Flow: hiring-plan, repo-profile, write-job-description, hiring-rubric with the same must-haves, you approve, screen-candidates writes the report, interview-kit prepares a kit per candidate, close-round deletes candidate data" width="520">
+  <img src="docs/assets/how-it-works.png" alt="Flow: map-codebase builds a whole-system map that check_map gates, then hiring-plan, repo-profile, write-job-description, hiring-rubric, you approve, screen-candidates, interview-kit, close-round" width="520">
 </p>
 
 You talk to your agent in plain language. A planning session looks like this:
@@ -108,6 +111,36 @@ Agent:  Noted. One thing I found: migrations run on every container start
         Here are three role designs. I recommend A, a backend engineer with deep PostgreSQL
         ownership, because...
 ```
+
+## It understands your codebase first
+
+Before any posting, rubric or interview question, `map-codebase` builds a map of the whole system. A script
+inventories the repo first, so nothing is missed: every package and service, pipeline, migration folder, deployment
+file, auth module, data store and test setup. Then the agent investigates each area and writes
+`hiring/_repo/codebase-map.md`:
+
+| Area | What the map records, with file paths |
+|---|---|
+| Components and services | Every package and service, its entry point, how they talk to each other |
+| Data stores and schema | Databases, caches, queues; ORM, main entities, how migrations are written and applied |
+| APIs and integrations | REST/GraphQL/gRPC, generated clients, external services |
+| Authentication and security | Login and tokens, password storage, permissions, secrets handling, scanning |
+| CI/CD pipeline | Every workflow: triggers, gates, releases and deployments |
+| Deployment and infrastructure | Containers, proxies and TLS, environments, IaC, backups |
+| Observability, testing, dependencies, conventions | Logging and errors, test types and setup, key libraries, code standards |
+| Hot spots and risks | Fragile areas and missing safeguards, marked **INTERNAL: never published** |
+
+Every other skill runs `check_map.py` first and refuses to start until the map is complete and current:
+
+```text
+FAIL codebase map hiring/_repo/codebase-map.md
+  error: compose service 'adminer' is not described in Components or Deployment
+  error: inventory detected Sentry (observability) but 'Observability' doesn't mention it
+  error: STALE: the codebase changed since the map was written. Changed: ~.github/workflows/test-backend.yml
+```
+
+The map is built once per repository and reused for every role. It never reads `.env` files, and blocks secrets
+copied into it. Read the real map of the demo repo: [`docs/example-codebase-map.md`](docs/example-codebase-map.md).
 
 ## Write the job description
 
@@ -275,12 +308,13 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Bias tests** | The eval suite checks that swapping a candidate's name, gender or national origin produces identical redacted text, and that a university change or a career break doesn't move the score. |
 | **Injection defence** | Instructions hidden in CVs (including white text in PDFs, in several languages) are detected, flagged for a human, and ignored. |
 | **Human approval** | No scoring until a named person approves the rubric. Nothing is ever rejected automatically. |
+| **Whole-system understanding** | A deterministic inventory plus a 13-section map with file citations; `check_map.py` blocks every other skill until everything found is explained and the map matches the current code. |
 | **Safe job postings** | `check_jd.py` blocks file paths, internal names from your repo, environment variables, hosts and security weaknesses from public job descriptions. |
 | **Fair interviews** | Interview kits use the same core questions for everyone; `validate_kit.py` blocks questions about protected characteristics, invented CV claims and leaked internals. |
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-71 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+85 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -359,8 +393,10 @@ scripts), so other agents that support skills can use them too; the scripts are 
 <details>
 <summary><b>What if my repo is huge, or a monorepo?</b></summary>
 
-`hiring-plan` asks which part of the repo the role touches, and `repo-profile` samples only that
-scope (entry points, core files, tests, most-changed files) rather than reading everything.
+The inventory script scans the whole tree in seconds and lists every package, service, pipeline and deployment file,
+so the map covers all of them at least at the "what it is and how it connects" level. The agent then goes deep on the
+areas you're hiring for, and `repo-profile` adds detail for each role. Ignored folders (`node_modules`, build output,
+virtualenvs) are skipped.
 </details>
 
 <details>
@@ -377,8 +413,9 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 
 | Skill | What it does | Output |
 |---|---|---|
+| `map-codebase` | Inventories the repo and writes a whole-system map with file citations: services, data, APIs, auth and security, CI/CD, deployment, observability, tests, risks; gates every other skill | `hiring/_repo/codebase-map.md` |
 | `hiring-plan` | Asks follow-up questions one at a time, investigates the relevant part of the repo, proposes 2–3 role designs, writes an approved brief | `brief.md` |
-| `repo-profile` | Samples the codebase in the brief's scope: stack, architecture, conventions, gaps, hard problems | `repo-profile.md` |
+| `repo-profile` | Builds on the map and goes deep on the role's area: stack, architecture, conventions, gaps, hard problems | `repo-profile.md` |
 | `write-job-description` | Writes a public job posting from the repo and a short Q&A with you; checks it for leaked internals and biased wording, and keeps its must-haves in line with the rubric | `jd.md` |
 | `hiring-rubric` | Turns brief + JD + profile into weighted criteria with observable anchors; waits for approval | `rubric.json` |
 | `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.html`, `report.md` |
@@ -405,6 +442,10 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 One folder per role, inside the repo you are hiring for. Keep `hiring/` in `.gitignore`.
 
 ```text
+hiring/_repo/
+├── inventory.json      # map-codebase: deterministic inventory
+└── codebase-map.md     # whole-system map, shared by every role
+
 hiring/db-owner/
 ├── brief.md            # hiring-plan, approved by you
 ├── jd.md               # write-job-description, or your own

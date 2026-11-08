@@ -215,6 +215,64 @@ def test_interview_kit(role):
     expect("<script>alert" not in out and "<img src=x" not in out, "kit HTML escapes all text")
 
 
+def test_codebase_map(tmp):
+    sys.path.insert(0, str(HERE.parent / "skills" / "map-codebase" / "scripts"))
+    sys.path.insert(0, str(HERE.parent / "skills" / "write-job-description" / "scripts"))
+    import check_jd  # noqa: E402
+    import check_map  # noqa: E402
+    import inventory  # noqa: E402
+
+    print("codebase map")
+    repo = tmp / "mini-repo"
+    shutil.copytree(FIXTURE.parent / "mini-repo", repo)
+    rc, _ = quiet(inventory.main, [str(repo)])
+    inv_path = repo / "hiring" / "_repo" / "inventory.json"
+    inv = json.loads(inv_path.read_text())
+    found = inv["files"]
+    expect(rc == 0 and found.get("ci_cd") and found.get("migrations") and found.get("auth_code") and found.get("containers"),
+           "inventory finds pipelines, migrations, auth code and containers")
+    expect(inv["compose_services"] == ["api", "db"] and "PostgreSQL" in inv["detected"]["data_stores"]
+           and "JWT" in inv["detected"]["auth_security"] and "Sentry" in inv["detected"]["observability"],
+           "inventory detects services, data stores, auth and observability")
+    expect(".env" in found.get("env_files", []) and "fixture-never-read" not in inv_path.read_text(),
+           "env files are listed but their contents are never read")
+
+    rc, out = quiet(check_map.main, [str(repo)])
+    expect(rc == 1 and "no codebase map" in out, "gate fails when there is no map")
+    map_path = repo / "hiring" / "_repo" / "codebase-map.md"
+    good = (FIXTURE.parent / "mini-repo-map.md").read_text()
+    map_path.write_text(good)
+    rc, out = quiet(check_map.main, [str(repo)])
+    expect(rc == 0, "complete, current map passes the gate")
+
+    import re as _re
+    cases = [
+        ("missing section", _re.sub(r"## Observability\n.*?(?=\n## Testing)", "", good, flags=_re.S), "missing section"),
+        ("nonexistent path", good.replace("`app/auth.py`", "`app/authentication.py`"), "does not exist"),
+        ("unexplained compose service", good.replace("- **db**: PostgreSQL 16 container, the `db` service in `docker-compose.yml`; the api depends on it.\n", "")
+             .replace("(api and db)", "(api)"), "compose service 'db'"),
+        ("pipeline not cited", good.replace("`.github/workflows/ci.yml`", "a workflow"), "ci cd file"),
+        ("risks not internal", good.replace("(INTERNAL — never publish)", "(for the team)"), "INTERNAL"),
+        ("secret copied", good + "\nLocal key: JWT_SIGNING_KEY=fixture-never-read-7f3a\n", "secret-looking"),
+        ("detected tool not mentioned", good.replace("Sentry initialised at startup", "Error reporting initialised at startup"), "Sentry"),
+    ]
+    for name, text, needle in cases:
+        map_path.write_text(text)
+        rc, out = quiet(check_map.main, [str(repo)])
+        expect(rc == 1 and needle in out, f"gate catches: {name}")
+    map_path.write_text(good)
+    ci = repo / ".github" / "workflows" / "ci.yml"
+    ci.write_text(ci.read_text() + "      - run: ruff check .\n")
+    rc, out = quiet(check_map.main, [str(repo)])
+    expect(rc == 1 and "STALE" in out and "ci.yml" in out, "gate reports a stale map and names the changed file")
+
+    role = repo / "hiring" / "role"
+    role.mkdir(parents=True)
+    (role / "jd.md").write_text("# Engineer\n€1–2 · Remote\n\n## What you'll work on\n- Improve the code in app/auth.py.\n")
+    rc, out = quiet(check_jd.main, [str(role)])
+    expect(rc == 1 and "app/auth.py" in out, "job description checker treats files named in the map as internal")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -309,6 +367,7 @@ def main():
 
         test_redaction_regressions(tmp)
         test_jd_checker(tmp)
+        test_codebase_map(tmp)
         test_demo_cleanup(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
