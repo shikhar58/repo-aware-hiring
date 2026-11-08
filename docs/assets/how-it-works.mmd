@@ -2,10 +2,12 @@ flowchart TB
     need(["Your hiring need<br/>e.g. own our database layer"]) --> plan["1 · hiring-plan<br/>asks follow-up questions, reads the code,<br/>proposes 2–3 role designs"]
     plan --> profile["2 · repo-profile<br/>stack, conventions, gaps, hard problems"]
     repo[("Your repo")] --> profile
-    profile --> rubric["3 · hiring-rubric<br/>weighted criteria with observable anchors"]
-    jd[("Job description<br/>optional")] --> rubric
+    profile --> jdw["3 · write-job-description<br/>Q&A + repo → public job posting,<br/>checked for leaks and biased wording"]
+    jdw --> post(["jd.md<br/>ready to publish"])
+    profile --> rubric["4 · hiring-rubric<br/>weighted criteria with observable anchors"]
+    post -. same must-haves .-> rubric
     rubric --> approve{{"You approve the rubric"}}
-    approve --> screen["4 · screen-candidates<br/>redact, score each CV with quotes, validate, rank"]
+    approve --> screen["5 · screen-candidates<br/>redact, score each CV with quotes, validate, rank"]
     cvs[("CVs<br/>PDF · DOCX · MD")] --> screen
-    screen --> report(["report.md<br/>shortlist, strengths, gaps, interview probes"])
-    report -.->|role filled| close["5 · close-round<br/>delete candidate data, keep a pseudonymous audit"]
+    screen --> report(["report.html + report.md<br/>shortlist, heatmap, strengths, gaps, interview probes"])
+    report -.->|role filled| close["6 · close-round<br/>delete candidate data, keep a pseudonymous audit"]

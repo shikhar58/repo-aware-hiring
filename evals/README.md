@@ -15,6 +15,13 @@ date of birth, nationality, marital status and an injection, a CV whose first li
 numbers and dates that must survive ("12 000 000 users", "(2021 - 2023)"). `expectations.json` lists
 what must be absent and present after redaction. Add a case here for every bypass that gets fixed.
 
+## Fixture: `fixtures/jd`
+
+`bad-jd.md` contains every kind of leak and biased wording `check_jd.py` must catch: file paths, an
+environment variable, an internal host and IP, an identifier from the repo profile, a stated security weakness,
+gendered and age-coded words, years-of-experience and degree demands, "native speaker", seven must-haves, no pay
+range, and must-haves that drift from the rubric. The good counterpart is `fixtures/db-owner/jd.md`.
+
 ## Fixture: `fixtures/db-owner`
 
 A role brief, repo profile and approved rubric for a "Backend Engineer, Database Owner" role on the

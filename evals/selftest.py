@@ -153,6 +153,31 @@ def test_html_report(tmp):
            "CV-derived text cannot inject markup into report.html")
 
 
+def test_jd_checker(tmp):
+    sys.path.insert(0, str(HERE.parent / "skills" / "write-job-description" / "scripts"))
+    import check_jd  # noqa: E402
+
+    print("job description checker")
+    role = tmp / "jd"
+    role.mkdir()
+    for name in ("repo-profile.md", "brief.md", "rubric.json", "jd.md"):
+        shutil.copy(FIXTURE / name, role / name)
+    rc, out = quiet(check_jd.main, [str(role)])
+    expect(rc == 0 and "0 errors, 0 warnings" in out, "good JD passes with no errors or warnings")
+    expect("[benefits]" in out, "unfilled placeholders are listed")
+    rc, out = quiet(check_jd.main, [str(role), "--jd", str(FIXTURE.parent / "jd" / "bad-jd.md")])
+    expect(rc == 1, "JD with internal details is blocked")
+    for needle, what in [("file path", "file paths"), ("environment variable", "env var names"), ("IP address", "IP addresses"),
+                         ("internal hostname", "internal hostnames"), ("security weakness", "security weaknesses"),
+                         ("'create_all'", "identifiers named in the repo profile")]:
+        expect(needle in out, f"leak caught: {what}")
+    for needle, what in [("gendered pronoun", "gendered pronouns"), ("age-coded", "age-coded words"),
+                         ("years-of-experience", "years-of-experience demands"), ("native speaker", "native-speaker demands"),
+                         ("works hard and plays hard", "exclusionary phrases"), ("7 must-haves", "long must-have lists"),
+                         ("no pay range", "missing pay range"), ("rubric must-have not in the JD", "drift from the rubric")]:
+        expect(needle in out, f"warning raised: {what}")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -174,7 +199,7 @@ def test_demo_cleanup(tmp):
     expect(rc == 1, "a folder that is not a round is refused")
     rc, _ = quiet(cleanup.main, ["close", str(role), "--include-cvs", "--yes"])
     left = sorted(str(p.relative_to(role)) for p in role.rglob("*") if p.is_file())
-    expect(rc == 0 and left == ["audit.json", "brief.md", "repo-profile.md", "round.json", "rubric.json"],
+    expect(rc == 0 and left == ["audit.json", "brief.md", "jd.md", "repo-profile.md", "round.json", "rubric.json"],
            "only the role definition and audit remain")
     audit = (role / "audit.json").read_text().lower()
     expect(not any(s in audit for s in ("ferreira", "mehta", ".pdf", ".docx", "postgresql 14", "@")),
@@ -245,6 +270,7 @@ def main():
         expect(rc == 1 and "FAIL C01" in out, "planted email and age are caught")
 
         test_redaction_regressions(tmp)
+        test_jd_checker(tmp)
         test_demo_cleanup(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

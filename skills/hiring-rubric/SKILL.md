@@ -14,7 +14,9 @@ a human has approved it.**
 - `hiring/<role-slug>/repo-profile.md` — run the `repo-profile` skill first if missing.
 - `hiring/<role-slug>/brief.md` if it exists (from `hiring-plan`).
 - The job description (a file in `hiring/<role-slug>/` such as `jd.md`, or pasted text).
-  If there is a brief but no JD, offer to draft `jd.md` from the brief and let the user edit it.
+  If there is no JD, offer to write one with the `write-job-description` skill first, or build the rubric
+  from the brief alone. If the JD was written with that skill, its must-haves and the rubric's must-haves
+  must match; `check_jd.py` reports any drift.
 
 ## Procedure
 

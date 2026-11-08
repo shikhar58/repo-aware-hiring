@@ -138,10 +138,30 @@ Then open your repo in Claude Code and say what you're hiring for:
 ```text
 > I want to hire someone to own the database layer of this repo
 > Profile the repo for db-owner
+> Write the job description for db-owner  # a few questions, then a posting to review
 > Build the rubric for db-owner          # review, edit, approve
 > Screen the candidates for db-owner     # put CVs in hiring/db-owner/cvs/ first
 > Close the db-owner round               # when the role is filled
 ```
+
+### A job description that matches the code
+
+`write-job-description` asks you a few questions (title, location, pay range, team), reads the repo, and writes
+a posting that describes the real work in public language. Then `check_jd.py` blocks anything internal and flags
+wording that puts people off:
+
+```text
+ERROR line 9:  looks like a file path: 'backend/scripts/prestart.sh'
+ERROR line 6:  describes a security weakness or missing safeguard: 'no backups'
+ERROR line 10: looks like an internal environment variable: 'DATABASE_URL'
+warn  line 14: years-of-experience requirement: describe the capability instead: '8+ years of'
+warn  line 16: "native speaker" excludes fluent non-natives: state the level needed (e.g. C1)
+warn  line 14: 7 must-haves: keep to 3–5; long lists deter qualified applicants
+warn  line -:  rubric must-have not in the JD's Must-haves: 'Ships schema and data migrations on live data safely'
+```
+
+The posting's must-haves become the screening rubric's must-haves, so candidates are judged on exactly what was
+advertised. See [`docs/example-jd.md`](docs/example-jd.md) for the demo role's posting.
 
 ## Why you can trust the output
 
@@ -163,10 +183,11 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Bias tests** | The eval suite checks that swapping a candidate's name, gender or national origin produces identical redacted text, and that a university change or a career break doesn't move the score. |
 | **Injection defence** | Instructions hidden in CVs (including white text in PDFs, in several languages) are detected, flagged for a human, and ignored. |
 | **Human approval** | No scoring until a named person approves the rubric. Nothing is ever rejected automatically. |
+| **Safe job postings** | `check_jd.py` blocks file paths, internal names from your repo, environment variables, hosts and security weaknesses from public job descriptions. |
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-41 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+58 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -239,6 +260,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 |---|---|---|
 | `hiring-plan` | Asks follow-up questions one at a time, investigates the relevant part of the repo, proposes 2–3 role designs, writes an approved brief | `brief.md` |
 | `repo-profile` | Samples the codebase in the brief's scope: stack, architecture, conventions, gaps, hard problems | `repo-profile.md` |
+| `write-job-description` | Writes a public job posting from the repo and a short Q&A with you; checks it for leaked internals and biased wording, and keeps its must-haves in line with the rubric | `jd.md` |
 | `hiring-rubric` | Turns brief + JD + profile into weighted criteria with observable anchors; waits for approval | `rubric.json` |
 | `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.html`, `report.md` |
 | `close-round` | Deletes candidate data when the role closes; keeps a pseudonymous audit record; finds overdue rounds | `audit.json` |
@@ -265,7 +287,7 @@ One folder per role, inside the repo you are hiring for. Keep `hiring/` in `.git
 ```text
 hiring/db-owner/
 ├── brief.md            # hiring-plan, approved by you
-├── jd.md               # optional; can be drafted from the brief
+├── jd.md               # write-job-description, or your own
 ├── repo-profile.md     # repo-profile
 ├── rubric.json         # hiring-rubric, approved by you
 ├── cvs/                # you provide

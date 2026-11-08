@@ -124,6 +124,7 @@ Date: <date> · Owner: <user> · Status: approved
 
 After the brief is approved:
 - `repo-profile` uses **Scope in the repo** as its scope and adds a mission-focused section.
-- `hiring-rubric` turns **Requirements derived from the mission** into criteria. If no job
-  description exists, offer to draft `jd.md` from the brief for the user to edit.
+- `write-job-description` turns the brief into a public job posting (`jd.md`), asking only the
+  questions the brief doesn't answer (location, pay range, benefits).
+- `hiring-rubric` turns **Requirements derived from the mission** into criteria.
 - Tell the user the next step in one line and ask whether to continue.

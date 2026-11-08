@@ -3,6 +3,21 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
+## [0.6.0] — 2026-11-08
+
+### Added
+- **`write-job-description` skill.** Writes a public job posting from the repo and a question-and-answer session
+  with the hiring manager (one question at a time; reuses the hiring brief when there is one). Translates repo
+  findings into public language, drafts section by section, and keeps must-haves consistent with the rubric.
+- **`check_jd.py`.** Blocks internal details in a posting (file paths, names from the repo profile and brief,
+  environment variables, IPs, internal hosts, credentials, stated security weaknesses) and warns about gendered,
+  age-coded and exclusionary wording, years-of-experience and degree demands, "native speaker", long must-have
+  lists, a missing pay range, missing sections, and must-haves that drift from the rubric.
+- Example posting for the demo role (`docs/example-jd.md`), a bad-posting fixture, and 17 self-test checks (58 total).
+
+### Changed
+- `hiring-plan` and `hiring-rubric` hand off to `write-job-description`; the README flow diagram includes it.
+
 ## [0.5.0] — 2026-11-08
 
 ### Added

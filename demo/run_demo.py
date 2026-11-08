@@ -36,7 +36,7 @@ def main(argv):
     target.mkdir(parents=True, exist_ok=True)
 
     step(1, "Copy brief, repo profile, approved rubric and 12 synthetic CVs")
-    for name in ("brief.md", "repo-profile.md", "rubric.json"):
+    for name in ("brief.md", "repo-profile.md", "rubric.json", "jd.md"):
         shutil.copy(FIXTURE / name, target / name)
     shutil.copytree(FIXTURE / "cvs", target / "cvs")
 
