@@ -3,7 +3,15 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.3] — 2026-11-08
+## [0.9.4] — 2026-11-08
+
+### Changed
+- **Follow-up questions** follow one rule in every skill ([How to ask a question](skills/hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)):
+  options are never labelled "recommended" (the option the evidence supports goes first, with its reason in neutral
+  words), and there is always a last option to write your own answer. Checkpoint plans show defaults without
+  calling them recommended. A self-test keeps "recommended" labels out of the skills.
+
+ — 2026-11-08
 
 ### Changed
 - `write-job-description` produces a **draft for the hiring manager**, marked as one at the top. It writes only

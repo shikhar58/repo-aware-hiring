@@ -39,10 +39,11 @@ multi-repo workspace.
 ## Planning checkpoint (stage `interview`)
 
 Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
+[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
-1. **Panel split**: one interviewer (recommended for a first interview), or several, each owning some criteria.
+1. **Panel split**: one interviewer (default for a first interview), or several, each owning some criteria.
    Write it to `core.json` as `"panel"` (see the schema below); `validate_kit.py` checks that every core question
    has an interviewer and fits their slot.
 2. **Length and stage**: recommend 60 minutes, first technical interview.

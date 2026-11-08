@@ -28,7 +28,8 @@ multi-repo workspace.
 ## Planning checkpoint (stage `profile`)
 
 Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
+[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
 1. **Order of the hard problems**: recommend the order the focus implies, then risk from the maps' hot spots.

@@ -108,6 +108,7 @@ Agent:  I looked at backend/app/models.py, crud.py and the alembic/ folder. One 
           A) Zero-downtime migrations and measurable query performance
           B) Move the backend to async SQLAlchemy
           C) A multi-tenant schema
+          D) Write my own answer
 You:    A
 Agent:  Noted. One thing I found: migrations run on every container start
         (backend/scripts/prestart.sh), which races with several replicas...
@@ -199,7 +200,7 @@ rejected, and so is anything that tries to switch off redaction or the rubric. *
 
 ## You decide at every stage
 
-Each stage opens with a short plan: at most three decisions, each with a recommended default and the reason from
+Each stage opens with a short plan: at most three decisions, each with a default and the reason from
 your code. Reply *"approve all"* or change one line.
 
 ```text
@@ -225,11 +226,11 @@ the code can't tell it, one question at a time:
 You:    Write the job description for db-owner.
 Agent:  From the brief: Backend Engineer owning the database layer, remote in EU time zones.
         One question: what pay range should the posting show?
-          A) Add a range (recommended: required in some places, and it increases applications)
-          B) "Competitive" (I'll flag it)
+          A) Add a range (required in some places, and it increases applications)
+          B) Leave a placeholder for you to fill in
           C) Leave it out
+          D) Write my own answer
 You:    A, €70–85k
-Agent:  Next: how many interview stages, and how long do they take?
         ...
 Agent:  Here's "What you'll work on". I've described the work without naming internal files
         or admitting gaps like the missing backups. Approve or edit?
@@ -589,7 +590,8 @@ Several repos? Same role folders, in a workspace outside all of them:
 - **Independent scoring** against redacted text; candidates are never compared while scoring.
 - **CVs are untrusted.** Injection attempts are detected, flagged and ignored.
 - **Names are confirmed, not guessed.** Redaction is only as good as knowing whose CV it is.
-- **Ask what matters, once.** Each stage asks at most three decisions with recommended defaults; the log remembers.
+- **Ask what matters, once.** Each stage asks at most three decisions, with defaults but no "recommended" labels, and always a write-your-own
+  option; the log remembers.
 </details>
 
 ## Status and roadmap

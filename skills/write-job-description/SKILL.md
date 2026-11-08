@@ -27,7 +27,8 @@ multi-repo workspace.
 ## Planning checkpoint (stage `jd`)
 
 Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
+[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
 1. **How much of the system to describe publicly**: recommend describing the work, with technologies only hinted at
@@ -40,7 +41,8 @@ The focus shapes "What you'll work on"; it never adds requirements about the per
 ## Principles
 
 - **One question per message, answered before the next.** Prefer multiple choice (use the question tool
-  if available) with a free-text option. Never send a list of questions.
+  if available), never labelled "recommended", with a last option to write their own answer
+  ([How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). Never send a list of questions.
 - **Look before you ask.** Read the brief and the repo first; ask only about intent, priorities, and facts
   the code cannot show (location, salary range, team, benefits).
 - **The JD is public.** Anything from the repo must be translated into general language before it goes in.

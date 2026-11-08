@@ -500,6 +500,18 @@ def test_demo_cleanup(tmp):
            "audit keeps pseudonymous results for every candidate")
 
 
+def test_question_style():
+    import re as _re
+    print("question style")
+    skills = sorted((HERE.parent / "skills").glob("*/SKILL.md")) + [HERE.parent / "skills" / "hiring-workspace" / "CHECKPOINTS.md"]
+    bad = [f"{p.parent.name}/{p.name}" for p in skills
+           if _re.search(r"\((?:recommended|Recommended)\b|recommended default|plan with recommended", p.read_text())]
+    expect(not bad, "no skill tells the agent to label an option 'recommended'" + (f" ({', '.join(bad)})" if bad else ""))
+    rule = (HERE.parent / "skills" / "hiring-workspace" / "CHECKPOINTS.md").read_text()
+    expect("Write my own answer" in rule and "Never label an option" in rule,
+           "the shared question rule asks for a write-your-own option and no 'recommended' labels")
+
+
 def main():
     tmp = Path(tempfile.mkdtemp(prefix="rah-selftest-"))
     try:
@@ -565,6 +577,7 @@ def main():
         test_jd_checker(tmp)
         test_codebase_map(tmp)
         test_workspace(tmp)
+        test_question_style()
         test_demo_cleanup(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

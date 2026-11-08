@@ -4,13 +4,30 @@ Every stage starts with a short planning checkpoint, so the hiring manager steer
 matters, and nothing they already answered is asked again. Each skill's own `## Planning checkpoint` section
 lists the decisions for its stage; this file says how to run one.
 
+## How to ask a question
+
+Every follow-up question, in every skill, follows the same shape:
+
+- **Multiple choice, one question at a time**, with 2–4 concrete options drawn from the code, the brief or earlier
+  answers. Use the question tool when there is one.
+- **Never label an option "recommended"** (nor "best", "suggested" or "default"). Put the option the evidence
+  supports first and give its reason in the option's description, in neutral words: "Matches the two hardest
+  problems in the profile". The person decides; the order and the reasons are enough.
+- **Always add a last option to write their own answer**, after all the other options: "Write my own answer".
+  If the question tool already adds a free-text choice of its own (such as "Other"), that is this option: don't show
+  it twice. In plain text, end the list with "Or write your own answer."
+- When several options can apply together, allow choosing more than one, and still offer the write-your-own option.
+
+The same applies to a checkpoint plan: show each line's default value and its reason, without calling it
+recommended.
+
 ## How to run a checkpoint
 
 1. **Run the gate first.** `check_ready.py <repo-or-workspace> --role <role> --stage <stage>` prints what is
    already decided for this stage, and any assumptions still waiting for confirmation.
 2. **Reuse what is decided.** Never re-ask a recorded decision. Name it in one line instead ("Using the scope
    weights you set on 8 Nov: payments-lib 50%, checkout-svc 30%, billing-svc 20%").
-3. **Show one plan with recommended defaults.** At most three decisions, each with a recommended default and a
+3. **Show one plan with defaults.** At most three decisions, each with a default value and a
    one-line reason drawn from the maps, the system map, the focus or the brief:
 
    ```
@@ -34,7 +51,7 @@ lists the decisions for its stage; this file says how to run one.
    - this role only: the role folder
 
    `decisions.py add <folder> --stage <stage> --key <key> --value '<value>' [--by <name>] [--note <why>]`
-6. **Unattended or no answer?** Take the recommended defaults, record each with `--assumed`, and start every output
+6. **Unattended or no answer?** Take the defaults, record each with `--assumed`, and start every output
    built on them with a line: *Draft: based on N assumptions not yet confirmed (see decisions.json).*
    `decisions.py pending` lists them for the manager later; `decisions.py confirm` clears them.
    Never assume past an irreversible step: approving the rubric, deleting data, sending anything to candidates.
@@ -61,7 +78,7 @@ sentence and offer the work-based version ("strong fundamentals in distributed s
 
 ## Decisions per stage
 
-| Stage | Skill | Decisions (at most three) | Recommended default |
+| Stage | Skill | Decisions (at most three) | Default |
 |---|---|---|---|
 | `workspace` | hiring-workspace | which repos are in scope; which are primary (full map) or supporting (service card); where the workspace lives | primary: the repos the focus or brief names, or the hire will change most; others supporting; workspace outside every repo |
 | `map` | map-codebase | which areas to map in depth; whether repos built from one template share one full map | areas the focus names; one full map per template group |

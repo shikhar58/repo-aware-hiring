@@ -23,6 +23,8 @@ Scripts are in `scripts/` next to this file (`${CLAUDE_PLUGIN_ROOT}/skills/hirin
 
 ## 1. Checkpoint `workspace`: which repos, which matter most
 
+Questions follow [How to ask a question](CHECKPOINTS.md#how-to-ask-a-question).
+
 Ask in one message (skip what the user already said):
 - the repos: local paths, git URLs (`https://…`, `git@…`) or `owner/repo`;
 - which ones the hire will **mainly work in** (primary: full codebase map) and which only **matter for context**

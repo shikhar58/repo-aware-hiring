@@ -29,10 +29,11 @@ multi-repo workspace.
 ## Planning checkpoint (stage `screen`)
 
 Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
+[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
-1. **Which CVs**: all of `cvs/` (recommended), or a named subset.
+1. **Which CVs**: all of `cvs/` (default), or a named subset.
 2. **Shortlist size**: how many top candidates get interview kits; recommend 8 or a quarter, whichever is larger.
 3. **Flagged CVs** (possible prompt injection, unreadable, redaction doubts): recommend human review; they are
    never silently excluded or down-ranked.

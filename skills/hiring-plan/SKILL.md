@@ -28,7 +28,8 @@ multi-repo workspace.
 ## Planning checkpoint (stage `plan`)
 
 Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
-one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+one plan with defaults ("approve all" or change one item; never label anything "recommended"; questions follow
+[How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
 1. **The focus.** If `focus.md` is empty, ask for one or two sentences on what the hire will work on, in the
@@ -42,8 +43,10 @@ defaults as `--assumed` when nobody is there to answer. This stage decides:
 ## Principles
 
 - **One question per message.** Never send a list of questions. Wait for the answer.
-- **Prefer multiple choice.** Offer 2–4 concrete options (use the question tool if available),
-  always allowing a free-text answer. Open questions only when options would be guesses.
+- **Prefer multiple choice.** Offer 2–4 concrete options (use the question tool if available), never labelled
+  "recommended", and always a last option to write their own answer (see
+  [How to ask a question](../hiring-workspace/CHECKPOINTS.md#how-to-ask-a-question)). Open questions only when
+  options would be guesses.
 - **Look before you ask.** If the repo can answer a question, read it instead of asking.
   Ask the user about intent, priorities and constraints, not facts the code shows.
 - **Show your evidence.** When you state something about the repo, name the path.
@@ -103,7 +106,7 @@ Offer **2–3 distinct role shapes** with trade-offs and your recommendation. Ex
   work is bounded and the team must own Rust afterwards.
 
 For each: who it suits, what it optimises for, main risk, and what must be true about the
-team for it to work. Lead with the one you recommend and say why, tied to the evidence.
+team for it to work. Put the one the evidence supports first and say why, tied to the evidence, without calling it "recommended".
 
 ## Phase 4 — Write the brief in sections
 
