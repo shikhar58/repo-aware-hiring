@@ -176,7 +176,8 @@ def test_jd_checker(tmp):
     for needle, what in [("gendered pronoun", "gendered pronouns"), ("age-coded", "age-coded words"),
                          ("years-of-experience", "years-of-experience demands"), ("native speaker", "native-speaker demands"),
                          ("works hard and plays hard", "exclusionary phrases"), ("7 must-haves", "long must-have lists"),
-                         ("no pay range", "missing pay range"), ("rubric must-have not in the JD", "drift from the rubric")]:
+                         ("no pay range", "missing pay range"), ("rubric must-have not in the JD", "drift from the rubric"),
+                         ("publishes your exact stack", "a stack section")]:
         expect(needle in out, f"warning raised: {what}")
 
 

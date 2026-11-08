@@ -1,6 +1,6 @@
 ---
 name: write-job-description
-description: Write a job description for a software engineering role from the company's codebase and a short question-and-answer session with the hiring manager. Describes the real stack and real work without leaking internal details, checks inclusive language, and keeps must-haves consistent with the screening rubric. Use when the user asks to write, draft, improve or review a job description or job posting.
+description: Write a job description for a software engineering role from the company's codebase and a short question-and-answer session with the hiring manager. Describes the real work and hints at the stack through the work and requirements (no stack list) without leaking internal details, checks inclusive language, and keeps must-haves consistent with the screening rubric. Use when the user asks to write, draft, improve or review a job description or job posting.
 ---
 
 # Write Job Description
@@ -30,7 +30,8 @@ Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_r
 one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
 defaults as `--assumed` when nobody is there to answer. This stage decides:
 
-1. **How much of the system to describe publicly**: recommend describing the work and the public technology only.
+1. **How much of the system to describe publicly**: recommend describing the work, with technologies only hinted at
+   inside the work, must-haves and nice-to-haves (no stack section).
    In a workspace, `check_jd.py` also blocks distinctive repo, service and package names (`checkout-svc`,
    `acme-payments`); say "our checkout service" instead.
 2. **Pay range** and 3. **location and working pattern**, if the brief doesn't have them (asked in step 2 below).
@@ -106,16 +107,15 @@ Present each section (~100–200 words) and get a yes or edits before the next. 
 2–4 sentences: the mission and why it matters now.
 
 ## What you'll work on
-4–6 bullets of real work, translated from the repo. Concrete verbs; no internal names.
-
-## Our stack
-One line or short list of public technology names, marked "you'll learn the rest" where true.
+4–6 bullets of real work, translated from the repo. Concrete verbs; no internal names. Technologies can show
+through the work itself ("tune hybrid keyword and vector search", "make Postgres schema changes safe").
 
 ## Must-haves
 3–5 bullets. Capabilities, not years or keywords. Each must trace to the mission or the repo.
+Where a technology matters, name it as an example of the capability, among alternatives.
 
 ## Nice-to-haves
-2–4 bullets, explicitly optional.
+2–4 bullets, explicitly optional. The natural place for the rest of the stack, again as examples.
 
 ## Backgrounds we welcome
 Transferable experience that counts (e.g. "Django or Rails ORMs count as much as SQLAlchemy").
@@ -131,6 +131,14 @@ Benefits from the user, or a clearly marked placeholder.
 ```
 
 Writing rules:
+- **No stack section.** Companies rarely want to publish their exact stack, and a list invites keyword-matching
+  applicants. Let the technologies show through the work and the requirements instead: in **What you'll work on**
+  as part of the task ("tune keyword and vector search"), and in **Must-haves** and **Nice-to-haves** as examples of a
+  capability, mixed with credible alternatives: "production Python libraries", "vector databases such as Qdrant, pgvector or
+  Elasticsearch", "language-processing tools such as spaCy or NLTK". A reader who knows the field can tell what you
+  work with; nobody gets an inventory. Mention only technologies the role really touches, never internal tools or
+  versions. Add an explicit "Our stack" section only if the hiring manager asks for one (record it as a decision;
+  `check_jd.py` warns about a stack section otherwise).
 - Second person ("you'll"), short sentences, no buzzwords ("rockstar", "ninja", "fast-paced", "wear many hats").
 - Requirements describe capabilities ("has shipped schema migrations on production data"), not years
   ("5+ years of PostgreSQL") or proxies (degrees, specific employers).

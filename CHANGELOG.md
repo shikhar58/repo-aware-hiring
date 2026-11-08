@@ -3,7 +3,15 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.1] — 2026-11-08
+## [0.9.2] — 2026-11-08
+
+### Changed
+- Job descriptions no longer have an "Our stack" section. Companies rarely want to publish their exact stack, so the
+  technologies show through the work ("tune keyword and vector search") and through must-haves and nice-to-haves as
+  examples among alternatives ("vector databases such as Qdrant, pgvector or Elasticsearch"). `check_jd.py` warns
+  when a posting has a stack section; keep one only if the hiring manager decides to publish it.
+
+ — 2026-11-08
 
 Found by running the job-description pipeline on a large real monorepo (mem0: ~230k lines, 25 packages, 34 pipelines).
 

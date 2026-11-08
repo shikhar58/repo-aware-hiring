@@ -13,18 +13,17 @@ be the person who makes our data safe to change and fast to read.
 - Own the reliability of our PostgreSQL databases: backups and restores, connection pooling and monitoring.
 - Help the team decide when and how to scale reads as usage grows.
 
-## Our stack
-Python, FastAPI, SQLModel/SQLAlchemy, Alembic, PostgreSQL, Docker. You'll learn the rest with us.
-
 ## Must-haves
 - You have run PostgreSQL in production: schema design, indexing and reading query plans.
-- You have shipped schema and data migrations on live data safely, including large or long-running changes.
+- You have shipped schema and data migrations on live data safely, including large or long-running changes,
+  with a migration tool such as Alembic, Flyway or Liquibase.
 
 ## Nice-to-haves
 - Diagnosing slow queries with EXPLAIN, better indexes or keyset pagination.
 - Production Python with an ORM such as SQLAlchemy, SQLModel or Django.
 - Database test setups with per-test isolation or containers.
 - PostgreSQL operations: pooling, replication, backups and monitoring.
+- Python web services (for example FastAPI or Django) shipped in containers such as Docker.
 
 ## Backgrounds we welcome
 Experience with Django or Rails ORMs, Hibernate, or Go with pgx counts as much as SQLAlchemy; Flyway, Liquibase or

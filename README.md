@@ -241,7 +241,8 @@ It drafts the posting section by section for your approval, then checks it befor
   <img src="docs/assets/jd.svg" alt="Repo findings such as file paths and missing backups translated into public job-posting language, and checker output blocking leaks and flagging biased wording" width="88%">
 </p>
 
-- **Specific, because it's grounded in the code.** The real stack and the real problems, in plain words.
+- **Specific, because it's grounded in the code.** The real problems in plain words, with your stack hinted through the
+  work and the requirements rather than listed, so you don't publish an inventory of your technology.
 - **Safe to publish.** File paths, internal names from your repo, environment variables, hosts, credentials and
   security weaknesses are errors that block publishing.
 - **Fair.** Gender-coded and age-coded words, "native speaker", years-of-experience and degree demands, missing pay

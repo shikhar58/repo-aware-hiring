@@ -11,6 +11,9 @@ no backups and is vulnerable to the issues we saw in last year's breach.
 - Move db.internal (10.0.4.12) to the new cluster.
 - Stop the tests calling create_all directly.
 
+## Our tech stack
+Python 3.12, FastAPI, SQLModel, PostgreSQL 16, Docker.
+
 ## Must-haves
 - 8+ years of PostgreSQL experience.
 - Bachelor's degree in Computer Science required.

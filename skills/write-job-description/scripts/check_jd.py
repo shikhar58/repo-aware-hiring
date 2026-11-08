@@ -207,6 +207,11 @@ def main(argv=None):
              "nice": "Nice-to-haves", "hire": "How we hire"}
     if missing:
         warnings.append(("-", "missing sections: " + ", ".join(names[k] for k in missing)))
+    for i, ln in enumerate(lines, 1):
+        if re.match(r"^#{2,3}\s+.*\b(?:(?:our|the|tech(?:nology)?)\s+stack|technologies(?:\s+we\s+use)?|tools\s+we\s+use|"
+                    r"what\s+we\s+(?:use|build\s+with))\b", ln, re.I):
+            warnings.append((i, "stack section publishes your exact stack: hint the technologies inside What you'll work on, "
+                                "Must-haves and Nice-to-haves instead (keep it only if the hiring manager decided to publish it)"))
     musts = bullets(secs.get("must", []))
     if musts and len(musts) > 6:
         warnings.append((musts[0][0], f"{len(musts)} must-haves: keep to 3–5; long lists deter qualified applicants"))
