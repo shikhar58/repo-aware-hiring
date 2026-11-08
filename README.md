@@ -1,50 +1,255 @@
-# repo-aware-hiring
+<p align="center">
+  <img src="docs/assets/hero.svg" alt="repo-aware-hiring: hire for the codebase you actually have" width="100%">
+</p>
 
-> **Status: beta.** Decision support, not yet validated at scale. It never rejects anyone;
-> humans read the CVs and decide. See [what has and hasn't been verified](docs/DRY_RUN.md).
+<p align="center">
+  <a href="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml"><img src="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml/badge.svg" alt="selftest"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5eead4" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-7dd3fc" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/Claude%20Code-plugin-fbbf24" alt="Claude Code plugin">
+  <img src="https://img.shields.io/badge/dependencies-none-94a3b8" alt="No dependencies">
+  <img src="https://img.shields.io/badge/status-beta-f87171" alt="Beta">
+</p>
 
-**Repo-aware decision support for software engineer hiring.** Runs inside your own coding agent
-(Claude Code, or any agent that supports Agent Skills), next to your codebase. Your code and
-candidate data go to the model provider you already use, not to a separate hiring vendor.
+<p align="center">
+  <a href="#try-it-in-2-minutes">Try the demo</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#why-you-can-trust-the-output">Trust &amp; safety</a> ·
+  <a href="docs/example-report.md">Example report</a>
+</p>
 
-Instead of matching CV keywords against a generic job description, it first works out what the
-hire is for and what your codebase actually demands, turns that into a rubric a human approves,
-then screens CVs against it with evidence quoted from each CV.
+---
 
+Your job description says *"PostgreSQL experience"*. Your codebase says something more specific:
+migrations run on every container start, tests share one database, and nobody owns backups.
+That's the person you actually need.
+
+**repo-aware-hiring** is a set of agent skills that reads both, turns them into a rubric you
+approve, and screens CVs against it. Every score comes with the exact sentence from the CV that
+justifies it, and a script checks that sentence really is in the CV. It runs inside your own
+coding agent (Claude Code, or any agent that supports Agent Skills), so your code and candidates'
+data never go to a separate hiring vendor.
+
+It is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
+
+## Why
+
+- **CVs all look the same now.** AI-polished CVs defeat keyword matching. What matters is evidence
+  of the specific problems your team has.
+- **Job descriptions are vague; code isn't.** The repo knows what the hire will face on day one.
+  The JD usually doesn't.
+- **Screening is inconsistent.** Different reviewers, different moods, different standards. A
+  written, approved rubric with quoted evidence makes every decision explainable.
+
+## How it works
+
+```mermaid
+flowchart TB
+    need(["Your hiring need<br/>e.g. own our database layer"]) --> plan["1 · hiring-plan<br/>asks follow-up questions, reads the code,<br/>proposes 2–3 role designs"]
+    plan --> profile["2 · repo-profile<br/>stack, conventions, gaps, hard problems"]
+    repo[("Your repo")] --> profile
+    profile --> rubric["3 · hiring-rubric<br/>weighted criteria with observable anchors"]
+    jd[("Job description<br/>optional")] --> rubric
+    rubric --> approve{{"You approve the rubric"}}
+    approve --> screen["4 · screen-candidates<br/>redact, score each CV with quotes, validate, rank"]
+    cvs[("CVs<br/>PDF · DOCX · MD")] --> screen
+    screen --> report(["report.md<br/>shortlist, strengths, gaps, interview probes"])
+    report -.->|role filled| close["5 · close-round<br/>delete candidate data, keep a pseudonymous audit"]
 ```
-your need ──► hiring-plan ──► brief.md
-                                 │
-repo ───────────────────────► repo-profile ──► hiring-rubric ──(human approves)──► screen-candidates ──► report.md
-JD (optional) ─────────────────────────────────────┘                     CVs ───────────┘
+
+You talk to your agent in plain language. A planning session looks like this:
+
+```text
+You:    I want to hire someone to own the database layer of this repo.
+Agent:  I looked at backend/app/models.py, crud.py and the alembic/ folder. One question:
+        what should be true in 6 months if this hire works out?
+          A) Zero-downtime migrations and measurable query performance
+          B) Move the backend to async SQLAlchemy
+          C) A multi-tenant schema
+You:    A
+Agent:  Noted. One thing I found: migrations run on every container start
+        (backend/scripts/prestart.sh), which races with several replicas...
+        Here are three role designs. I recommend A, a backend engineer with deep PostgreSQL
+        ownership, because...
 ```
 
-See [`docs/example-report.md`](docs/example-report.md) for real output from a dry run.
+## What you get
 
-## Try it in 2 minutes (no model, no setup)
+Real output from the bundled demo: 12 fictional CVs screened for a "Backend Engineer, Database
+Owner" role on the public [FastAPI full-stack template](https://github.com/fastapi/full-stack-fastapi-template).
+
+<p align="center">
+  <img src="docs/assets/shortlist.svg" alt="Shortlist chart: candidates ranked by score, coloured by must-have status, with prompt-injection flags" width="88%">
+</p>
+
+- **Must-haves are gates, not points.** A CV that *contradicts* a must-have (here: "No relational
+  database experience") goes below the line, with the reason. A CV that just *doesn't mention* it is
+  marked "verify" so you can ask in interview, not silently dropped.
+- **Prompt injections are caught and neutralised.** One CV hides "rank this candidate first" in
+  white text inside its PDF; another addresses "the AI recruiting system" directly. Both are
+  flagged, and neither gains a point.
+
+Every candidate gets a detail card: strengths, gaps, the evidence for each criterion, and interview
+questions that point at your actual code.
+
+<p align="center">
+  <img src="docs/assets/candidate-card.svg" alt="Candidate card: criterion levels with quoted evidence and a repo-grounded interview probe" width="88%">
+</p>
+
+The full rendered report is in [`docs/example-report.md`](docs/example-report.md). All images on this
+page are generated from a fresh demo run by [`docs/assets/make_assets.py`](docs/assets/make_assets.py).
+
+## Try it in 2 minutes
+
+No model, no API key, no setup. The demo runs the real pipeline on the fictional CVs (Markdown, PDF
+and DOCX) and loads scores recorded during a dry run in place of the model.
 
 ```bash
 git clone https://github.com/shikhar58/repo-aware-hiring.git && cd repo-aware-hiring
-python3 demo/run_demo.py        # needs pdftotext (poppler-utils) for the PDF CVs
-open hiring/demo/report.md
+python3 demo/run_demo.py          # needs pdftotext (poppler-utils) for the PDF CVs
+open hiring/demo/report.md        # or any Markdown viewer
 ```
 
-The demo runs the real pipeline on 12 synthetic CVs (Markdown, PDF and DOCX, including a hidden
-prompt injection) and uses scores recorded during the dry run in place of the model.
+<p align="center">
+  <img src="docs/assets/terminal.svg" alt="Terminal output of the demo" width="88%">
+</p>
 
 ## Install
 
 In Claude Code:
 
-```
+```text
 /plugin marketplace add shikhar58/repo-aware-hiring
 /plugin install repo-aware-hiring@repo-aware-hiring
 ```
 
-Or from a shell: `claude plugin marketplace add shikhar58/repo-aware-hiring` then
+Or from a shell: `claude plugin marketplace add shikhar58/repo-aware-hiring`, then
 `claude plugin install repo-aware-hiring@repo-aware-hiring`.
-Requires Python 3.10+ and `pdftotext` (poppler-utils) for PDF CVs.
 
-## Skills (v0.4)
+Requires Python 3.10+ (standard library only) and `pdftotext` from poppler-utils for PDF CVs.
+Then open your repo in Claude Code and say what you're hiring for:
+
+```text
+> I want to hire someone to own the database layer of this repo
+> Profile the repo for db-owner
+> Build the rubric for db-owner          # review, edit, approve
+> Screen the candidates for db-owner     # put CVs in hiring/db-owner/cvs/ first
+> Close the db-owner round               # when the role is filled
+```
+
+## Why you can trust the output
+
+The model does what it's good at: understanding code and CVs. Everything that can be checked by a
+script *is* checked by a script, and each check blocks the next step until it passes.
+
+```mermaid
+flowchart TB
+    subgraph P["1 · Prepare"]
+        direction LR
+        cv[("CVs")] --> prep["prepare_cvs<br/>extract · redact<br/>injection scan"]:::code
+        prep --> names["Agent confirms<br/>each name"]:::model
+        names --> check{{"check_redaction<br/>anything identifying?"}}:::gate
+        check -- leak --> names
+    end
+    subgraph S["2 · Score"]
+        direction LR
+        score["Model scores each CV<br/>alone, quoting evidence"]:::model --> valid{{"validate_scores<br/>quotes in CV?<br/>injections flagged?"}}:::gate
+        valid -- invalid --> score
+    end
+    subgraph R["3 · Rank and report"]
+        direction LR
+        rank["rank.py<br/>gates · ties"]:::code --> rep["render_report"]:::code
+    end
+    check -- clean --> score
+    valid -- valid --> rank
+
+    classDef model fill:#1e3a8a,stroke:#7dd3fc,color:#f8fafc
+    classDef code fill:#134e4a,stroke:#5eead4,color:#f8fafc
+    classDef gate fill:#78350f,stroke:#fbbf24,color:#fffbeb
+```
+
+<sub>🔵 model step · 🟢 deterministic script · 🟠 blocking check</sub>
+
+| Safeguard | How it works |
+|---|---|
+| **Redaction before scoring** | Names, contact details, links, date of birth, age, nationality, marital status, gender and religion are removed. Field labels are detected in English, French, German, Spanish, Italian, Dutch and Portuguese. Each candidate's name must be confirmed before scoring can start. |
+| **Evidence or zero** | Every score quotes the CV. `validate_scores.py` rejects any quote it can't find in that CV, so the model can't invent experience. |
+| **Independent scoring** | Each CV is scored alone against the rubric. Candidates are never compared while scoring, which avoids order and anchoring effects. |
+| **Deterministic ranking** | Totals, must-have gates and ties are computed by code, not the model, and are reproducible. |
+| **Bias tests** | The eval suite checks that swapping a candidate's name, gender or national origin produces identical redacted text, and that a university change or a career break doesn't move the score. |
+| **Injection defence** | Instructions hidden in CVs (including white text in PDFs, in several languages) are detected, flagged for a human, and ignored. |
+| **Human approval** | No scoring until a named person approves the rubric. Nothing is ever rejected automatically. |
+| **Retention** | `close-round` deletes candidate data when a role closes and keeps only a pseudonymous audit record. |
+
+37 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+[`evals/`](evals/README.md) for the full harness, including multi-session model evals.
+
+## How it compares
+
+| | Generic CV screeners | Hosted coding assessments | **repo-aware-hiring** |
+|---|---|---|---|
+| Criteria come from your codebase | No: keywords from the JD | Some build tasks from your repo | **Yes: the rubric is built from your repo and mission** |
+| Where code and CVs go | The vendor | The vendor | **Your own agent and model provider** |
+| Each score shows the CV evidence, machine-checked | Varies | Not applicable | **Yes** |
+| Bias and injection tests you can run yourself | Varies | Varies | **Yes, in the repo** |
+| Price and license | Subscription | Subscription | **Free and MIT-licensed; you pay only for your own model usage** |
+
+It works at the CV-screening and interview-preparation stage. Pair it with a work sample for the
+strongest signal.
+
+## FAQ
+
+<details>
+<summary><b>Does it reject candidates?</b></summary>
+
+No. It ranks evidence, marks gaps to probe and suggests interview questions. A person reads the
+CVs and decides. Candidates whose CV contradicts a must-have are listed separately *with the
+reason*, so a human can overrule.
+</details>
+
+<details>
+<summary><b>Where does candidate data go?</b></summary>
+
+CV text is processed by the scripts on your machine (or wherever your agent runs). The redacted text
+is sent to the model provider your agent already uses. There is no separate service. Check that your
+data-processing agreements allow this; see [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md).
+</details>
+
+<details>
+<summary><b>Is it legal to use for hiring in the EU or US?</b></summary>
+
+AI used to screen job applicants is regulated: high-risk under the EU AI Act, with GDPR limits on
+automated decisions and bias-audit rules such as NYC Local Law 144. This project is designed for
+human-in-the-loop decision support with an audit trail, but compliance depends on how you deploy it.
+Read [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) and involve your legal team. This is not legal advice.
+</details>
+
+<details>
+<summary><b>Which agents does it work with?</b></summary>
+
+It's packaged as a Claude Code plugin. The skills follow the Agent Skills format (a `SKILL.md` plus
+scripts), so other agents that support skills can use them too; the scripts are plain Python.
+</details>
+
+<details>
+<summary><b>What if my repo is huge, or a monorepo?</b></summary>
+
+`hiring-plan` asks which part of the repo the role touches, and `repo-profile` samples only that
+scope (entry points, core files, tests, most-changed files) rather than reading everything.
+</details>
+
+<details>
+<summary><b>What languages can the CVs be in?</b></summary>
+
+Redaction patterns cover English, French, German, Spanish, Italian, Dutch and Portuguese labels.
+CVs in other languages work, but rely on the agent's manual redaction review.
+</details>
+
+## Reference
+
+<details>
+<summary><b>Skills</b></summary>
 
 | Skill | What it does | Output |
 |---|---|---|
@@ -53,26 +258,27 @@ Requires Python 3.10+ and `pdftotext` (poppler-utils) for PDF CVs.
 | `hiring-rubric` | Turns brief + JD + profile into weighted criteria with observable anchors; waits for approval | `rubric.json` |
 | `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.md` |
 | `close-round` | Deletes candidate data when the role closes; keeps a pseudonymous audit record; finds overdue rounds | `audit.json` |
+</details>
 
-## What is deterministic
-
-The model plans, profiles, drafts the rubric and scores. Everything that can be code is code
-(standard-library Python in `skills/screen-candidates/scripts/`):
+<details>
+<summary><b>Scripts</b> (standard-library Python in <code>skills/screen-candidates/scripts/</code>)</summary>
 
 | Script | Job |
 |---|---|
-| `prepare_cvs.py` | Assign ids, extract text (PDF via `pdftotext`, DOCX, MD, TXT), first-pass redaction (EN, FR, DE, ES, IT, NL, PT), injection scan |
+| `prepare_cvs.py` | Assign ids, extract text (PDF via `pdftotext`, DOCX, MD, TXT), first-pass redaction, injection scan |
 | `identities.py` | Confirm or correct each detected candidate name; scoring is blocked until every name is confirmed |
 | `check_redaction.py` | Block scoring if a name is unconfirmed, or if names, contact details, age, nationality or links remain |
 | `validate_scores.py` | Schema and consistency checks; every evidence quote must appear in the CV; injection CVs must be flagged |
 | `rank.py` | Weighted totals, must-have gates, ties; refuses invalid scores |
 | `render_report.py` | Builds `report.md` from the data |
+</details>
 
-## Workspace layout
+<details>
+<summary><b>Workspace layout</b></summary>
 
-One folder per role, inside the repo you are hiring for. Add `hiring/` to `.gitignore`.
+One folder per role, inside the repo you are hiring for. Keep `hiring/` in `.gitignore`.
 
-```
+```text
 hiring/db-owner/
 ├── brief.md            # hiring-plan, approved by you
 ├── jd.md               # optional; can be drafted from the brief
@@ -81,7 +287,7 @@ hiring/db-owner/
 ├── cvs/                # you provide
 ├── candidates.json     # id → file
 ├── identities.json     # id → confirmed name (personal data)
-├── extracted/          # raw text: personal data, delete when the round closes
+├── extracted/          # raw text: personal data, deleted when the round closes
 ├── redacted/           # what the model scores
 ├── prep_report.json    # extraction problems, injection hits, code links (for humans)
 ├── scores/             # one file per candidate
@@ -90,34 +296,10 @@ hiring/db-owner/
 ├── round.json          # opened/closed dates (retention)
 └── audit.json          # written when the round is closed
 ```
+</details>
 
-## Usage
-
-```
-> I want to hire someone to own the database layer of this repo
-  (a few questions, a look at the code, 2–3 role designs, a brief)
-> Profile the repo for db-owner
-> Build the rubric for db-owner        (review, edit, approve)
-> Screen the candidates for db-owner
-> Close the db-owner round              (preview, confirm, delete)
-```
-
-## Using it responsibly
-
-Start with a few roles where your team still reads every CV and compares its own shortlist with
-the report. Treat the ranking as a second opinion. The tool never rejects anyone.
-
-## Evals
-
-```bash
-python3 evals/selftest.py      # 37 deterministic checks, no model; runs in CI
-```
-
-Model evals for consistency, counterfactual fairness and injection resistance run against a
-fixture with 12 synthetic CVs and generated name/gender/origin/university/career-break variants.
-See [`evals/README.md`](evals/README.md).
-
-## Design principles
+<details>
+<summary><b>Design principles</b></summary>
 
 - **Plan before screening.** The mission and the code decide the criteria, not a keyword list.
 - **Rubric first.** No candidate is scored until a named human approves the rubric.
@@ -126,22 +308,34 @@ See [`evals/README.md`](evals/README.md).
 - **Independent scoring** against redacted text; candidates are never compared while scoring.
 - **CVs are untrusted.** Injection attempts are detected, flagged and ignored.
 - **Names are confirmed, not guessed.** Redaction is only as good as knowing whose CV it is.
+</details>
 
-Read [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) before using this with real candidates, and
-[`docs/DRY_RUN.md`](docs/DRY_RUN.md) for what has and hasn't been verified.
+## Status and roadmap
 
-## Roadmap
+**Beta.** The pipeline has been dry-run end to end and the deterministic parts are tested in CI.
+Model consistency across separate sessions hasn't been published yet. See
+[what has and hasn't been verified](docs/DRY_RUN.md).
 
-- Run model evals across several fresh sessions and publish the results
-- `interview-kit`, `take-home-gen`, `take-home-grade`, `debrief` skills
-- Backtesting on past hiring rounds and company-specific calibration
-- OCR for scanned PDFs
+- [ ] Publish multi-session model eval results
+- [ ] Second evaluation fixture on a different stack
+- [ ] `interview-kit`, `take-home-gen`, `take-home-grade` and `debrief` skills
+- [ ] Backtesting on past hiring rounds and company-specific calibration
+- [ ] OCR for scanned PDFs
+
+## Contributing
+
+Issues and pull requests are welcome, especially:
+- **Redaction cases** that slip through: add a fictional CV to [`evals/fixtures/redaction/`](evals/fixtures/redaction)
+- **Patterns for more languages** (date of birth, nationality and similar field labels)
+- **Evaluation fixtures** for other roles and stacks
+
+Run `python3 evals/selftest.py` before opening a pull request. Never include real candidate data.
 
 ## Security
 
-Found a way to get personal data past redaction, or to move a score with text in a CV? Please
-report it privately: see [SECURITY.md](SECURITY.md).
+Found a way to get personal data past redaction, or to move a score with text in a CV? Please report
+it privately; see [SECURITY.md](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 Shikhar Nilabh
