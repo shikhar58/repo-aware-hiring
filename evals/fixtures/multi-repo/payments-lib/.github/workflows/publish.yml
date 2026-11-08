@@ -1,0 +1,12 @@
+name: publish
+on:
+  push:
+    tags: ["v*"]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install build pytest respx httpx pydantic && pytest
+      - run: python -m build
+      - run: twine upload --repository-url https://pypi.acme.internal/simple dist/*

@@ -1,6 +1,6 @@
 ---
 name: map-codebase
-description: Understand the whole codebase before any hiring work. Runs a deterministic inventory, then investigates and writes hiring/_repo/codebase-map.md covering every component and service, data stores and schema, APIs, authentication and security, CI/CD pipelines, deployment and infrastructure, observability, testing, dependencies, conventions and risks, each backed by file paths. Other skills require this map. Use first, when no current map exists, when check_map.py fails, or when the user asks how the codebase works.
+description: Understand the whole codebase before any hiring work. Runs a deterministic inventory, then investigates and writes hiring/_repo/codebase-map.md covering every component and service, data stores and schema, APIs, authentication and security, CI/CD pipelines, deployment and infrastructure, observability, testing, dependencies, conventions and risks, each backed by file paths. Other skills require this map. In a multi-repo workspace it maps each repo at its tier (a full map for primary repos, a shorter service card for supporting ones). Use first, when no current map exists, when check_map.py fails, or when the user asks how the codebase works.
 ---
 
 # Map the Codebase
@@ -87,6 +87,25 @@ secret-looking value was copied, or the codebase changed since the map was writt
 
 Summarise the system for the user in 5–8 lines and offer the next step: planning a hire (`hiring-plan`), writing a
 job description, or building a role profile.
+
+## Several repos (workspace)
+
+In a multi-repo workspace (see the `hiring-workspace` skill) each repo is mapped at its tier, written into the
+workspace, never into the repo:
+
+| Tier | File | Sections | Check |
+|---|---|---|---|
+| primary | `<ws>/maps/<repo>/codebase-map.md` | all 13 | `check_map.py <repo path> --map <file>` |
+| supporting | `<ws>/maps/<repo>/service-card.md` | overview, components, data, APIs, auth, deployment, dependencies, gaps | `check_map.py <repo path> --map <file> --level card` |
+
+`workspace.py scan` has already written `<ws>/maps/<repo>/inventory.json`. Repos from one template (the scan lists
+them): map the group's primary repo fully, and in the others say "same template as <repo>" and describe only what
+differs. Mention what each repo publishes and which internal hosts it calls (the inventory's `links`): the system map
+builds on that.
+
+**Planning checkpoint (stage `map`)**, per [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): before mapping, ask
+at most which areas to map in depth (recommend what the focus names) and whether template groups share one full map
+(recommend yes). Record with `decisions.py add <ws or hiring/_repo> --stage map …`.
 
 ## Keeping it current
 

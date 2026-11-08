@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: billing
+  template:
+    metadata:
+      labels:
+        app: billing
+    spec:
+      containers:
+        - name: billing
+          image: ghcr.io/acme/billing:1.4.2
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: billing-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing
+spec:
+  selector:
+    app: billing
+  ports:
+    - port: 8000

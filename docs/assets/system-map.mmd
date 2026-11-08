@@ -1,0 +1,14 @@
+flowchart TB
+    infra[/"infra<br/>supporting · service card"/]
+    checkout["checkout-svc<br/>primary · full map"]
+    billing["billing-svc<br/>supporting · service card"]
+    lib[("payments-lib<br/>primary · full map<br/>publishes acme-payments")]
+    checkout -- "uses lib: charge, idempotency_key" --> lib
+    billing -- "uses lib: refund" --> lib
+    billing -- "calls http://checkout:8000" --> checkout
+    infra -- "deploys image" --> checkout
+    infra -- "deploys image" --> billing
+    classDef primary fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+    classDef supporting fill:#f1f5f9,stroke:#64748b,color:#1e293b
+    class checkout,lib primary
+    class billing,infra supporting

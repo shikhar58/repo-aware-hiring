@@ -16,6 +16,7 @@
   <a href="#install">Install</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#it-understands-your-codebase-first">Codebase map</a> ·
+  <a href="#several-repos-it-maps-how-they-connect">Several repos</a> ·
   <a href="#write-the-job-description">Job descriptions</a> ·
   <a href="#screen-candidates-against-it">Screening</a> ·
   <a href="#interview-each-candidate">Interviews</a> ·
@@ -73,6 +74,8 @@ That's the person you actually need.
 
 All three start from the same place: a **full map of your codebase** (services, data, APIs, auth and security,
 CI/CD, deployment, tests), checked for completeness and kept current, so nothing is based on a quick glance.
+Hiring for **several repos or microservices**? It maps each one and how they connect. Tell it **what to focus on**
+in a sentence, and it asks you only the decisions that matter, at the stage they matter.
 Use any of them on its own or all together. It runs inside your own coding agent (Claude Code, or any agent that
 supports Agent Skills), so your code and candidates' data never go to a separate hiring vendor.
 Screening is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
@@ -93,7 +96,7 @@ Screening is **decision support**: it ranks evidence and suggests interview ques
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/how-it-works.png" alt="Flow: map-codebase builds a whole-system map that check_map gates, then hiring-plan, repo-profile, write-job-description, hiring-rubric, you approve, screen-candidates, interview-kit, close-round" width="520">
+  <img src="docs/assets/how-it-works.png" alt="Flow: map-codebase builds a whole-system map (or a system map across several repos) that check_ready gates, then hiring-plan, repo-profile, write-job-description, hiring-rubric, you approve, screen-candidates, interview-kit, close-round" width="520">
 </p>
 
 You talk to your agent in plain language. A planning session looks like this:
@@ -141,6 +144,77 @@ FAIL codebase map hiring/_repo/codebase-map.md
 
 The map is built once per repository and reused for every role. It never reads `.env` files, and blocks secrets
 copied into it. Read the real map of the demo repo: [`docs/example-codebase-map.md`](docs/example-codebase-map.md).
+
+## Several repos? It maps how they connect
+
+Most hires work across more than one repository: a few services, a shared library, an infrastructure repo.
+The `hiring-workspace` skill keeps them in one private folder outside all of them (local paths or git URLs), and:
+
+- **scans every repo** and finds the links from the code itself: packages one repo publishes and others depend on,
+  container images built in one repo and deployed from another, services calling each other's hostnames, shared API
+  contracts, and services generated from the **same template**;
+- **maps at the right depth**: a full codebase map for the repos the hire will mainly work in, a shorter
+  *service card* for the ones that only matter for context;
+- writes a **system map** that must explain every link, and goes stale when any repo changes.
+
+<p align="center">
+  <img src="docs/assets/system-map.png" alt="System graph found from code: checkout-svc and billing-svc use the payments-lib package, billing-svc calls checkout-svc over HTTP, and infra deploys both service images" width="460">
+</p>
+
+```text
+$ workspace.py scan ~/hiring/payments
+System graph e5a4d9d6b8ba79a8: 4 repos, 5 links
+  checkout-svc -[package]-> payments-lib: depends on acme-payments
+  billing-svc -[package]-> payments-lib: depends on acme-payments
+  infra -[image]-> checkout-svc: deploys image ghcr.io/acme/checkout
+  billing-svc -[http]-> checkout-svc: calls http://checkout:8000 (Service declared in infra)
+  same template: billing-svc, checkout-svc (similarity 1.0)
+```
+
+One repo? Nothing changes: everything still works inside `hiring/` in that repo.
+Example: [`docs/example-system-map.md`](docs/example-system-map.md).
+
+## Tell it what to focus on
+
+Write what matters in plain words, once per role:
+
+> *Focus on the payment library and its application in the two repositories, as the new hire will work on the
+> payment system.*
+
+Every step reads it: the profile ranks the payment problems first, the rubric weights them, and interview questions
+start there. When the focus names a library, a tracer finds where it's defined and every place it's used:
+
+```text
+| Repo         | Declared | Import sites | Symbols used | Call sites |
+| checkout-svc | 1        | 1            | 2            | 2          |
+| billing-svc  | 1        | 1            | 1            | 1          |
+checkout-svc  charge ×1 app/api/orders.py:17 · idempotency_key ×1 app/api/orders.py:15
+billing-svc   refund ×1 app/api/invoices.py:14
+Public symbols nobody outside the library calls: Charge, PaymentClient
+```
+
+The focus describes the **work**, never the person: *"young"*, *"top universities"* or *"native speaker"* are
+rejected, and so is anything that tries to switch off redaction or the rubric. *"Race conditions"* and
+*"React Native"* are fine. Each output records the focus version it used, so changing the focus shows what to redo.
+
+## You decide at every stage
+
+Each stage opens with a short plan: at most three decisions, each with a recommended default and the reason from
+your code. Reply *"approve all"* or change one line.
+
+```text
+Plan for the rubric
+1. Scope across repos: payments-lib 50% · checkout-svc 30% · billing-svc 20%
+   (the focus names the payment library; checkout charges, billing refunds)
+2. Must-haves: idempotent payment flows; production Python services
+3. Weight of on-call experience: 10% (infra is owned by the platform team)
+Reply "approve all", or change any item ("1: 60/20/20").
+```
+
+Answers go into a decisions log, so nothing is asked twice. If you're away, it takes the defaults, marks them as
+*assumed*, and labels what it builds as a draft until you confirm. It never assumes past an irreversible step
+(approving the rubric, deleting data). Interview panels work the same way: say who asks about what, and each kit
+shows every interviewer their questions.
 
 ## Write the job description
 
@@ -314,7 +388,7 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-85 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+126 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -391,6 +465,14 @@ scripts), so other agents that support skills can use them too; the scripts are 
 </details>
 
 <details>
+<summary><b>We have many microservices. Do I map all of them?</b></summary>
+
+Add them all to a workspace, but only the repos the hire will mainly work in get a full map. The others get a short
+service card, and services built from the same template share one map. The scan finds how they connect (shared
+packages, deployed images, service calls) from the code, so the system map doesn't depend on anyone remembering.
+</details>
+
+<details>
 <summary><b>What if my repo is huge, or a monorepo?</b></summary>
 
 The inventory script scans the whole tree in seconds and lists every package, service, pipeline and deployment file,
@@ -413,6 +495,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 
 | Skill | What it does | Output |
 |---|---|---|
+| `hiring-workspace` | For several repos: a private workspace, cross-repo graph, system map; also the focus, decisions log and readiness gate every skill uses | `system/system-map.md`, `roles/<role>/` |
 | `map-codebase` | Inventories the repo and writes a whole-system map with file citations: services, data, APIs, auth and security, CI/CD, deployment, observability, tests, risks; gates every other skill | `hiring/_repo/codebase-map.md` |
 | `hiring-plan` | Asks follow-up questions one at a time, investigates the relevant part of the repo, proposes 2–3 role designs, writes an approved brief | `brief.md` |
 | `repo-profile` | Builds on the map and goes deep on the role's area: stack, architecture, conventions, gaps, hard problems | `repo-profile.md` |
@@ -434,6 +517,18 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 | `validate_scores.py` | Schema and consistency checks; every evidence quote must appear in the CV; injection CVs must be flagged |
 | `rank.py` | Weighted totals, must-have gates, ties; refuses invalid scores |
 | `render_report.py` | Builds `report.html` (charts, heatmap, cards; self-contained) and `report.md` from the data |
+
+In `skills/hiring-workspace/scripts/`:
+
+| Script | Job |
+|---|---|
+| `workspace.py` | Create a workspace, add repos by path or git URL, set tiers, scan, sync, show status, start a role |
+| `system_graph.py` | Find links between repos (packages, images, service calls, shared contracts) and template groups |
+| `check_system.py` | Block work until every repo is mapped at its tier and the system map explains every link |
+| `trace_usage.py` | Where a library is defined, declared, imported and called, per repo (Python, TS/JS, Go, Java/Kotlin) |
+| `focus.py` | Check the focus (no criteria about people, no switching off safeguards), version it, find stale outputs |
+| `decisions.py` | The decisions log: add, confirm, list pending assumptions |
+| `check_ready.py` | The one gate every skill runs: maps, system map, focus and decisions, in either mode |
 </details>
 
 <details>
@@ -467,6 +562,22 @@ hiring/db-owner/
 ```
 </details>
 
+Several repos? Same role folders, in a workspace outside all of them:
+
+```text
+~/hiring/payments/
+├── workspace.json      # repos and tiers (primary, supporting, ignored)
+├── decisions.json      # decisions shared by every role
+├── repos/              # clones of repos added by URL
+├── maps/<repo>/        # inventory.json + codebase-map.md or service-card.md
+├── system/             # system-graph.md (generated), system-map.md
+└── roles/payments-engineer/
+    ├── focus.md        # what to concentrate on
+    ├── decisions.json  # this role's decisions
+    └── …               # the same files as hiring/<role>/
+```
+</details>
+
 <details>
 <summary><b>Design principles</b></summary>
 
@@ -477,6 +588,7 @@ hiring/db-owner/
 - **Independent scoring** against redacted text; candidates are never compared while scoring.
 - **CVs are untrusted.** Injection attempts are detected, flagged and ignored.
 - **Names are confirmed, not guessed.** Redaction is only as good as knowing whose CV it is.
+- **Ask what matters, once.** Each stage asks at most three decisions with recommended defaults; the log remembers.
 </details>
 
 ## Status and roadmap

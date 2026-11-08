@@ -18,6 +18,12 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "hiring-workspace" / "scripts"))
+try:
+    import wslib  # noqa: E402
+except ImportError:  # the workspace skill is optional for single-repo use
+    wslib = None
+
 PUBLIC_TECH = {
     "python", "fastapi", "django", "flask", "postgresql", "postgres", "mysql", "sqlalchemy", "sqlmodel", "alembic",
     "pytest", "docker", "kubernetes", "terraform", "react", "typescript", "javascript", "node.js", "go", "rust",
@@ -94,7 +100,20 @@ def tokens(text):
 def internal_terms(role):
     """Paths and identifiers the profile and brief mention: none of these may appear in the JD."""
     terms = set()
-    for p in (role / "repo-profile.md", role / "brief.md", role.parent / "_repo" / "codebase-map.md"):
+    sources = [role / "repo-profile.md", role / "brief.md", role / "focus.md", role.parent / "_repo" / "codebase-map.md"]
+    ws = wslib.find_workspace(role) if wslib else None
+    if ws:
+        data = wslib.load(ws)
+        sources.append(ws / "system" / "system-map.md")
+        for r in wslib.active_repos(data):
+            sources.append(wslib.map_file(ws, r))
+            names = {r["name"]}
+            inv = wslib.map_dir(ws, r["name"]) / "inventory.json"
+            if inv.exists():
+                names |= set(json.loads(inv.read_text()).get("links", {}).get("published", {}).values())
+            # only distinctive names: 'checkout-svc' or 'acme_payments' leak, a plain word like 'billing' doesn't
+            terms |= {n for n in names if re.search(r"[-_\d/@]", n) and n.lower() not in PUBLIC_TECH}
+    for p in sources:
         name = p.name
         if not p.exists():
             continue
@@ -148,7 +167,7 @@ def find_leaks(text, role):
             line_no = where(text, term)
             if any(ln == line_no and term in f for ln, f in flagged):
                 continue  # already reported as a path on this line
-            errors.append((line_no, f"names an internal detail from the repo profile or brief: {term!r}"))
+            errors.append((line_no, f"names an internal detail (from the codebase maps, repo profile or brief): {term!r}"))
 
     return errors
 

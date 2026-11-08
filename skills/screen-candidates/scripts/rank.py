@@ -92,6 +92,18 @@ def main(argv=None):
     if not rubric.get("approved"):
         print("ERROR: rubric.json is not approved. Approve it before ranking.", file=sys.stderr)
         return 1
+    scope = rubric.get("scope")
+    if scope is not None:
+        if not isinstance(scope, dict) or not scope or \
+                not all(isinstance(v, (int, float)) and v >= 0 for v in scope.values()) or \
+                abs(sum(scope.values()) - 1) > 0.01:
+            print("ERROR: rubric.json scope must map each repo to a share of the work, summing to 1 "
+                  "(e.g. {\"payments-lib\": 0.5, \"checkout-svc\": 0.3, \"billing-svc\": 0.2}).", file=sys.stderr)
+            return 1
+        unknown = [c["id"] for c in rubric["criteria"] for r in c.get("repos", []) or [] if r not in scope]
+        if unknown:
+            print(f"ERROR: criteria {sorted(set(unknown))} name repos that are not in rubric.json scope.", file=sys.stderr)
+            return 1
     scores_dir = Path(args.scores_dir) if args.scores_dir else role / "scores"
 
     if not args.skip_validate:

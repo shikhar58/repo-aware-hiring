@@ -1,8 +1,8 @@
 flowchart TB
-    repo[("Your repo")] --> map["1 · map-codebase<br/>inventory + whole-system map: services, data,<br/>APIs, auth, CI/CD, deployment, tests, risks"]
-    map --> gate{{"check_map: complete and current?"}}
+    repo[("Your repo<br/>or several repos")] --> map["1 · map-codebase<br/>inventory + whole-system map: services, data,<br/>APIs, auth, CI/CD, deployment, tests, risks<br/>(several repos: a system map of how they connect)"]
+    map --> gate{{"check_ready: maps complete and current?<br/>focus valid? what's already decided?"}}
     gate --> plan["2 · hiring-plan<br/>asks follow-up questions,<br/>proposes 2–3 role designs"]
-    need(["Your hiring need<br/>e.g. own our database layer"]) --> plan
+    need(["Your hiring need + focus<br/>e.g. own the payment library"]) --> plan
     plan --> profile["3 · repo-profile<br/>the role's area, in depth"]
     profile --> jdw["4 · write-job-description<br/>Q&A + repo → public job posting,<br/>checked for leaks and biased wording"]
     jdw --> post(["jd.md<br/>ready to publish"])

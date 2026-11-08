@@ -26,7 +26,8 @@ from pathlib import Path
 
 ALWAYS_DELETE = ["extracted", "redacted", "scores", "runs", "prep_report.json", "candidates.json", "identities.json",
                  "ranking.json", "notes.md", "report.md", "report.html", "eval-report.md", "golden.json", "interviews"]
-KEEP = ["brief.md", "jd.md", "repo-profile.md", "rubric.json", "rubric.md", "round.json"]
+KEEP = ["brief.md", "jd.md", "repo-profile.md", "rubric.json", "rubric.md", "round.json", "focus.md", "focus-history.json",
+        "decisions.json"]
 
 
 def now():

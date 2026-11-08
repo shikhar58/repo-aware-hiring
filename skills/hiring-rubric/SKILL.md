@@ -9,13 +9,32 @@ Produce `hiring/<role-slug>/rubric.json` (machine-readable) and `rubric.md` (hum
 The rubric is the contract every candidate is scored against. **No candidate is scored until
 a human has approved it.**
 
-## Before anything else: a current map of the codebase
+## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
-to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
-run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
-missing or stale map: everything below depends on understanding the whole system, not a sample of it.
-Read `hiring/_repo/codebase-map.md` before going on.
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage rubric`
+(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+multi-repo workspace.
+- **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
+  it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
+  continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+- **Read every file it lists** under "Read before starting": the codebase map (one repo), or the system map plus every
+  repo's map or service card (workspace), and the focus.
+- **Role folder**: the one it prints (`hiring/<role-slug>/` in one repo, `roles/<role-slug>/` in a workspace). Below,
+  `hiring/<role-slug>/` means that folder.
+- **Focus**: apply it as described in [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md#the-focus), and write the
+  version it prints into what you produce (`Focus: <version>` in Markdown headers, `"focus_version"` in JSON).
+
+## Planning checkpoint (stage `rubric`)
+
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
+one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+defaults as `--assumed` when nobody is there to answer. This stage decides:
+
+1. **Must-haves**: recommend the two or three the profile's hardest problems demand.
+2. **Criteria weights**: recommend from the order of the hard problems.
+3. **Scope weights per repo** (workspace): copy the plan's `scope` decision into `rubric.json` as `"scope"`
+   (repo → share, summing to 1), and tag criteria that belong to specific repos with `"repos": [...]`. `rank.py`
+   checks both. Add `"focus_version"` from `check_ready.py`.
 
 ## Inputs
 
@@ -81,6 +100,13 @@ Read `hiring/_repo/codebase-map.md` before going on.
 ```
 
 Must-have criteria carry `weight: 0`; they act as gates, not points.
+
+Optional fields:
+- `"focus_version"`: the focus version `check_ready.py` printed, so a changed focus shows the rubric needs review.
+- `"scope"` (workspace): the share of the work per repo, from the plan, summing to 1:
+  `{"payments-lib": 0.5, "checkout-svc": 0.3, "billing-svc": 0.2}`. Use it to balance criteria across repos: weights
+  of criteria about a repo should roughly follow its share. The report shows it.
+- `"repos"` on a criterion (workspace): the repos it is about, e.g. `["payments-lib"]`. Each must be in `scope`.
 
 ## Rules
 

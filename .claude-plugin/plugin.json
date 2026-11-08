@@ -1,7 +1,7 @@
 {
   "name": "repo-aware-hiring",
-  "version": "0.8.0",
-  "description": "Repo-aware hiring for software engineers: maps your whole codebase first, then writes job descriptions, screens CVs with verified evidence, and prepares structured interview kits for each candidate.",
+  "version": "0.9.0",
+  "description": "Repo-aware hiring for software engineers: maps your codebase (or several repos and how they connect) first, then writes job descriptions, screens CVs with verified evidence, and prepares structured interview kits, with a focus prompt and planning checkpoints at every stage.",
   "author": {
     "name": "Shikhar Nilabh",
     "url": "https://github.com/shikhar58"
@@ -15,6 +15,8 @@
     "interview-questions",
     "job-description",
     "job-posting",
+    "microservices",
+    "multi-repo",
     "recruiting",
     "rubric",
     "screening",

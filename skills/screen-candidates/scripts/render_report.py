@@ -53,7 +53,11 @@ def main(argv=None):
 
     out = [f"# Screening report — {rubric['role']}", "",
            f"Rubric v{rubric['version']} · approved by {rubric.get('approved_by') or '—'} · "
-           f"{dt.date.today().isoformat()} · {len(rows)} candidates", "", DISCLAIMER, "",
+           f"{dt.date.today().isoformat()} · {len(rows)} candidates"
+           + (f" · Focus: {rubric['focus_version']}" if rubric.get("focus_version") else ""),
+           *([f"Scope: " + ", ".join(f"{k} {float(v):.0%}" for k, v in rubric["scope"].items())]
+             if isinstance(rubric.get("scope"), dict) and rubric["scope"] else []),
+           "", DISCLAIMER, "",
            "## Shortlist", "",
            "| Rank | Candidate | File | Score /100 | Must-haves | Confidence | Flags |",
            "|---|---|---|---|---|---|---|"]

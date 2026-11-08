@@ -221,7 +221,11 @@ def build_html(rubric, ranking, scores, notes_md="", date=""):
     h.append('<div class="top"><div>'
              f'<div class="muted">Screening report</div><h1>{e(rubric["role"])}</h1>'
              f'<div class="muted">Rubric v{e(rubric.get("version"))} · approved by {e(rubric.get("approved_by") or "—")} · '
-             f'{e(date)} · {n} candidates</div></div>'
+             f'{e(date)} · {n} candidates'
+             + (f' · focus {e(rubric["focus_version"])}' if rubric.get("focus_version") else "")
+             + ('<br>Scope: ' + e(", ".join(f"{k} {float(v):.0%}" for k, v in rubric["scope"].items()))
+                if isinstance(rubric.get("scope"), dict) and rubric["scope"] else "")
+             + '</div></div>'
              '<button class="btn" id="theme" type="button" title="Switch between light and dark">Light / dark</button></div>')
     h.append('<div class="callout"><strong>Decision support only.</strong> This report ranks CV evidence against an '
              'approved rubric. It does not reject or advance anyone. A named person reads the evidence and decides. '

@@ -29,6 +29,8 @@ sys.path.insert(0, str(SKILLS / "screen-candidates" / "scripts"))
 sys.path.insert(0, str(SKILLS / "write-job-description" / "scripts"))
 import check_jd  # noqa: E402
 import hiring_lib as H  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import panel as P  # noqa: E402
 
 TYPES = {"claim_deep_dive", "gap_probe", "consistency"}
 REQUIRED = ("question", "follow_ups", "listen_for", "warning_signs", "minutes")
@@ -121,6 +123,7 @@ def main(argv=None):
     if not files:
         warnings.append("no candidate kits yet")
     prep = H.load_json(role / "prep_report.json") if (role / "prep_report.json").exists() else {}
+    kits_loaded = []
     for path in files:
         cid = path.stem
         if not path.exists():
@@ -178,6 +181,11 @@ def main(argv=None):
             errors.append(f"{cid}: core + personal questions take {total} min, interview is {duration}")
         if prep.get(cid, {}).get("injection") and not any("injection" in str(n).lower() for n in kit.get("notes_for_interviewer", [])):
             warnings.append(f"{cid}: CV was flagged for possible prompt injection; mention it in notes_for_interviewer")
+        kits_loaded.append((cid, kit))
+
+    pe, pw = P.validate(core, set(crit), kits_loaded)
+    errors += pe
+    warnings += pw
 
     for e in errors:
         print(f"ERROR {e}")

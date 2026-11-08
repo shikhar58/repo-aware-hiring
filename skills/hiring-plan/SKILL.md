@@ -10,13 +10,34 @@ repo, what success looks like, and the role shape the user chose. Every later sk
 
 **Do not jump to a job description or rubric.** The value of this step is the conversation.
 
-## Before anything else: a current map of the codebase
+## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
-to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
-run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
-missing or stale map: everything below depends on understanding the whole system, not a sample of it.
-Read `hiring/_repo/codebase-map.md` before going on.
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage plan`
+(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+multi-repo workspace.
+- **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
+  it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
+  continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+- **Read every file it lists** under "Read before starting": the codebase map (one repo), or the system map plus every
+  repo's map or service card (workspace), and the focus.
+- **Role folder**: the one it prints (`hiring/<role-slug>/` in one repo, `roles/<role-slug>/` in a workspace). Below,
+  `hiring/<role-slug>/` means that folder.
+- **Focus**: apply it as described in [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md#the-focus), and write the
+  version it prints into what you produce (`Focus: <version>` in Markdown headers, `"focus_version"` in JSON).
+
+## Planning checkpoint (stage `plan`)
+
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
+one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+defaults as `--assumed` when nobody is there to answer. This stage decides:
+
+1. **The focus.** If `focus.md` is empty, ask for one or two sentences on what the hire will work on, in the
+   manager's words, write them to `focus.md` and run `focus.py check`. Phase 1's questions count toward this
+   checkpoint: don't ask what the focus already answers.
+2. **Scope across repos** (workspace only): the share of the work per repo, e.g. `{"payments-lib": 0.5,
+   "checkout-svc": 0.3, "billing-svc": 0.2}`. Recommend it from the focus, the system map and, if the focus names a
+   library, its usage trace. Record `--key scope`; the brief's "Scope in the repo" section lists it.
+3. **Role design**: chosen in Phase 3, recorded as `--key role_design`.
 
 ## Principles
 

@@ -3,6 +3,44 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
+## [0.9.0] — 2026-11-08
+
+### Added
+- **Multi-repo workspaces (`hiring-workspace` skill).** A private folder outside the repos that references local
+  checkouts or clones git URLs (URLs with credentials are refused; a workspace inside a repo is refused).
+  `workspace.py` creates it, adds repos, sets tiers (primary, supporting, ignored), scans, syncs, shows status and
+  starts roles. Single-repo use is unchanged.
+- **Cross-repo graph.** `inventory.py` now records what each repo publishes and depends on, which container images it
+  builds and deploys, Kubernetes and compose service names, internal hosts it calls, and API contracts (output only:
+  existing map fingerprints are unchanged). `system_graph.py` turns that into links between repos (package, image,
+  HTTP, shared contract), groups repos built from one template, and lists internal hosts it can't match.
+- **Tiered maps and a system map.** Primary repos need a full map; supporting repos a shorter service card
+  (`check_map.py --level card`). `check_system.py` requires every repo to be mapped at its tier and
+  `system/system-map.md` to describe every repo, explain every link and name template groups, and goes stale when
+  repos, tiers or links change.
+- **Focus prompt per role** (`focus.md`). Every stage reads it; outputs record its version and `focus.py stale` lists
+  what to redo after a change. It rejects criteria about people (age, gender, origin, religion, family, health,
+  schools, appearance) and attempts to switch off safeguards, without flagging terms like "race condition" or
+  "React Native".
+- **`trace_usage.py`.** Where a library is defined, which repos declare it (and at which versions), every import and
+  call site per symbol, and public symbols nobody uses. Python, TypeScript/JavaScript, Go, Java/Kotlin.
+- **Planning checkpoints** at every stage ([`CHECKPOINTS.md`](skills/hiring-workspace/CHECKPOINTS.md)): at most three
+  decisions with recommended defaults, "approve all" or change one item, a decisions log (`decisions.py`) so nothing
+  is asked twice, and recorded assumptions when nobody is there to answer.
+- **`check_ready.py`**, one gate for every skill in either mode: maps, system map, focus and decisions.
+- **Interview panels.** Optional `panel` in `core.json`: each interviewer owns criteria; kits show who asks what and
+  a panel table; `validate_kit.py` checks that every core question has an interviewer and fits their slot.
+- **Scope weights.** Optional `scope` (share of the work per repo) and per-criterion `repos` in `rubric.json`,
+  checked by `rank.py` and shown in the report with the focus version.
+- Multi-repo fixture, example system map (`docs/example-system-map.md`), system-map diagram, and 41 new self-test
+  checks (126 total).
+
+### Changed
+- All skills run `check_ready.py` instead of `check_map.py`, then a planning checkpoint for their stage.
+- `check_jd.py` (and so `validate_kit.py`) also treats workspace maps, the focus, and distinctive repo and package
+  names as internal.
+- `close-round` keeps `focus.md` and `decisions.json` for the next round.
+
 ## [0.8.0] — 2026-11-08
 
 ### Added

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Gate: is there a complete, current map of the codebase? Every other skill runs this first.
 
-Usage: python3 check_map.py <repo_dir> [--map hiring/_repo/codebase-map.md] [--quiet]
+Usage: python3 check_map.py <repo_dir> [--map hiring/_repo/codebase-map.md] [--level full|card] [--quiet]
+
+--level card checks a service card: the shorter map for supporting repos in a multi-repo workspace (overview,
+components, data, APIs, auth, deployment, dependencies, gaps). Full maps (the default) need all 13 sections.
 
 Checks hiring/_repo/codebase-map.md against a fresh inventory of the repo:
   - all required sections exist and say something
@@ -47,6 +50,7 @@ TITLES = {"overview": "Overview", "components": "Components and services", "data
           "deploy": "Deployment and infrastructure", "observability": "Observability", "testing": "Testing",
           "dependencies": "Dependencies", "conventions": "Conventions", "risks": "Hot spots and risks (INTERNAL)",
           "gaps": "Gaps in this map"}
+CARD_SECTIONS = ("overview", "components", "data", "apis", "auth", "deploy", "dependencies", "gaps")
 NEEDS_CITATION = {"components", "data", "apis", "auth", "cicd", "deploy", "observability", "testing",
                   "dependencies", "conventions", "risks"}
 NONE_FOUND = re.compile(r"\bnone found\b|\bnot present\b|\bno [\w /-]+ (?:found|present|configured)\b", re.I)
@@ -115,6 +119,7 @@ def main(argv=None):
     ap.add_argument("repo")
     ap.add_argument("--map", default=None)
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--level", choices=("full", "card"), default="full")
     args = ap.parse_args(argv)
     root = Path(args.repo).resolve()
     map_path = Path(args.map) if args.map else root / "hiring" / "_repo" / "codebase-map.md"
@@ -156,7 +161,10 @@ def main(argv=None):
 
     # ---- sections
     secs = parse_sections(text)
+    required = set(TITLES) if args.level == "full" else set(CARD_SECTIONS)
     for key, title in TITLES.items():
+        if key not in required:
+            continue
         if key not in secs:
             errors.append(f"missing section: ## {title}")
         elif len(secs[key]["body"]) < 20:
@@ -183,7 +191,8 @@ def main(argv=None):
 
     for cat, keys in FILE_COVERAGE.items():
         files = inv["files"].get(cat, [])
-        if not files:
+        keys = tuple(k for k in keys if k in required)
+        if not files or not keys:
             continue
         body = section_text(keys)
         cited = set(cited_paths(body))
@@ -192,7 +201,7 @@ def main(argv=None):
             where = " / ".join(TITLES[k] for k in keys)
             errors.append(f"inventory found {len(files)} {cat.replace('_', ' ')} file(s) (e.g. `{files[0]}`) but "
                           f"'{where}' doesn't cite any")
-    if inv["files"].get("ci_cd"):
+    if inv["files"].get("ci_cd") and "cicd" in required:
         body = section_text(("cicd",))
         uncovered = [f for f in inv["files"]["ci_cd"] if f not in body and Path(f).name not in body
                      and str(Path(f).parent) not in cited_paths(body)]
@@ -206,11 +215,22 @@ def main(argv=None):
         if not re.search(rf"(?<![\w-]){re.escape(svc)}(?![\w-])", section_text(("components", "deploy"))):
             errors.append(f"compose service '{svc}' is not described in Components or Deployment")
     for cat, keys in LABEL_COVERAGE.items():
+        keys = tuple(k for k in keys if k in required)
+        if not keys:
+            continue
         body = section_text(keys)
         for label in inv["detected"].get(cat, []):
             if not mentions(body, label):
                 where = " / ".join(TITLES[k] for k in keys)
                 errors.append(f"inventory detected {label} ({cat.replace('_', ' ')}) but '{where}' doesn't mention it")
+    links = inv.get("links", {})
+    linked_text = section_text(("overview", "components", "apis", "dependencies", "deploy"))
+    for pub in sorted(set(links.get("published", {}).values())):
+        if pub.rsplit("/", 1)[-1] not in linked_text.lower():
+            warnings.append(f"the repo publishes package '{pub}' but the map doesn't say so (other repos may depend on it)")
+    for host in links.get("internal_hosts", {}):
+        if host.split(":")[0] not in linked_text.lower():
+            warnings.append(f"the code calls internal host '{host}' but Components/APIs don't mention it")
     if inv["size"]["test_files"] and "testing" in secs and not cited_paths(secs["testing"]["body"]):
         errors.append(f"{inv['size']['test_files']} test files exist but Testing cites none")
     if inv["files"].get("env_files"):
@@ -220,7 +240,7 @@ def main(argv=None):
 
     ok = not errors
     if not args.quiet or not ok:
-        print(f"{'OK  ' if ok else 'FAIL'} codebase map {map_path}")
+        print(f"{'OK  ' if ok else 'FAIL'} {'codebase map' if args.level == 'full' else 'service card'} {map_path}")
         for e in errors:
             print(f"  error: {e}")
         for w in warnings:

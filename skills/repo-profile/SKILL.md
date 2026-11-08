@@ -10,13 +10,32 @@ evidence-backed description of what
 working in this codebase actually requires. It is built **once per role** and reused for every
 candidate, so the repo is never re-read per CV.
 
-## Before anything else: a current map of the codebase
+## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
-to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
-run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
-missing or stale map: everything below depends on understanding the whole system, not a sample of it.
-Read `hiring/_repo/codebase-map.md` before going on.
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage profile`
+(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+multi-repo workspace.
+- **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
+  it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
+  continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+- **Read every file it lists** under "Read before starting": the codebase map (one repo), or the system map plus every
+  repo's map or service card (workspace), and the focus.
+- **Role folder**: the one it prints (`hiring/<role-slug>/` in one repo, `roles/<role-slug>/` in a workspace). Below,
+  `hiring/<role-slug>/` means that folder.
+- **Focus**: apply it as described in [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md#the-focus), and write the
+  version it prints into what you produce (`Focus: <version>` in Markdown headers, `"focus_version"` in JSON).
+
+## Planning checkpoint (stage `profile`)
+
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
+one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+defaults as `--assumed` when nobody is there to answer. This stage decides:
+
+1. **Order of the hard problems**: recommend the order the focus implies, then risk from the maps' hot spots.
+2. **Coverage** (workspace): primary repos in depth; supporting repos only where the focus or the system map's
+   connections touch them. Cross-repo problems (a contract between two services, a library used by both) count as
+   hard problems in their own right. Cite paths with the repo name: `checkout-svc:app/api/orders.py`.
+3. If the focus names a library and `usage-<library>.md` doesn't exist yet, run `trace_usage.py` first and cite it.
 
 ## Inputs
 
@@ -32,7 +51,7 @@ Read `hiring/_repo/codebase-map.md` before going on.
 ## Procedure
 
 1. **Start from the codebase map.** The whole-system picture (components, data, APIs, auth and security,
-   CI/CD, deployment, observability, testing) is already in `hiring/_repo/codebase-map.md`. Don't redo it:
+   CI/CD, deployment, observability, testing) is already in the codebase map (and, in a workspace, the system map and each repo's map or card). Don't redo it:
    select what matters for this role and cite the map's findings with their paths.
 2. **Go deep on the role's scope.** For each module in scope, read the entry points, the core domain files,
    the tests, how it is built and deployed (from the map's CI/CD and deployment sections), and the most-changed

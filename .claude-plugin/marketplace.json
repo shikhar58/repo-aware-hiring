@@ -10,12 +10,13 @@
     {
       "name": "repo-aware-hiring",
       "source": ".",
-      "description": "Write job descriptions from your codebase, screen CVs with verified evidence, and prepare structured interview kits per candidate. Decision support only.",
+      "description": "Write job descriptions from your codebase (one repo or many), screen CVs with verified evidence, and prepare structured interview kits per candidate. Decision support only.",
       "category": "hiring",
       "tags": [
         "hiring",
         "interview",
         "job-description",
+        "multi-repo",
         "recruiting",
         "rubric",
         "screening",

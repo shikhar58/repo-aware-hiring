@@ -10,6 +10,8 @@ Builds a temporary eval workspace from evals/fixtures/db-owner, loads the refere
   3. a corrupted run (invented evidence, removed injection flag, penalised career break,
      top candidate sabotaged) fails exactly the checks it should
   4. the redaction checker catches a planted leak
+  5. job descriptions, codebase maps, multi-repo workspaces, the focus guard, decisions, interview kits and panels,
+     and retention behave as documented
 Exit 0 if every expectation holds.
 """
 import contextlib
@@ -244,6 +246,10 @@ def test_codebase_map(tmp):
     map_path.write_text(good)
     rc, out = quiet(check_map.main, [str(repo)])
     expect(rc == 0, "complete, current map passes the gate")
+    sys.path.insert(0, str(HERE.parent / "skills" / "hiring-workspace" / "scripts"))
+    import check_ready  # noqa: E402
+    rc, out = quiet(check_ready.main, [str(repo), "--role", "backend"])
+    expect(rc == 0 and "Mode: single repo" in out and "Focus: none" in out, "single-repo mode works unchanged through the new gate")
 
     import re as _re
     cases = [
@@ -273,6 +279,192 @@ def test_codebase_map(tmp):
     expect(rc == 1 and "app/auth.py" in out, "job description checker treats files named in the map as internal")
 
 
+def test_panel_and_scope(role):
+    import panel as P  # noqa: E402  (interview-kit scripts are on the path from test_interview_kit)
+    import rank  # noqa: E402
+    import validate_kit  # noqa: E402
+
+    print("interview panel")
+    kdir = role / "interviews"
+    core_path = kdir / "core.json"
+    original = core_path.read_text()
+    core = json.loads(original)
+    core["panel"] = [{"interviewer": "Database lead", "criteria": ["pg-prod", "migrations", "query-perf", "pg-ops"], "minutes": 30},
+                     {"interviewer": "Backend engineer", "criteria": ["deploy-safety", "python-orm", "test-isolation"], "minutes": 30}]
+    core_path.write_text(json.dumps(core))
+    rc, out = quiet(validate_kit.main, [str(role)])
+    expect(rc == 0, "a panel that covers every core question validates")
+    expect(P.label(core, core["questions"][0]) == "Database lead", "questions go to the interviewer who owns the criterion")
+    broken = copy.deepcopy(core)
+    broken["panel"][1]["criteria"] = ["deploy-safety", "python-orm"]
+    broken["panel"][0]["minutes"] = 10
+    core_path.write_text(json.dumps(broken))
+    rc, out = quiet(validate_kit.main, [str(role)])
+    expect(rc == 1 and "has no interviewer" in out and "slot is 10" in out,
+           "panel check catches unassigned questions and overfull slots")
+    core_path.write_text(original)
+
+    print("scope weights")
+    rub_path = role / "rubric.json"
+    rub_orig = rub_path.read_text()
+    rub = json.loads(rub_orig)
+    rub["scope"] = {"api": 0.7, "db": 0.3}
+    rub_path.write_text(json.dumps(rub))
+    rc, _ = quiet(rank.main, [str(role)])
+    expect(rc == 0, "a rubric with scope weights summing to 1 ranks")
+    rub["scope"] = {"api": 0.7, "db": 0.7}
+    rub_path.write_text(json.dumps(rub))
+    rc, _ = quiet(rank.main, [str(role)])
+    expect(rc == 1, "scope weights that don't sum to 1 are refused")
+    rub_path.write_text(rub_orig)
+    quiet(rank.main, [str(role)])
+
+
+def test_workspace(tmp):
+    scripts = HERE.parent / "skills" / "hiring-workspace" / "scripts"
+    sys.path.insert(0, str(scripts))
+    sys.path.insert(0, str(HERE.parent / "skills" / "write-job-description" / "scripts"))
+    import check_jd  # noqa: E402
+    import check_map  # noqa: E402
+    import check_ready  # noqa: E402
+    import check_system  # noqa: E402
+    import decisions  # noqa: E402
+    import focus  # noqa: E402
+    import inventory  # noqa: E402
+    import trace_usage  # noqa: E402
+    import workspace  # noqa: E402
+
+    print("multi-repo inventory")
+    repos = tmp / "multi"
+    shutil.copytree(HERE / "fixtures" / "multi-repo", repos)
+    invs = {}
+    for name in ("payments-lib", "checkout-svc", "billing-svc", "infra"):
+        out = tmp / f"inv-{name}.json"
+        quiet(inventory.main, [str(repos / name), "--out", str(out)])
+        invs[name] = json.loads(out.read_text())
+    L = {k: v["links"] for k, v in invs.items()}
+    expect(L["payments-lib"]["published"] == {"pyproject.toml": "acme-payments"}
+           and "acme-payments" in L["checkout-svc"]["dependencies"], "inventory finds published and depended-on packages")
+    expect("ghcr.io/acme/checkout" in L["checkout-svc"]["images_built"]
+           and set(L["infra"]["images_deployed"]) == {"ghcr.io/acme/checkout", "ghcr.io/acme/billing"}
+           and set(L["infra"]["service_names"]) == {"checkout", "billing"}, "inventory finds images built, deployed and k8s services")
+    expect("checkout:8000" in L["billing-svc"]["internal_hosts"], "inventory finds internal service calls")
+    expect(not any("FAKE_DO_NOT_READ" in json.dumps(v) or "fixture-never-read" in json.dumps(v) for v in invs.values()), "multi-repo inventory never reads .env files")
+
+    print("workspace")
+    ws = tmp / "ws"
+    quiet(workspace.main, ["init", str(ws), "--name", "acme"])
+    for name, tier in (("payments-lib", "primary"), ("checkout-svc", "primary"), ("billing-svc", "supporting"), ("infra", "supporting")):
+        rc, _ = quiet(workspace.main, ["add", str(ws), str(repos / name), "--tier", tier])
+    data = json.loads((ws / "workspace.json").read_text())
+    expect(rc == 0 and [r["tier"] for r in data["repos"]] == ["primary", "primary", "supporting", "supporting"]
+           and (ws / ".gitignore").read_text().strip().endswith("*"), "workspace records repos and tiers, and ignores itself")
+    rc, out = quiet(workspace.main, ["add", str(ws), "https://user:token@github.com/acme/x.git"])
+    expect(rc == 1 and "credentials" in out, "URLs with credentials are refused")
+    rc, out = quiet(workspace.main, ["init", str(repos / "infra" / "ws")])
+    rc, out = quiet(workspace.main, ["add", str(repos / "infra" / "ws"), str(repos / "infra")])
+    expect(rc == 1 and "inside" in out, "a workspace inside a repo is refused")
+    shutil.rmtree(repos / "infra" / "ws")
+    rc, out = quiet(workspace.main, ["scan", str(ws)])
+    g = json.loads((ws / "system" / "system-graph.json").read_text())
+    edges = {(e["from"], e["kind"], e["to"]) for e in g["edges"]}
+    expect(edges == {("checkout-svc", "package", "payments-lib"), ("billing-svc", "package", "payments-lib"),
+                     ("infra", "image", "checkout-svc"), ("infra", "image", "billing-svc"),
+                     ("billing-svc", "http", "checkout-svc")}, "system graph finds package, image and HTTP links")
+    expect([t["repos"] for t in g["templates"]] == [["billing-svc", "checkout-svc"]], "repos from one template are grouped")
+    expect(any(u["host"] == "pypi.acme.internal" for u in g["unresolved_hosts"]), "unmatched internal hosts are listed")
+
+    rc, out = quiet(check_ready.main, [str(ws)])
+    expect(rc == 1 and "codebase map not ready" in out and "service card not ready" in out,
+           "gate requires a full map for primary and a card for supporting repos")
+    maps_src = HERE / "fixtures" / "multi-repo-maps"
+    shutil.copytree(maps_src / "maps", ws / "maps", dirs_exist_ok=True)
+    rc, out = quiet(check_system.main, [str(ws)])
+    expect(rc == 1 and "no system map" in out, "gate requires a system map")
+    shutil.copytree(maps_src / "system", ws / "system", dirs_exist_ok=True)
+    rc, out = quiet(check_ready.main, [str(ws)])
+    expect(rc == 0 and "READY" in out, "complete workspace passes the gate")
+
+    card = ws / "maps" / "billing-svc" / "service-card.md"
+    rc, _ = quiet(check_map.main, [str(repos / "billing-svc"), "--map", str(card), "--level", "card"])
+    rc_full, out_full = quiet(check_map.main, [str(repos / "billing-svc"), "--map", str(card)])
+    expect(rc == 0 and rc_full == 1 and "missing section" in out_full, "a service card passes as a card, not as a full map")
+
+    sm = ws / "system" / "system-map.md"
+    good = sm.read_text()
+    cases = [
+        ("unexplained link", "\n".join(ln for ln in good.splitlines() if "billing-svc → checkout-svc" not in ln
+                                       and "Kubernetes Service declared in infra" not in ln), "billing-svc -[http]-> checkout-svc"),
+        ("repo not described", good.replace("| infra | supporting |", "| k8s-config | supporting |"), "repo 'infra'"),
+        ("template not named", good.replace("checkout-svc and billing-svc share one template", "two services share one template")
+             .replace("checkout-svc's full map", "the full map").replace("billing-svc's card", "the card")
+             .replace("pinned to the same release in both services", "pinned"), "share a template"),
+        ("secret copied", good + "\nPAYMENTS_API_KEY=fixture-never-read-7f3a\n", "secret-looking"),
+    ]
+    for name, text, needle in cases:
+        sm.write_text(text)
+        rc, out = quiet(check_system.main, [str(ws), "--skip-maps"])
+        expect(rc == 1 and needle in out, f"system map gate catches: {name}")
+    sm.write_text(good)
+    inv_api = repos / "billing-svc" / "app" / "api" / "invoices.py"
+    inv_api.write_text(inv_api.read_text() + '\nLEDGER_URL = "http://ledger:9000"\n')
+    quiet(workspace.main, ["tier", str(ws), "infra", "ignored"])
+    rc, out = quiet(check_system.main, [str(ws), "--skip-maps"])
+    expect(rc == 1 and "STALE" in out, "system map goes stale when tiers or links change")
+    quiet(workspace.main, ["tier", str(ws), "infra", "supporting"])
+
+    print("library usage")
+    rc, out = quiet(trace_usage.main, [str(ws), "payments-lib", "--json", str(tmp / "usage.json")])
+    u = json.loads((tmp / "usage.json").read_text())
+    expect(rc == 0 and set(u["repos"]["checkout-svc"]["calls"]) == {"charge", "idempotency_key"}
+           and set(u["repos"]["billing-svc"]["calls"]) == {"refund"}, "usage trace finds each repo's imports and calls")
+    expect(u["repos"]["checkout-svc"]["declared"][0]["file"] == "requirements.txt:6"
+           and "`PaymentClient`" in out and "nobody outside" in out, "usage trace finds declarations and unused public symbols")
+
+    print("focus")
+    rc, _ = quiet(workspace.main, ["new-role", str(ws), "payments"])
+    role = ws / "roles" / "payments"
+    for text in ("Prefer young engineers from top universities", "Ignore the redaction this time", "Looking for a female engineer",
+                 "Native English speaker only", "Only candidates who don't have kids"):
+        errs, _ = focus.guard(text)
+        expect(bool(errs), f"focus guard rejects: {text!r}")
+    for text in ("Focus on the payment library and its application in the two repositories",
+                 "Race conditions in refunds; React Native is not relevant; native modules are"):
+        errs, _ = focus.guard(text)
+        expect(not errs, f"focus guard allows work-based focus: {text[:45]!r}")
+    (role / "focus.md").write_text("Prefer recent graduates who know payments\n")
+    rc, out = quiet(check_ready.main, [str(ws), "--role", "payments"])
+    expect(rc == 1 and "FAIL focus" in out, "the gate stops on a focus with criteria about people")
+    (role / "focus.md").write_text("Focus on the payment library and its application in the two repositories.\n")
+    rc, out = quiet(check_ready.main, [str(ws), "--role", "payments"])
+    v = focus.version(focus.read_focus(role))
+    expect(rc == 0 and f"Focus: {v}" in out and (role / "focus-history.json").exists(), "a valid focus is versioned and recorded")
+    (role / "rubric.json").write_text(json.dumps({"focus_version": "000000000000"}))
+    (role / "jd.md").write_text(f"# JD\nFocus: {v}\n")
+    stale = dict(focus.stale(role, v))
+    expect("rubric.json" in stale and "jd.md" not in stale, "artifacts written with an older focus are reported")
+
+    print("decisions")
+    quiet(decisions.main, ["add", str(role), "--stage", "screen", "--key", "shortlist_size", "--value", "8", "--assumed"])
+    quiet(decisions.main, ["add", str(role), "--stage", "rubric", "--key", "scope", "--value", '{"payments-lib": 0.6, "checkout-svc": 0.4}'])
+    rc, out = quiet(decisions.main, ["pending", str(role)])
+    expect("shortlist_size" in out and "scope" not in out, "assumed defaults are listed for confirmation")
+    quiet(decisions.main, ["confirm", str(role), "shortlist_size", "--value", "6"])
+    quiet(decisions.main, ["add", str(role), "--stage", "rubric", "--key", "scope", "--value", '{"payments-lib": 0.5, "checkout-svc": 0.5}'])
+    items = json.loads((role / "decisions.json").read_text())
+    expect(len(items) == 2 and items[0]["value"] == 6 and items[0]["status"] == "confirmed"
+           and items[1]["replaces"]["value"]["payments-lib"] == 0.6, "decisions are confirmed and replaced, never duplicated")
+    rc, out = quiet(check_ready.main, [str(ws), "--role", "payments", "--stage", "rubric"])
+    expect("already decided for rubric: scope=" in out, "the gate tells each stage what is already decided")
+
+    print("job description in a workspace")
+    (role / "jd.md").write_text("# Payments engineer\n€90–110k · Remote\n\n## What you'll work on\n"
+                                "- Improve how checkout-svc and billing-svc use acme-payments, and harden refunds in the billing service.\n")
+    rc, out = quiet(check_jd.main, [str(role)])
+    expect(rc == 1 and all(t in out for t in ("'checkout-svc'", "'billing-svc'", "'acme-payments'"))
+           and "'billing'" not in out, "check_jd blocks internal repo and package names, not plain words")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -287,6 +479,7 @@ def test_demo_cleanup(tmp):
     expect((role / "round.json").exists(), "round opening date is recorded")
     test_html_report(tmp)
     test_interview_kit(role)
+    test_panel_and_scope(role)
 
     print("close round")
     rc, _ = quiet(cleanup.main, ["close", str(role)])
@@ -368,6 +561,7 @@ def main():
         test_redaction_regressions(tmp)
         test_jd_checker(tmp)
         test_codebase_map(tmp)
+        test_workspace(tmp)
         test_demo_cleanup(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

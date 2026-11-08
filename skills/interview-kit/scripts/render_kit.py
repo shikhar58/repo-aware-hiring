@@ -15,6 +15,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent.parent / "screen-candidates" / "scripts"))
 import hiring_lib as H  # noqa: E402
 import report_html as R  # noqa: E402
+sys.path.insert(0, str(HERE))
+import panel as P  # noqa: E402
 
 e = R.e
 TYPE_LABEL = {"claim_deep_dive": "Deep dive into a CV claim", "gap_probe": "Probe a gap", "consistency": "Clarify"}
@@ -42,9 +44,9 @@ KIT_CSS = """
 """
 
 
-def q_card(q, crit, personal):
+def q_card(q, crit, personal, who=None):
     c = crit.get(q.get("criterion"), {})
-    tags = [f'<span class="tier {e(c.get("tier", ""))}">{e(R.TIER_LABEL.get(c.get("tier"), ""))}</span>',
+    tags = ([f'<span class="tag verify">Asked by {e(who)}</span>'] if who else []) + [f'<span class="tier {e(c.get("tier", ""))}">{e(R.TIER_LABEL.get(c.get("tier"), ""))}</span>',
             f'<span>{e(c.get("name", q.get("criterion")))}</span>',
             f'<span>· {e(q.get("minutes"))} min</span>']
     if personal:
@@ -92,13 +94,24 @@ def build_html(rubric, core, kit, row, role_name):
              f'<div class="legend"><span><i style="background:var(--blue)"></i>Core questions · {e(core_m)} min</span>'
              f'<span><i style="background:var(--bar-pass)"></i>Personal questions · {e(pers_m)} min</span>'
              f'<span><i style="background:var(--panel2)"></i>Candidate’s questions · {e(spare)} min</span></div>')
+    if core.get("panel"):
+        rows = []
+        for p in core["panel"]:
+            name = p.get("interviewer")
+            mine = [q for q in core_q + pers_q if P.label(core, q) == name]
+            names = sorted({crit.get(c, {}).get("name", c) for c in p.get("criteria", [])})
+            rows.append(f'<tr><td><strong>{e(name)}</strong></td><td>{e(", ".join(names))}</td>'
+                        f'<td>{len(mine)}</td><td>{e(sum(q.get("minutes", 0) for q in mine))} min</td></tr>')
+        h.append('<h2>Panel</h2><div class="card" style="padding:6px 14px;overflow-x:auto"><table class="score"><thead><tr>'
+                 '<th>Interviewer</th><th>Criteria</th><th>Questions</th><th>Time</th></tr></thead><tbody>'
+                 + "".join(rows) + '</tbody></table></div>')
     notes = kit.get("notes_for_interviewer", [])
     if notes:
         h.append('<h2>Before you start</h2><div class="card notes"><ul>' + "".join(f"<li>{e(n)}</li>" for n in notes) + "</ul></div>")
     h.append('<h2>Core questions</h2><p class="mini">The same for every candidate.</p>')
-    h += [q_card(q, crit, False) for q in core_q]
+    h += [q_card(q, crit, False, P.label(core, q)) for q in core_q]
     h.append('<h2>Personal questions</h2><p class="mini">Based on this candidate’s CV.</p>')
-    h += [q_card(q, crit, True) for q in pers_q]
+    h += [q_card(q, crit, True, P.label(core, q)) for q in pers_q]
     h.append('<h2>Scorecard</h2><p class="mini">Fill in after the interview, from the answers alone.</p>'
              '<div class="card" style="padding:6px 14px;overflow-x:auto"><table class="score"><thead><tr><th>Criterion</th>'
              '<th>0</th><th>1</th><th>2</th><th>3</th></tr></thead><tbody>')
@@ -128,6 +141,8 @@ def build_md(rubric, core, kit, row):
         for i, q in enumerate(qs, 1):
             c = crit.get(q.get("criterion"), {})
             kind = f" · {TYPE_LABEL.get(q['type'], q['type'])}" if q.get("type") else ""
+            who = P.label(core, q)
+            kind += f" · asked by {who}" if who else ""
             out += [f"### {i}. {q['question']}", "", f"*{c.get('name', q.get('criterion'))} · {q.get('minutes')} min{kind}*", ""]
             out += [f"> From the CV: “{ev}”" for ev in q.get("evidence", []) or []]
             if q.get("why"):

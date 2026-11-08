@@ -11,13 +11,33 @@ redaction and step 4 (scoring). Scripts live in `scripts/` next to this file
 Run them with `python3 -I`. They need only the standard library, plus `pdftotext`
 (poppler-utils) for PDF CVs.
 
-## Before anything else: a current map of the codebase
+## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts/check_map.py <repo>` (or the same script relative
-to this skill: `../map-codebase/scripts/check_map.py`). If it fails because the map is missing, incomplete or stale,
-run the `map-codebase` skill first (or update the sections it names) and re-run until it passes. Do not continue on a
-missing or stale map: everything below depends on understanding the whole system, not a sample of it.
-Read `hiring/_repo/codebase-map.md` before going on.
+Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage screen`
+(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+multi-repo workspace.
+- **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
+  it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
+  continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.
+- **Read every file it lists** under "Read before starting": the codebase map (one repo), or the system map plus every
+  repo's map or service card (workspace), and the focus.
+- **Role folder**: the one it prints (`hiring/<role-slug>/` in one repo, `roles/<role-slug>/` in a workspace). Below,
+  `hiring/<role-slug>/` means that folder.
+- **Focus**: apply it as described in [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md#the-focus), and write the
+  version it prints into what you produce (`Focus: <version>` in Markdown headers, `"focus_version"` in JSON).
+
+## Planning checkpoint (stage `screen`)
+
+Follow [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md): reuse what `check_ready.py` says is already decided, show
+one plan with recommended defaults ("approve all" or change one item), record answers with `decisions.py`, and record
+defaults as `--assumed` when nobody is there to answer. This stage decides:
+
+1. **Which CVs**: all of `cvs/` (recommended), or a named subset.
+2. **Shortlist size**: how many top candidates get interview kits; recommend 8 or a quarter, whichever is larger.
+3. **Flagged CVs** (possible prompt injection, unreadable, redaction doubts): recommend human review; they are
+   never silently excluded or down-ranked.
+The focus helps you find the strongest evidence for the rubric's criteria; it never adds criteria. Scores are
+always against `rubric.json`.
 
 ## Inputs
 

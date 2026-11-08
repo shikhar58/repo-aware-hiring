@@ -151,6 +151,98 @@ def deps_from_manifest(p, text):
     return {x for x in names if x and len(x) < 80}
 
 
+# ---------------------------------------------------------------- cross-repo facts (used by system_graph.py)
+INTERNAL_HOST_SUFFIX = (".svc", ".svc.cluster.local", ".cluster.local", ".internal", ".local", ".consul", ".lan")
+NOT_A_SERVICE_HOST = {"localhost", "127.0.0.1", "0.0.0.0", "host.docker.internal", "example.com", "example.org",
+                      "www.w3.org", "w3.org", "json-schema.org", "schemas.xmlsoap.org", "github.com", "gitlab.com",
+                      "raw.githubusercontent.com", "docs.python.org", "pypi.org", "registry.npmjs.org", "npmjs.com",
+                      "opensource.org", "www.apache.org", "apache.org", "creativecommons.org", "semver.org",
+                      "keepachangelog.com", "img.shields.io", "shields.io", "badge.fury.io", "readthedocs.io",
+                      "stackoverflow.com", "en.wikipedia.org", "fastapi.tiangolo.com", "swagger.io", "spdx.org",
+                      "goo.gl", "bit.ly", "youtube.com", "www.youtube.com", "twitter.com", "x.com", "www.google.com"}
+URL_RE = re.compile(r"\bhttps?://([A-Za-z0-9][A-Za-z0-9_.-]*)(?::(\d{2,5}))?")
+IMAGE_TAG_RE = re.compile(r"(?:docker\s+(?:buildx\s+)?build[^\n]*?(?:-t|--tag)[ =]|docker\s+push\s+|^\s*tags?:\s*|^\s*-\s+(?=[\w.-]+\.[\w.-]+/))"
+                          r"[\"']?([A-Za-z0-9${}._/\-]+(?::[A-Za-z0-9${}._\-\s]+?)?)[\"']?\s*$", re.M | re.I)
+IMAGE_FIELD_RE = re.compile(r"^\s*-?\s*(?:image|repository)\s*[:=]\s*[\"']?([A-Za-z0-9${}._/\-]+(?::[A-Za-z0-9${}._\-]+)?(?:@sha256:[0-9a-f]+)?)", re.M)
+CONFIG_EXT = {".yaml", ".yml", ".toml", ".json", ".ini", ".cfg", ".conf", ".properties", ".tf", ".hcl"}
+
+
+def normalize_image(ref):
+    """'ghcr.io/acme/checkout:${{ github.sha }}' -> 'ghcr.io/acme/checkout'. Returns '' for non-images."""
+    ref = re.sub(r"\$\{\{[^}]*\}\}", "", ref.strip().strip("\"'")).split("@", 1)[0]
+    last = ref.rsplit("/", 1)[-1]
+    if ":" in last:
+        ref = ref[: len(ref) - len(last)] + last.split(":", 1)[0]
+    ref = ref.strip().rstrip("/").lower()
+    if not ref or ref in {"true", "false", "latest"} or not re.search(r"[a-z]", ref.rsplit("/", 1)[-1]):
+        return ""
+    return ref
+
+
+def published_name(p, text):
+    """The name a manifest publishes its package under (what other repos would depend on)."""
+    n = p.name
+    try:
+        if n == "package.json":
+            return (json.loads(text).get("name") or "").lower()
+    except ValueError:
+        return ""
+    if n == "pyproject.toml":
+        m = re.search(r"^\[(?:project|tool\.poetry)\]\s*\n(?:(?!^\[).*\n)*?\s*name\s*=\s*[\"']([^\"']+)", text, re.M)
+        return m.group(1).lower() if m else ""
+    if n in ("setup.py", "setup.cfg"):
+        m = re.search(r"\bname\s*[=:]\s*[\"']?([A-Za-z0-9_.\-]+)", text)
+        return m.group(1).lower() if m else ""
+    if n == "go.mod":
+        m = re.search(r"^module\s+(\S+)", text, re.M)
+        return m.group(1).lower() if m else ""
+    if n == "Cargo.toml":
+        m = re.search(r"^\[package\]\s*\n(?:(?!^\[).*\n)*?\s*name\s*=\s*\"([^\"]+)", text, re.M)
+        return m.group(1).lower() if m else ""
+    if n == "pom.xml":
+        body = re.sub(r"<(parent|dependencies|dependencyManagement|build|profiles|plugins)>.*?</\1>", "", text, flags=re.S)
+        m = re.search(r"<artifactId>([^<]+)</artifactId>", body)
+        return m.group(1).strip().lower() if m else ""
+    if n.startswith("settings.gradle"):
+        m = re.search(r"rootProject\.name\s*=\s*[\"']([^\"']+)", text)
+        return m.group(1).lower() if m else ""
+    return ""
+
+
+def link_deps(p, text, fallback):
+    """Dependency names precise enough to link repos (pyproject needs a real parser; the rest reuse deps_from_manifest)."""
+    if p.name != "pyproject.toml":
+        return set(fallback)
+    names = set()
+    for arr in re.findall(r"^\s*[\w.\-]*dependencies\s*=\s*\[(.*?)\]", text, re.M | re.S):
+        names |= {re.split(r"[<>=~!\[; (]", s.strip())[0].lower() for s in re.findall(r"[\"']([^\"']+)[\"']", arr)}
+    for block in re.findall(r"^\[project\.optional-dependencies\]\s*\n((?:(?!^\[).*\n?)*)", text, re.M):
+        for arr in re.findall(r"=\s*\[(.*?)\]", block, re.S):
+            names |= {re.split(r"[<>=~!\[; (]", s.strip())[0].lower() for s in re.findall(r"[\"']([^\"']+)[\"']", arr)}
+    for block in re.findall(r"^\[tool\.poetry\.(?:group\.\w+\.)?(?:dev-)?dependencies\]\s*\n((?:(?!^\[).*\n?)*)", text, re.M):
+        names |= {m.lower() for m in re.findall(r"^\s*([A-Za-z0-9_.\-]+)\s*=", block, re.M)} - {"python"}
+    return {n for n in names if n}
+
+
+def k8s_service_names(text):
+    names = set()
+    for doc in re.split(r"^---\s*$", text, flags=re.M):
+        if re.search(r"^kind:\s*Service\s*$", doc, re.M):
+            m = re.search(r"^metadata:\s*\n(?:\s+.*\n)*?\s+name:\s*[\"']?([A-Za-z0-9.\-]+)", doc, re.M)
+            if m:
+                names.add(m.group(1).lower())
+    return names
+
+
+def host_kind(host):
+    h = host.lower().rstrip(".")
+    if h in NOT_A_SERVICE_HOST or re.fullmatch(r"[\d.]+", h) or h.endswith((".example.com", ".example.org", ".test", ".invalid")):
+        return None
+    if "." not in h or h.endswith(INTERNAL_HOST_SUFFIX):
+        return "internal"
+    return "external"
+
+
 def match_signals(tokens_text):
     found = defaultdict(set)
     low = tokens_text.lower()
@@ -179,6 +271,13 @@ def main(argv=None):
     key_hash = hashlib.sha256()
     key_files = {}
     dep_text = []
+    published = {}            # manifest -> published package name
+    link_dep_names = set()
+    images_built, images_deployed = defaultdict(set), defaultdict(set)   # image -> files
+    service_names = set()
+    hosts = {"internal": defaultdict(set), "external": defaultdict(set)}  # host[:port] -> files
+    spec_ids = defaultdict(set)                                           # proto package / OpenAPI title -> files
+    layout = set()
     top_dirs = sorted(p.name for p in root.iterdir() if p.is_dir() and p.name not in SKIP_DIRS and not p.name.startswith("."))
 
     for p in walk(root):
@@ -190,6 +289,10 @@ def main(argv=None):
             cats["env_files"].append(rel)  # never read: may contain secrets
             continue
         size_ok = p.stat().st_size <= 5_000_000
+        parts = rel.split("/")
+        for depth in range(1, min(len(parts), 4)):
+            layout.add("/".join(parts[:depth]) + "/")
+        text = None
         if lang and size_ok:
             text = read(p)
             n = text.count("\n") + (1 if text and not text.endswith("\n") else 0)
@@ -197,12 +300,24 @@ def main(argv=None):
             files_by_lang[lang] += 1
             if lang in SOURCE_LANGS:
                 source_files += 1
+        if size_ok and (lang in SOURCE_LANGS or ext in CONFIG_EXT or name in ("Makefile", "Jenkinsfile")
+                        or CONTAINERS.match(name)) and not name.endswith(".lock") and "lock" not in name.lower():
+            if text is None:
+                text = read(p)
+            for host, port in URL_RE.findall(text):
+                kind = host_kind(host)
+                if kind:
+                    hosts[kind][host.lower() + (f":{port}" if port and kind == "internal" else "")].add(rel)
         key = False
         if MANIFESTS.match(name):
             text = read(p)
             cats["manifests"].append(rel)
             deps[rel] |= deps_from_manifest(p, text)
             dep_text.append(" ".join(sorted(deps[rel])))
+            pub = published_name(p, text)
+            if pub:
+                published[rel] = pub
+            link_dep_names |= link_deps(p, text, deps[rel]) - {pub}
             key = True
         if CONTAINERS.match(name):
             cats["containers"].append(rel)
@@ -213,15 +328,49 @@ def main(argv=None):
                 m = re.search(r"^services:\s*\n((?:[ \t]+.*\n?|\n)*)", text, re.M)
                 if m:
                     compose_services += [s for s in re.findall(r"^  ([A-Za-z0-9_.-]+):\s*$", m.group(1), re.M)]
-        if CI_PATHS.search(rel):
+        is_ci = bool(CI_PATHS.search(rel))
+        if is_ci:
             cats["ci_cd"].append(rel)
             key = True
+        if (is_ci or name == "Makefile" or (ext == ".sh" and re.search(r"(^|/)(scripts?|ci|build|deploy)/", rel))) and size_ok:
+            for ref in IMAGE_TAG_RE.findall(read(p)):
+                img = normalize_image(ref)
+                if img and "/" in img or (img and is_ci):
+                    images_built[img].add(rel)
+        is_deploy = False
         if DEPLOY_PATHS.search(rel):
             cats["deploy_infra"].append(rel)
-            key = True
+            key = is_deploy = True
         elif ext in (".yaml", ".yml") and size_ok and K8S_KIND.search(read(p, 60_000)):
             cats["deploy_infra"].append(rel)
-            key = True
+            key = is_deploy = True
+        if (is_deploy or (ext in (".yaml", ".yml") and re.search(r"(^|/)(charts?|helm|k8s|kubernetes|deploy\w*|manifests|"
+                                                                   r"overlays|base|argocd|flux)/", rel))) and size_ok:
+            t = read(p)
+            for ref in IMAGE_FIELD_RE.findall(t):
+                img = normalize_image(ref)
+                if img:
+                    images_deployed[img].add(rel)
+            service_names |= k8s_service_names(t)
+        if "compose" in name and CONTAINERS.match(name) and size_ok:
+            t = read(p)
+            m = re.search(r"^services:\s*\n((?:[ \t]+.*\n?|\n)*)", t, re.M)
+            if m:
+                for block in re.split(r"^  (?=[A-Za-z0-9_.-]+:\s*$)", m.group(1), flags=re.M):
+                    img = re.search(r"^\s+image:\s*[\"']?([^\s\"'#]+)", block, re.M)
+                    if img and re.search(r"^\s+build:", block, re.M) and normalize_image(img.group(1)):
+                        images_built[normalize_image(img.group(1))].add(rel)
+        if size_ok and (ext == ".proto" or API_SPECS.search(rel)):
+            t = read(p)
+            if ext == ".proto":
+                m = re.search(r"^package\s+([\w.]+)\s*;", t, re.M)
+                if m:
+                    spec_ids[f"proto:{m.group(1)}"].add(rel)
+            else:
+                m = re.search(r"^info:\s*\n(?:\s+.*\n)*?\s+title:\s*[\"']?([^\"'\n]+)", t, re.M) or \
+                    re.search(r"\"info\"\s*:\s*\{[^}]*?\"title\"\s*:\s*\"([^\"]+)", t)
+                if m:
+                    spec_ids[f"api:{m.group(1).strip().lower()}"].add(rel)
         if MIGRATION_DIR.search(rel) and ext in (".py", ".sql", ".rb", ".js", ".ts", ".go", ".xml", ".yaml", ".yml", ".java"):
             cats["migrations"].append(rel)
             key = True
@@ -263,6 +412,18 @@ def main(argv=None):
         "detected": {k: sorted(v) for k, v in signals.items()},
         "files": {k: sorted(set(v)) for k, v in cats.items()},
         "key_files": dict(sorted(key_files.items())),
+        # cross-repo facts: how this repo connects to others (read by system_graph.py)
+        "links": {
+            "published": dict(sorted(published.items())),
+            "dependencies": sorted(link_dep_names - set(published.values())),
+            "images_built": {k: sorted(v) for k, v in sorted(images_built.items())},
+            "images_deployed": {k: sorted(v) for k, v in sorted(images_deployed.items())},
+            "service_names": sorted(service_names | {s.lower() for s in compose_services}),
+            "internal_hosts": {k: sorted(v)[:5] for k, v in sorted(hosts["internal"].items())},
+            "external_hosts": {k: sorted(v)[:5] for k, v in sorted(hosts["external"].items())[:60]},
+            "specs": {k: sorted(v) for k, v in sorted(spec_ids.items())},
+        },
+        "layout": sorted(layout)[:600],
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(inv, indent=2) + "\n", encoding="utf-8")
@@ -280,6 +441,13 @@ def main(argv=None):
             print(f"  {k.replace('_', ' ')}: {', '.join(v)}")
     for k, v in inv["files"].items():
         print(f"  {k.replace('_', ' ')}: {len(v)} file(s)" + (" (contents never read)" if k == "env_files" else ""))
+    lk = inv["links"]
+    bits = [f"publishes {', '.join(sorted(set(lk['published'].values())))}" if lk["published"] else "",
+            f"builds images {', '.join(lk['images_built'])}" if lk["images_built"] else "",
+            f"deploys images {', '.join(lk['images_deployed'])}" if lk["images_deployed"] else "",
+            f"calls internal hosts {', '.join(lk['internal_hosts'])}" if lk["internal_hosts"] else ""]
+    if any(bits):
+        print("  links: " + "; ".join(b for b in bits if b))
     return 0
 
 

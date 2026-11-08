@@ -9,6 +9,9 @@ Script: `scripts/cleanup.py` next to this file
 (`${CLAUDE_PLUGIN_ROOT}/skills/close-round/scripts/cleanup.py` when installed). Run with `python3 -I`.
 It deletes only inside the role folder and never follows symlinks.
 
+In a multi-repo workspace the role folder is `<workspace>/roles/<role-slug>`; the sweep takes `<workspace>/roles`.
+The workspace's maps and system map hold no candidate data and stay.
+
 ## Close one round
 
 1. **Preview.** `python3 -I scripts/cleanup.py close hiring/<role-slug>`
@@ -27,7 +30,7 @@ including in scheduled or unattended runs: there, run the preview and report it 
 
 ## What remains
 
-`brief.md`, `jd.md`, `repo-profile.md`, `rubric.json` (to reuse for the next round), `round.json`
+`brief.md`, `jd.md`, `repo-profile.md`, `rubric.json`, `focus.md` and `decisions.json` (to reuse for the next round), `round.json`
 (opened/closed dates), and `audit.json`: rubric
 version and hash, each candidate's pseudonymous id, score, gate, confidence and flag codes, the
 ranking hash, and what was deleted. No names, file names or CV text.
