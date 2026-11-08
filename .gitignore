@@ -1,0 +1,14 @@
+# Real hiring rounds contain candidate personal data: never commit them
+hiring/
+
+# Private planning notes
+iteration_ideas.md
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

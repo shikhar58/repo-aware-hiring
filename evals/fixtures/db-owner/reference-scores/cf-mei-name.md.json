@@ -1,0 +1,80 @@
+{
+  "candidate_id": "cf-mei-name.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Designed PostgreSQL schemas and indexes for an event ingestion service"
+      ]
+    },
+    "migrations": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Wrote goose migrations for production, including batched backfills on tables with 1B rows"
+      ]
+    },
+    "query-perf": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Profiled queries with EXPLAIN ANALYZE and pg_stat_statements; replaced OFFSET pagination with keyset pagination"
+      ]
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "Go, pgx, sqlc",
+        "Python (scripting)"
+      ]
+    },
+    "test-isolation": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Integration tests against ephemeral Postgres containers in CI"
+      ]
+    },
+    "deploy-safety": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Ran blue-green deploys where schema changes shipped one release ahead of the code that used them"
+      ]
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "low",
+      "evidence": [
+        "pgx"
+      ]
+    }
+  },
+  "strengths": [
+    "Batched backfills at very large scale",
+    "Backward-compatible deploys"
+  ],
+  "gaps": [
+    "Go rather than Python; would need to ramp on SQLAlchemy/SQLModel"
+  ],
+  "interview_probes": [
+    "Our items listing uses OFFSET; you replaced that before. How would you do it with SQLModel?"
+  ],
+  "flags": []
+}

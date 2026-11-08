@@ -1,0 +1,78 @@
+{
+  "candidate_id": "cf-liam-name.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Maintained a Django monolith on PostgreSQL with 40 tables and 300M rows in the largest table"
+      ]
+    },
+    "migrations": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Wrote Django migrations for production data, including a three-step rename of a heavily used column to avoid locking"
+      ]
+    },
+    "query-perf": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Added partial and composite indexes after reading EXPLAIN output for the slowest endpoints; reduced report generation from 30 s to 4 s"
+      ]
+    },
+    "python-orm": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Django ORM"
+      ]
+    },
+    "test-isolation": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Used pytest-django with transactional tests and factory fixtures for all database code"
+      ]
+    },
+    "deploy-safety": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "took part in weekly deployments that included schema changes"
+      ]
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Lock-aware migrations on a large table",
+    "Transactional tests"
+  ],
+  "gaps": [
+    "Django ORM rather than SQLAlchemy (transferable)",
+    "No operations evidence"
+  ],
+  "interview_probes": [
+    "Map your three-step column rename onto Alembic for our item table. What runs in which deploy?"
+  ],
+  "flags": []
+}

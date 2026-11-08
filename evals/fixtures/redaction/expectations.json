@@ -1,0 +1,24 @@
+{
+  "_comment": "Regression cases for redaction. 'set_names' simulates the agent correcting a name the detector could not find.",
+  "set_names": {"04-no-name-line.md": {"name": "Wei Zhang"}},
+  "cases": {
+    "01-cv-heading.md": {
+      "absent": ["Sarah", "Johnson", "sarah.johnson", "612 345 678"],
+      "present": ["1,000,000,000 rows", "12 000 000 users", "(2021 - 2023)", "4111111111", "PGConf 2022"]
+    },
+    "02-french.md": {
+      "absent": ["Jean", "Pierre", "Dupont", "03/04/1988", "française", "marié"],
+      "present": ["(01.2019 - 05.2023)", "PostgreSQL en production"],
+      "injection": true
+    },
+    "03-german.md": {
+      "absent": ["Katharina", "Berg", "12.05.1991", "deutsch", "verheiratet", "030 1234 5678"],
+      "present": ["500 000 000 Zeilen"],
+      "injection": true
+    },
+    "04-no-name-line.md": {
+      "absent": ["Wei", "Zhang", "wei.zhang"],
+      "present": ["SENIOR BACKEND ENGINEER", "eight years"]
+    }
+  }
+}

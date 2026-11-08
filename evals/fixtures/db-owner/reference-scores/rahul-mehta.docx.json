@@ -1,0 +1,77 @@
+{
+  "candidate_id": "rahul-mehta.docx",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Owned production PostgreSQL 13 for the lending platform: schema design, indexing and query plan reviews for all teams"
+      ]
+    },
+    "migrations": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Wrote Flyway migrations on live data, using expand-contract changes and batched updates to avoid long locks"
+      ]
+    },
+    "query-perf": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Tuned slow queries with EXPLAIN ANALYZE and pg_stat_statements; partitioned the payments table by month"
+      ]
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Java services with Hibernate/JPA"
+      ]
+    },
+    "test-isolation": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "integration tests with Testcontainers"
+      ]
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "medium",
+      "evidence": [
+        "Set up streaming replication, PgBouncer and nightly backups with tested restores"
+      ]
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Deep Postgres ownership incl. operations our compose.yml lacks",
+    "Online migrations"
+  ],
+  "gaps": [
+    "Java/Hibernate rather than Python"
+  ],
+  "interview_probes": [
+    "What would you set up first for backups and pooling given our single Postgres container in compose.yml?"
+  ],
+  "flags": []
+}

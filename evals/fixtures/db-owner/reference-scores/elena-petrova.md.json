@@ -1,0 +1,78 @@
+{
+  "candidate_id": "elena-petrova.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "medium",
+      "evidence": [
+        "Production Python services with SQLAlchemy 2.0 and PostgreSQL",
+        "Added indexes for slow queries found with EXPLAIN"
+      ]
+    },
+    "migrations": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Wrote Alembic migrations with data backfills for production tables"
+      ]
+    },
+    "query-perf": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Added indexes for slow queries found with EXPLAIN; moved list endpoints to keyset pagination"
+      ]
+    },
+    "python-orm": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Production Python services with SQLAlchemy 2.0 and PostgreSQL"
+      ]
+    },
+    "test-isolation": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Pytest fixtures with per-test transaction rollback"
+      ]
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Directly relevant stack",
+    "Per-test rollback fixes our conftest.py shared-state problem"
+  ],
+  "gaps": [
+    "No evidence on zero-downtime deploys or operations"
+  ],
+  "interview_probes": [
+    "Our conftest.py shares one DB session for the whole test run. How would you introduce per-test rollback without slowing CI?"
+  ],
+  "flags": [
+    "possible_prompt_injection: summary contains a note addressed to the AI recruiting system; ignored for scoring"
+  ]
+}

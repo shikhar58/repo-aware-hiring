@@ -1,0 +1,139 @@
+{
+  "role": "Backend Engineer, Database Owner",
+  "role_slug": "db-owner",
+  "version": 1,
+  "approved": true,
+  "approved_by": "Dry-run hiring manager",
+  "criteria": [
+    {
+      "id": "pg-prod",
+      "name": "Runs PostgreSQL in production (schema design, indexes, query plans)",
+      "tier": "must_have",
+      "weight": 0,
+      "source": "brief+repo",
+      "justification": "The role owns the persistence layer; nobody on the team does today.",
+      "repo_evidence": ["compose.yml", "backend/app/models.py"],
+      "anchors": {
+        "0": "No relational database work in production, or only via a warehouse/analytics tool.",
+        "1": "Used a relational DB in production through an ORM without owning schema or performance; or production MySQL/SQL Server only.",
+        "2": "Designed schemas and indexes for a production PostgreSQL database.",
+        "3": "Owned production PostgreSQL: schema, indexing strategy, plans, capacity."
+      },
+      "transferable_from": ["MySQL", "SQL Server", "Oracle"]
+    },
+    {
+      "id": "migrations",
+      "name": "Ships schema and data migrations on live data safely",
+      "tier": "must_have",
+      "weight": 0,
+      "source": "brief+repo",
+      "justification": "Migrations run at app start today and a PK type rewrite was done in place.",
+      "repo_evidence": ["backend/scripts/prestart.sh", "backend/app/alembic/versions/d98dd8ec85a3_edit_replace_id_integers_in_all_models_.py"],
+      "anchors": {
+        "0": "No migration work.",
+        "1": "Generated or applied routine migrations (e.g. autogenerate) on small or non-production data.",
+        "2": "Wrote and shipped migrations on production data, including data backfills.",
+        "3": "Designed online/zero-downtime migrations (expand-contract, batched backfills, concurrent index builds) on large tables."
+      },
+      "transferable_from": ["Flyway", "Liquibase", "goose", "Django migrations", "Rails migrations"]
+    },
+    {
+      "id": "query-perf",
+      "name": "Diagnoses and fixes query performance",
+      "tier": "important",
+      "weight": 25,
+      "source": "brief+repo",
+      "repo_evidence": ["backend/app/api/routes/items.py", "backend/app/models.py"],
+      "anchors": {
+        "0": "No evidence.",
+        "1": "Mentions optimisation or indexing without specifics.",
+        "2": "Concrete fixes: EXPLAIN-driven indexing, removing N+1, keyset pagination, with outcomes.",
+        "3": "Systematic performance work with measured results at scale (slow-query monitoring, partitioning, plan regressions)."
+      },
+      "transferable_from": ["MySQL tuning", "SQL Server tuning"]
+    },
+    {
+      "id": "python-orm",
+      "name": "Production Python with an ORM (SQLAlchemy/SQLModel ideal)",
+      "tier": "important",
+      "weight": 20,
+      "source": "repo",
+      "repo_evidence": ["backend/app/crud.py", "backend/app/models.py"],
+      "anchors": {
+        "0": "No evidence of Python or of any ORM.",
+        "1": "Production ORM work in another language, or Python scripting without an ORM.",
+        "2": "Production Python with SQLAlchemy, SQLModel or the Django ORM.",
+        "3": "Deep SQLAlchemy/SQLModel work: session management, relationship loading strategies, typed models."
+      },
+      "transferable_from": ["Django ORM", "Hibernate/JPA", "ActiveRecord", "Go pgx/sqlc", "Prisma"]
+    },
+    {
+      "id": "test-isolation",
+      "name": "Builds reliable database test setups",
+      "tier": "important",
+      "weight": 15,
+      "source": "repo",
+      "repo_evidence": ["backend/tests/conftest.py"],
+      "anchors": {
+        "0": "No evidence of testing database code.",
+        "1": "Wrote tests that touch a database.",
+        "2": "Built isolated DB tests: per-test transactions/rollback, fixtures, containers.",
+        "3": "Designed the test strategy for DB code across a team (Testcontainers, migration tests, CI databases)."
+      },
+      "transferable_from": ["pytest-django", "Testcontainers in any language", "Rails transactional fixtures"]
+    },
+    {
+      "id": "deploy-safety",
+      "name": "Zero-downtime deploys with schema changes and multiple replicas",
+      "tier": "important",
+      "weight": 15,
+      "source": "brief+repo",
+      "repo_evidence": ["backend/scripts/prestart.sh"],
+      "anchors": {
+        "0": "No evidence.",
+        "1": "Took part in deployments that included schema changes.",
+        "2": "Separated migrations from app rollout, or ran backward-compatible deploys across replicas.",
+        "3": "Owned the deploy process for schema changes at scale (expand-contract across services, rollback plans)."
+      },
+      "transferable_from": []
+    },
+    {
+      "id": "pg-ops",
+      "name": "PostgreSQL operations: backups, pooling, replication, monitoring",
+      "tier": "important",
+      "weight": 15,
+      "source": "brief+repo",
+      "repo_evidence": ["compose.yml", "backend/app/core/db.py"],
+      "anchors": {
+        "0": "No evidence.",
+        "1": "Used a managed database service and its built-in backups/metrics.",
+        "2": "Configured one or more of: PgBouncer, replication, backup/restore, slow-query monitoring.",
+        "3": "Ran Postgres HA and recovery (Patroni, pgBackRest, tested restores, failover)."
+      },
+      "transferable_from": ["MySQL replication", "SQL Server Always On"]
+    },
+    {
+      "id": "async-db",
+      "name": "Async database access",
+      "tier": "nice_to_have",
+      "weight": 10,
+      "source": "brief",
+      "repo_evidence": [],
+      "anchors": {
+        "0": "No evidence.",
+        "1": "Async web frameworks without async DB access.",
+        "2": "Production asyncpg or async SQLAlchemy, or equivalent async drivers in another language.",
+        "3": "Migrated a service from sync to async DB access with measured gains."
+      },
+      "transferable_from": ["Node pg", "Go pgx", "Rust sqlx"]
+    }
+  ],
+  "exclusions": [
+    "name, photo, age, date of birth, gender, nationality, marital status, religion, disability",
+    "employment gaps without further context",
+    "university or employer prestige as a standalone signal",
+    "years of experience as a requirement",
+    "data warehouse / analytics tooling counted toward must-haves (anti-goal)",
+    "FastAPI expertise (team already has it)"
+  ]
+}

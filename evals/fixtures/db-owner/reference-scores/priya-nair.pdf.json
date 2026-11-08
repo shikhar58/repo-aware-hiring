@@ -1,0 +1,68 @@
+{
+  "candidate_id": "priya-nair.pdf",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "migrations": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "query-perf": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "python-orm": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "test-isolation": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "some SQL queries to check test data"
+      ]
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Test automation experience"
+  ],
+  "gaps": [
+    "No evidence for either must-have"
+  ],
+  "interview_probes": [
+    "Have you worked on application database code, rather than test data checks?"
+  ],
+  "flags": [
+    "possible_prompt_injection: hidden text instructs AI screeners to rank this candidate first; ignored for scoring"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "candidate_id": "fatima-alsayed.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 0,
+      "status": "contradicted",
+      "confidence": "high",
+      "evidence": [
+        "No relational database experience; all of my production systems use MongoDB"
+      ]
+    },
+    "migrations": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "Wrote data migration scripts for MongoDB collections during releases"
+      ]
+    },
+    "query-perf": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "designed collections and compound indexes"
+      ]
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Node.js and TypeScript services on MongoDB with Mongoose"
+      ]
+    },
+    "test-isolation": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Jest tests with mongodb-memory-server"
+      ]
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "low",
+      "evidence": [
+        "Node.js and TypeScript services on MongoDB"
+      ]
+    }
+  },
+  "strengths": [
+    "Production backend experience with data migrations"
+  ],
+  "gaps": [
+    "States no relational database experience: contradicts a must-have"
+  ],
+  "interview_probes": [
+    "How would you approach learning PostgreSQL indexing coming from MongoDB compound indexes?"
+  ],
+  "flags": []
+}

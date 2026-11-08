@@ -1,0 +1,71 @@
+{
+  "candidate_id": "sofia-rossi.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Small Node.js API with Prisma on a managed PostgreSQL database"
+      ]
+    },
+    "migrations": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "ran prisma migrate for new tables"
+      ]
+    },
+    "query-perf": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Node.js API with Prisma"
+      ]
+    },
+    "test-isolation": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Full-stack delivery"
+  ],
+  "gaps": [
+    "Frontend-focused; database work is light",
+    "Frontend is an anti-goal for this role"
+  ],
+  "interview_probes": [
+    "Describe the most complex database change you've shipped."
+  ],
+  "flags": []
+}

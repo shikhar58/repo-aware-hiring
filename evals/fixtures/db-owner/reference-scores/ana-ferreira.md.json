@@ -1,0 +1,82 @@
+{
+  "candidate_id": "ana-ferreira.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Owned the PostgreSQL 14 cluster behind the payments API (1.2 TB, 9k writes/s): schema design, indexing strategy and capacity planning"
+      ]
+    },
+    "migrations": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Designed zero-downtime migrations with Alembic using expand-contract and batched backfills"
+      ]
+    },
+    "query-perf": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Cut p95 latency of account listing from 900 ms to 40 ms with EXPLAIN ANALYZE, composite indexes and keyset pagination"
+      ]
+    },
+    "python-orm": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "tuned relationship loading (selectinload) to remove N+1 queries"
+      ]
+    },
+    "test-isolation": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "medium",
+      "evidence": [
+        "Built the test setup for database code: per-test transactions with rollback and Testcontainers in CI"
+      ]
+    },
+    "deploy-safety": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Moved migrations out of container start into a dedicated pre-deploy job so 12 API replicas never raced"
+      ]
+    },
+    "pg-ops": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Introduced PgBouncer in transaction mode and pg_stat_statements dashboards for slow-query monitoring"
+      ]
+    },
+    "async-db": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "asyncpg (side project)"
+      ]
+    }
+  },
+  "strengths": [
+    "Has already solved our exact prestart.sh migration race",
+    "Measured query-performance wins with keyset pagination"
+  ],
+  "gaps": [
+    "No evidence of backups/replication or restore drills"
+  ],
+  "interview_probes": [
+    "Our backend runs `alembic upgrade head` in prestart.sh on every container. Walk through moving that to a pre-deploy job.",
+    "items.py uses OFFSET pagination ordered by created_at. How would you change the query and indexes?"
+  ],
+  "flags": []
+}

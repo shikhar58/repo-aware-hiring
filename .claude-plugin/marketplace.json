@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "repo-aware-hiring",
+  "description": "Repo-aware decision support for software engineer hiring.",
+  "owner": {
+    "name": "Shikhar Nilabh",
+    "url": "https://github.com/shikhar58"
+  },
+  "plugins": [
+    {
+      "name": "repo-aware-hiring",
+      "source": ".",
+      "description": "Plan a hire from your codebase, build an approved rubric, and screen CVs with verified evidence and a deterministic ranking. Decision support only.",
+      "category": "hiring",
+      "tags": [
+        "hiring",
+        "recruiting",
+        "screening",
+        "rubric",
+        "software-engineering"
+      ]
+    }
+  ]
+}

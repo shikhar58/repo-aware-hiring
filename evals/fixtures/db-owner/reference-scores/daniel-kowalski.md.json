@@ -1,0 +1,67 @@
+{
+  "candidate_id": "daniel-kowalski.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "medium",
+      "evidence": []
+    },
+    "migrations": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "query-perf": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Python for pipeline code and data quality checks"
+      ]
+    },
+    "test-isolation": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Python and SQL in production pipelines"
+  ],
+  "gaps": [
+    "Postgres only as a source for analytics; warehouse work is an anti-goal for must-haves",
+    "No migration evidence"
+  ],
+  "interview_probes": [
+    "Have you ever changed the schema of the PostgreSQL databases you read from? Tell us about one change."
+  ],
+  "flags": []
+}

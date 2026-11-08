@@ -1,0 +1,74 @@
+{
+  "candidate_id": "tom-becker.md",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "medium",
+      "evidence": [
+        "Ran PostgreSQL HA clusters with Patroni and etcd"
+      ]
+    },
+    "migrations": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Reviewed and ran application teams' schema migrations during deployments"
+      ]
+    },
+    "query-perf": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "python-orm": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Python tooling for automation (no ORM)"
+      ]
+    },
+    "test-isolation": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "deploy-safety": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "medium",
+      "evidence": [
+        "Reviewed and ran application teams' schema migrations during deployments"
+      ]
+    },
+    "pg-ops": {
+      "level": 3,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Backups and point-in-time recovery with pgBackRest; monthly restore drills"
+      ]
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Strongest operations background in the pool"
+  ],
+  "gaps": [
+    "Little application-side ORM or query work"
+  ],
+  "interview_probes": [
+    "Our app runs migrations at container start. From an SRE view, what breaks first with multiple replicas?"
+  ],
+  "flags": []
+}

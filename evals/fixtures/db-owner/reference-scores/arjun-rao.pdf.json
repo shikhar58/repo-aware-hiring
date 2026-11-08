@@ -1,0 +1,76 @@
+{
+  "candidate_id": "arjun-rao.pdf",
+  "rubric_version": 1,
+  "criteria": {
+    "pg-prod": {
+      "level": 1,
+      "status": "weak",
+      "confidence": "high",
+      "evidence": [
+        "Python services with SQLAlchemy on MySQL 8; designed tables and indexes for the orders service"
+      ]
+    },
+    "migrations": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Wrote Alembic migrations for production, including a data backfill run in batches overnight"
+      ]
+    },
+    "query-perf": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Fixed N+1 queries with joinedload and added covering indexes after EXPLAIN"
+      ]
+    },
+    "python-orm": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "Python services with SQLAlchemy on MySQL 8"
+      ]
+    },
+    "test-isolation": {
+      "level": 2,
+      "status": "evidenced",
+      "confidence": "high",
+      "evidence": [
+        "pytest suite with a MySQL container in CI"
+      ]
+    },
+    "deploy-safety": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "pg-ops": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    },
+    "async-db": {
+      "level": 0,
+      "status": "no_evidence",
+      "confidence": "high",
+      "evidence": []
+    }
+  },
+  "strengths": [
+    "Same Python/SQLAlchemy/Alembic toolchain we use",
+    "Production data backfills"
+  ],
+  "gaps": [
+    "MySQL rather than PostgreSQL",
+    "No evidence on deploy safety or database operations"
+  ],
+  "interview_probes": [
+    "Which PostgreSQL features would you miss coming from MySQL, e.g. for the UUID rewrite in our d98dd8ec85a3 migration?"
+  ],
+  "flags": []
+}
