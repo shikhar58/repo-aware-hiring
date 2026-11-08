@@ -3,10 +3,11 @@
 
 Usage: python3 docs/assets/make_assets.py
 
-Writes docs/assets/{hero,shortlist,candidate-card,terminal}.svg. Standard library only.
+Writes docs/assets/{hero,shortlist,candidate-card,terminal,jd}.svg. Standard library only.
 The two flow diagrams are rendered separately from their .mmd sources by render_diagrams.sh.
 """
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -76,9 +77,9 @@ def hero():
     tx = 360
     b.append(text(tx, 150, "repo-aware-hiring", 54, TEXT, 700))
     b.append(text(tx, 202, "Hire for the codebase you actually have.", 30, TEAL, 600))
-    b.append(text(tx, 248, "Agent skills that read your repo and job description, build a rubric you approve,", 19, MUTED))
-    b.append(text(tx, 276, "and screen CVs against it, with every score backed by a quote from the CV.", 19, MUTED))
-    chips = ["Claude Code plugin", "Evidence-verified", "Redacted before scoring", "Never auto-rejects"]
+    b.append(text(tx, 248, "Agent skills that read your repo to write the job description, build a rubric", 19, MUTED))
+    b.append(text(tx, 276, "you approve, and screen CVs against it, with every score backed by a quote.", 19, MUTED))
+    chips = ["Claude Code plugin", "Writes job descriptions", "Evidence-verified screening", "Never auto-rejects"]
     x = tx
     for c in chips:
         cw = 16 + len(c) * 8.4
@@ -220,13 +221,91 @@ def terminal(demo_out):
     return svg(w, h, "".join(b), "Terminal output of the demo: validated, ranked candidates with flags")
 
 
+# ------------------------------------------------------------------ job description visual
+
+JD_PAIRS = [  # the translations write-job-description documents and applies
+    ("Migrations run in backend/scripts/prestart.sh on every container start",
+     "Make our schema changes safe to ship without downtime"),
+    ("No backups or replication configured for the database",
+     "Own the reliability of our PostgreSQL databases"),
+    ("OFFSET pagination on the items endpoint is slow",
+     "Find and fix performance problems as our data grows"),
+]
+
+
+def jd_check_output():
+    tmp = Path(tempfile.mkdtemp()) / "role"
+    tmp.mkdir()
+    fx = ROOT / "evals" / "fixtures" / "db-owner"
+    for name in ("repo-profile.md", "brief.md", "rubric.json"):
+        (tmp / name).write_text((fx / name).read_text())
+    out = subprocess.run([sys.executable, "-I", str(ROOT / "skills" / "write-job-description" / "scripts" / "check_jd.py"),
+                          str(tmp), "--jd", str(ROOT / "evals" / "fixtures" / "jd" / "bad-jd.md")],
+                         capture_output=True, text=True).stdout
+    return out
+
+
+def jd_visual():
+    out = jd_check_output()
+    lines = [ln for ln in out.splitlines() if ln.startswith(("ERROR", "warn"))]
+    pick = []
+    for key in ("file path", "security weakness", "environment variable", "internal detail", "years-of-experience",
+                "native speaker", "must-haves: keep", "rubric must-have not"):
+        for ln in lines:
+            if key in ln and ln not in pick:
+                pick.append(ln)
+                break
+    summary = [ln for ln in out.splitlines() if ln.endswith("warnings.")][0]
+    w = 960
+    rowh = 74
+    top = 104
+    h = top + rowh * len(JD_PAIRS) + 64 + 26 * (len(pick) + 2) + 40
+    b = [f'<rect width="{w}" height="{h}" rx="16" fill="{BG}" stroke="{BORDER}"/>',
+         text(32, 46, "From your code to a public job posting", 22, TEXT, 700),
+         text(32, 74, "write-job-description describes the real work, in words that are safe to publish", 14, MUTED),
+         text(32, top - 8, "IN YOUR REPO (STAYS PRIVATE)", 12, RED, 700),
+         text(w / 2 + 24, top - 8, "IN THE JOB POSTING (PUBLIC)", 12, TEAL, 700)]
+    colw = w / 2 - 56
+    for i, (priv, pub) in enumerate(JD_PAIRS):
+        y = top + i * rowh
+        b.append(f'<rect x="24" y="{y}" width="{colw}" height="{rowh-14}" rx="10" fill="{PANEL}" stroke="#4c2626"/>')
+        b.append(f'<rect x="{w/2+16}" y="{y}" width="{colw}" height="{rowh-14}" rx="10" fill="{PANEL}" stroke="#134e4a"/>')
+        for j, part in enumerate(_wrap(priv, 48)[:2]):
+            b.append(text(40, y + 25 + j * 19, part, 14, MUTED))
+        for j, part in enumerate(_wrap(pub, 50)[:2]):
+            b.append(text(w / 2 + 32, y + 25 + j * 19, part, 15, TEXT, 600))
+        b.append(text(w / 2, y + 36, "→", 22, AMBER, 700, anchor="middle"))
+    ty = top + rowh * len(JD_PAIRS) + 22
+    th = 26 * (len(pick) + 2) + 30
+    b.append(f'<rect x="24" y="{ty}" width="{w-48}" height="{th}" rx="12" fill="#0b0f14" stroke="{BORDER}"/>')
+    b.append(f'<text x="44" y="{ty+30}" font-family="{MONO}" font-size="13" fill="{TEAL}">$ check_jd.py   # on a posting written without the skill</text>')
+    for k, ln in enumerate(pick):
+        col = RED if ln.startswith("ERROR") else AMBER
+        ln = re.sub(r"\s+line\s+(\S+):", r" line \1:", ln).replace(" (say what the hire will build instead)", "")
+        b.append(f'<text x="44" y="{ty+56+k*26}" font-family="{MONO}" font-size="13" fill="{col}" xml:space="preserve">{escape(clip(ln, 104))}</text>')
+    b.append(f'<text x="44" y="{ty+56+len(pick)*26}" font-family="{MONO}" font-size="13" fill="{MUTED}">{escape(summary)} Errors block publishing.</text>')
+    return svg(w, h, "".join(b), "Repo findings translated into public job-posting language, with checker output")
+
+
+def _wrap(s, n):
+    words, lines, cur = s.split(), [], ""
+    for wd in words:
+        if len(cur) + len(wd) + 1 > n:
+            lines.append(cur)
+            cur = wd
+        else:
+            cur = f"{cur} {wd}".strip()
+    return lines + [cur]
+
+
 def main():
     demo_out, ranking, rubric, scores = run_demo()
     (HERE / "hero.svg").write_text(hero(), encoding="utf-8")
     (HERE / "shortlist.svg").write_text(shortlist(ranking), encoding="utf-8")
     (HERE / "candidate-card.svg").write_text(candidate_card(ranking, rubric, scores), encoding="utf-8")
     (HERE / "terminal.svg").write_text(terminal(demo_out), encoding="utf-8")
-    print("Wrote hero.svg, shortlist.svg, candidate-card.svg, terminal.svg")
+    (HERE / "jd.svg").write_text(jd_visual(), encoding="utf-8")
+    print("Wrote hero.svg, shortlist.svg, candidate-card.svg, terminal.svg, jd.svg")
 
 
 if __name__ == "__main__":

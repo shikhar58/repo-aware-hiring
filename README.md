@@ -15,6 +15,8 @@
   <a href="#try-it-in-2-minutes">Try the demo</a> ·
   <a href="#install">Install</a> ·
   <a href="#how-it-works">How it works</a> ·
+  <a href="#write-the-job-description">Job descriptions</a> ·
+  <a href="#screen-candidates-against-it">Screening</a> ·
   <a href="#why-you-can-trust-the-output">Trust &amp; safety</a> ·
   <a href="docs/example-report.md">Example report</a>
 </p>
@@ -25,27 +27,53 @@ Your job description says *"PostgreSQL experience"*. Your codebase says somethin
 migrations run on every container start, tests share one database, and nobody owns backups.
 That's the person you actually need.
 
-**repo-aware-hiring** is a set of agent skills that reads both, turns them into a rubric you
-approve, and screens CVs against it. Every score comes with the exact sentence from the CV that
-justifies it, and a script checks that sentence really is in the CV. It runs inside your own
-coding agent (Claude Code, or any agent that supports Agent Skills), so your code and candidates'
-data never go to a separate hiring vendor.
+**repo-aware-hiring** is a set of agent skills that reads both and does the two jobs that decide who you hire:
 
-It is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### ✍️ Write the job description
+
+- Asks you a few questions, reads the repo, and writes a posting that describes **your real work**, not buzzwords
+- Translates internal findings into public language; a checker **blocks leaked file paths, internal names and security weaknesses**
+- Flags wording that puts good people off: gender-coded words, years-of-experience demands, long must-have lists
+
+[See how it works ↓](#write-the-job-description)
+
+</td>
+<td width="50%" valign="top">
+
+### 🔍 Screen candidates against it
+
+- Builds a rubric from the same must-haves, which **you approve**
+- Scores each redacted CV with **quotes that a script verifies** are really in the CV
+- Produces a shareable report: shortlist, heatmap, strengths, gaps and **interview questions about your code**
+
+[See the report ↓](#screen-candidates-against-it)
+
+</td>
+</tr>
+</table>
+
+Use either on its own or both together. It runs inside your own coding agent (Claude Code, or any agent that
+supports Agent Skills), so your code and candidates' data never go to a separate hiring vendor.
+Screening is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
 
 ## Why
 
 - **CVs all look the same now.** AI-polished CVs defeat keyword matching. What matters is evidence
   of the specific problems your team has.
-- **Job descriptions are vague; code isn't.** The repo knows what the hire will face on day one.
-  The JD usually doesn't.
+- **Generic job descriptions attract generic applicants.** The repo knows what the hire will face on day one;
+  the posting usually doesn't. Writing a specific one by hand takes hours, and it's easy to leak internal
+  details or put people off with the wrong words.
 - **Screening is inconsistent.** Different reviewers, different moods, different standards. A
   written, approved rubric with quoted evidence makes every decision explainable.
 
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/how-it-works.png" alt="Flow: your hiring need goes to hiring-plan, then repo-profile reads the repo, hiring-rubric adds the job description, you approve the rubric, screen-candidates scores the CVs into report.md, and close-round deletes candidate data when the role is filled" width="560">
+  <img src="docs/assets/how-it-works.png" alt="Flow: hiring-plan, then repo-profile reads the repo, write-job-description produces a public posting, hiring-rubric uses the same must-haves, you approve, screen-candidates writes the report, close-round deletes candidate data" width="560">
 </p>
 
 You talk to your agent in plain language. A planning session looks like this:
@@ -64,7 +92,42 @@ Agent:  Noted. One thing I found: migrations run on every container start
         ownership, because...
 ```
 
-## What you get
+## Write the job description
+
+Say what you're hiring for. The skill reads the repo (and the hiring brief, if you made one), then asks only what
+the code can't tell it, one question at a time:
+
+```text
+You:    Write the job description for db-owner.
+Agent:  From the brief: Backend Engineer owning the database layer, remote in EU time zones.
+        One question: what pay range should the posting show?
+          A) Add a range (recommended: required in some places, and it increases applications)
+          B) "Competitive" (I'll flag it)
+          C) Leave it out
+You:    A, €70–85k
+Agent:  Next: how many interview stages, and how long do they take?
+        ...
+Agent:  Here's "What you'll work on". I've described the work without naming internal files
+        or admitting gaps like the missing backups. Approve or edit?
+```
+
+It drafts the posting section by section for your approval, then checks it before you publish:
+
+<p align="center">
+  <img src="docs/assets/jd.svg" alt="Repo findings such as file paths and missing backups translated into public job-posting language, and checker output blocking leaks and flagging biased wording" width="88%">
+</p>
+
+- **Specific, because it's grounded in the code.** The real stack and the real problems, in plain words.
+- **Safe to publish.** File paths, internal names from your repo, environment variables, hosts, credentials and
+  security weaknesses are errors that block publishing.
+- **Fair.** Gender-coded and age-coded words, "native speaker", years-of-experience and degree demands, missing pay
+  ranges and must-have lists longer than 5 are flagged with a suggested fix.
+- **Consistent with screening.** The posting's must-haves become the rubric's must-haves, so candidates are judged on
+  exactly what was advertised. The checker reports any drift.
+
+Read the posting the demo role gets: [`docs/example-jd.md`](docs/example-jd.md).
+
+## Screen candidates against it
 
 Real output from the bundled demo: 12 fictional CVs screened for a "Backend Engineer, Database
 Owner" role on the public [FastAPI full-stack template](https://github.com/fastapi/full-stack-fastapi-template).
@@ -114,6 +177,7 @@ and DOCX) and loads scores recorded during a dry run in place of the model.
 git clone https://github.com/shikhar58/repo-aware-hiring.git && cd repo-aware-hiring
 python3 demo/run_demo.py          # needs pdftotext (poppler-utils) for the PDF CVs
 open hiring/demo/report.html       # opens in your browser
+python3 skills/write-job-description/scripts/check_jd.py hiring/demo   # check the demo job posting
 ```
 
 <p align="center">
@@ -143,25 +207,6 @@ Then open your repo in Claude Code and say what you're hiring for:
 > Screen the candidates for db-owner     # put CVs in hiring/db-owner/cvs/ first
 > Close the db-owner round               # when the role is filled
 ```
-
-### A job description that matches the code
-
-`write-job-description` asks you a few questions (title, location, pay range, team), reads the repo, and writes
-a posting that describes the real work in public language. Then `check_jd.py` blocks anything internal and flags
-wording that puts people off:
-
-```text
-ERROR line 9:  looks like a file path: 'backend/scripts/prestart.sh'
-ERROR line 6:  describes a security weakness or missing safeguard: 'no backups'
-ERROR line 10: looks like an internal environment variable: 'DATABASE_URL'
-warn  line 14: years-of-experience requirement: describe the capability instead: '8+ years of'
-warn  line 16: "native speaker" excludes fluent non-natives: state the level needed (e.g. C1)
-warn  line 14: 7 must-haves: keep to 3–5; long lists deter qualified applicants
-warn  line -:  rubric must-have not in the JD's Must-haves: 'Ships schema and data migrations on live data safely'
-```
-
-The posting's must-haves become the screening rubric's must-haves, so candidates are judged on exactly what was
-advertised. See [`docs/example-jd.md`](docs/example-jd.md) for the demo role's posting.
 
 ## Why you can trust the output
 
@@ -194,6 +239,7 @@ script *is* checked by a script, and each check blocks the next step until it pa
 
 | | Generic CV screeners | Hosted coding assessments | **repo-aware-hiring** |
 |---|---|---|---|
+| Writes the job description from your codebase | No | No | **Yes, checked for leaks and biased wording** |
 | Criteria come from your codebase | No: keywords from the JD | Some build tasks from your repo | **Yes: the rubric is built from your repo and mission** |
 | Where code and CVs go | The vendor | The vendor | **Your own agent and model provider** |
 | Each score shows the CV evidence, machine-checked | Varies | Not applicable | **Yes** |
@@ -211,6 +257,21 @@ strongest signal.
 No. It ranks evidence, marks gaps to probe and suggests interview questions. A person reads the
 CVs and decides. Candidates whose CV contradicts a must-have are listed separately *with the
 reason*, so a human can overrule.
+</details>
+
+<details>
+<summary><b>Can I use only the job description part?</b></summary>
+
+Yes. `write-job-description` works on its own: point it at your repo and answer a few questions. It handles no
+candidate data, so there's nothing to redact or delete. You can also paste an existing posting and ask it to improve it.
+</details>
+
+<details>
+<summary><b>Will the job description reveal things about our code?</b></summary>
+
+It's instructed to describe the work in general terms, and `check_jd.py` blocks file paths, names that appear in your
+repo profile or hiring brief, environment variables, hostnames, IP addresses, credentials and statements of security
+weaknesses. Still read the posting before you publish it; the checker reduces risk, it doesn't replace review.
 </details>
 
 <details>

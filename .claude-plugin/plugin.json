@@ -1,7 +1,7 @@
 {
   "name": "repo-aware-hiring",
   "version": "0.6.0",
-  "description": "Repo-aware decision support for software engineer hiring: profiles your codebase, builds an evidence-based rubric from a planned brief and the job description, and screens CVs against it with verified evidence and a deterministic ranking.",
+  "description": "Repo-aware hiring for software engineers: writes job descriptions from your codebase (checked for leaked internals and biased wording), builds a rubric you approve, and screens CVs with verified evidence and a deterministic ranking.",
   "author": {
     "name": "Shikhar Nilabh",
     "url": "https://github.com/shikhar58"
@@ -13,7 +13,9 @@
     "software-engineering",
     "screening",
     "rubric",
-    "decision-support"
+    "decision-support",
+    "job-description",
+    "job-posting"
   ],
   "homepage": "https://github.com/shikhar58/repo-aware-hiring",
   "repository": "https://github.com/shikhar58/repo-aware-hiring"
