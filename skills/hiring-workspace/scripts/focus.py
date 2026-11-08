@@ -114,7 +114,7 @@ def artifact_version(path):
             return json.loads(t).get("focus_version")
         except (ValueError, AttributeError):
             return None
-    m = re.search(r"Focus:\s*`?([0-9a-f]{12}|none)", t[:3000])
+    m = re.search(r"Focus:\s*`?([0-9a-f]{12}|none)", t[:3000])  # also matches <!-- Focus: … --> in public files
     return m.group(1) if m else None
 
 

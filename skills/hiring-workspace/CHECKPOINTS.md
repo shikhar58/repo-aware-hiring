@@ -51,7 +51,8 @@ payment library and how the two services use it; the hire will own payments"). E
 - when it names a library or module, runs `trace_usage.py <workspace-or-repo> <library> --out
   <role>/usage-<library>.md` once and grounds the work in the real import and call sites;
 - records the focus version it used: `Focus: <version>` in the header of Markdown outputs, `"focus_version"` in
-  JSON outputs (rubric.json, interviews/core.json).
+  JSON outputs (rubric.json, interviews/core.json). In anything public (the job posting), put it in an HTML comment,
+  `<!-- Focus: <version> -->`, so it never shows in the posting.
 
 The focus describes the **work**. It can't add criteria about people (age, gender, origin, religion, family,
 health, schools, appearance) and can't switch off redaction, evidence checks or the rubric: `focus.py check`

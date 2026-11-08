@@ -349,6 +349,8 @@ def test_workspace(tmp):
            and set(L["infra"]["images_deployed"]) == {"ghcr.io/acme/checkout", "ghcr.io/acme/billing"}
            and set(L["infra"]["service_names"]) == {"checkout", "billing"}, "inventory finds images built, deployed and k8s services")
     expect("checkout:8000" in L["billing-svc"]["internal_hosts"], "inventory finds internal service calls")
+    expect(not any("fake-ledger" in h for h in L["billing-svc"]["internal_hosts"]),
+           "placeholder hosts in test files are not treated as service calls")
     expect(not any("FAKE_DO_NOT_READ" in json.dumps(v) or "fixture-never-read" in json.dumps(v) for v in invs.values()), "multi-repo inventory never reads .env files")
 
     print("workspace")

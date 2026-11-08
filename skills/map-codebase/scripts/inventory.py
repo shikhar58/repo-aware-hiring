@@ -304,7 +304,9 @@ def main(argv=None):
                         or CONTAINERS.match(name)) and not name.endswith(".lock") and "lock" not in name.lower():
             if text is None:
                 text = read(p)
-            for host, port in URL_RE.findall(text):
+            # test files and examples are full of placeholder hosts (http://x, http://my-host:1234): skip them
+            hosts_text = "" if TEST_PATH.search(rel) or re.search(r"(^|/)(examples?|docs?|fixtures?|mocks?)/", rel) else text
+            for host, port in URL_RE.findall(hosts_text):
                 kind = host_kind(host)
                 if kind:
                     hosts[kind][host.lower() + (f":{port}" if port and kind == "internal" else "")].add(rel)

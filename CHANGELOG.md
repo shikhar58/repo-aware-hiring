@@ -3,7 +3,16 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.0] — 2026-11-08
+## [0.9.1] — 2026-11-08
+
+Found by running the job-description pipeline on a large real monorepo (mem0: ~230k lines, 25 packages, 34 pipelines).
+
+### Fixed
+- The inventory treated placeholder URLs in tests, examples and docs (`http://x`, `http://my-host:1234`) as internal
+  service calls, flooding the map gate with warnings (28 hosts on mem0, 3 after the fix).
+- The focus version stamp was visible in the public job posting. Public outputs now carry it in an HTML comment.
+
+ — 2026-11-08
 
 ### Added
 - **Multi-repo workspaces (`hiring-workspace` skill).** A private folder outside the repos that references local

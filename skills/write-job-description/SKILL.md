@@ -21,7 +21,8 @@ multi-repo workspace.
 - **Role folder**: the one it prints (`hiring/<role-slug>/` in one repo, `roles/<role-slug>/` in a workspace). Below,
   `hiring/<role-slug>/` means that folder.
 - **Focus**: apply it as described in [CHECKPOINTS.md](../hiring-workspace/CHECKPOINTS.md#the-focus), and write the
-  version it prints into what you produce (`Focus: <version>` in Markdown headers, `"focus_version"` in JSON).
+  version it prints into what you produce. The posting is public, so put it in an HTML comment under the
+  title: `<!-- Focus: <version> -->`.
 
 ## Planning checkpoint (stage `jd`)
 
