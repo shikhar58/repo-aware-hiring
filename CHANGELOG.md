@@ -3,6 +3,24 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
+## [0.7.0] — 2026-11-08
+
+### Added
+- **`interview-kit` skill.** Structured interview kits per candidate: core questions shared by everyone (one or more per
+  must-have and important criterion, grounded in the repo's real problems and phrased safely for candidates) plus
+  personal questions from each CV (deep dives into quoted claims, probes for must-haves the CV didn't show,
+  neutral consistency questions). Each question has follow-ups, strong-answer signals, warning signs and minutes.
+- **`validate_kit.py`.** Requires core coverage of every must-have, a personal probe for every unshown must-have,
+  quoted claims that are really in the CV, and a fit within the interview length; blocks leaked internals (shared with
+  `check_jd.py`) and questions about protected characteristics, without flagging terms like "race condition".
+- **`render_kit.py`.** Printable, self-contained HTML kits with a time plan and a 0–3 scorecard using the rubric's
+  anchors, plus Markdown and an index page.
+- Demo step 7 renders kits for three candidates. 13 new self-test checks (71 total).
+
+### Changed
+- `close-round` deletes `interviews/`. `screen-candidates` offers interview kits after the report.
+- `check_jd.py` exposes `find_leaks()` for reuse.
+
 ## [0.6.0] — 2026-11-08
 
 ### Added

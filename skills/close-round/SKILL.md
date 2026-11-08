@@ -1,6 +1,6 @@
 ---
 name: close-round
-description: Close a hiring round and delete candidate personal data (extracted and redacted CVs, scores, rankings, reports) while keeping a pseudonymous audit record. Also finds rounds left open too long. Use when a role is filled or cancelled, when the user asks to delete candidate data or apply retention, or to check for overdue rounds.
+description: Close a hiring round and delete candidate personal data (extracted and redacted CVs, scores, rankings, reports, interview kits) while keeping a pseudonymous audit record. Also finds rounds left open too long. Use when a role is filled or cancelled, when the user asks to delete candidate data or apply retention, or to check for overdue rounds.
 ---
 
 # Close Round

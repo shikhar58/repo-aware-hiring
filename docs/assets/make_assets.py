@@ -77,9 +77,9 @@ def hero():
     tx = 360
     b.append(text(tx, 150, "repo-aware-hiring", 54, TEXT, 700))
     b.append(text(tx, 202, "Hire for the codebase you actually have.", 30, TEAL, 600))
-    b.append(text(tx, 248, "Agent skills that read your repo to write the job description, build a rubric", 19, MUTED))
-    b.append(text(tx, 276, "you approve, and screen CVs against it, with every score backed by a quote.", 19, MUTED))
-    chips = ["Claude Code plugin", "Writes job descriptions", "Evidence-verified screening", "Never auto-rejects"]
+    b.append(text(tx, 248, "Agent skills that read your repo to write the job description, screen CVs", 19, MUTED))
+    b.append(text(tx, 276, "with quoted evidence, and prepare a tailored interview for each candidate.", 19, MUTED))
+    chips = ["Job descriptions", "Evidence-verified screening", "Interview kits", "Never auto-rejects"]
     x = tx
     for c in chips:
         cw = 16 + len(c) * 8.4

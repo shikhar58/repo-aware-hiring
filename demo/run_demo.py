@@ -23,9 +23,13 @@ import prepare_cvs  # noqa: E402
 import rank  # noqa: E402
 import render_report  # noqa: E402
 
+sys.path.insert(0, str(ROOT / "skills" / "interview-kit" / "scripts"))
+import render_kit  # noqa: E402
+import validate_kit  # noqa: E402
+
 
 def step(n, text):
-    print(f"\n[{n}/6] {text}")
+    print(f"\n[{n}/7] {text}")
 
 
 def main(argv):
@@ -70,7 +74,22 @@ def main(argv):
                      "- FastAPI expertise is deliberately not screened for: the team already has it.\n")
     render_report.main([str(target), "--notes", str(notes)])
 
+    step(7, "Interview kits for three candidates — in real use the model writes them; the demo loads recorded ones")
+    kits_src = FIXTURE / "interview-kits"
+    kdir = target / "interviews"
+    kdir.mkdir()
+    shutil.copy(kits_src / "core.json", kdir / "core.json")
+    for src in sorted(kits_src.glob("*.md.json")):
+        fname = src.name[:-5]
+        kit = json.loads(src.read_text())
+        kit["candidate_id"] = ids[fname]
+        (kdir / f"{ids[fname]}.json").write_text(json.dumps(kit, indent=2))
+    if validate_kit.main([str(target)]) != 0:
+        return 1
+    render_kit.main([str(target)])
+
     print(f"\nDone. Open {target / 'report.html'} in your browser (text version: report.md)")
+    print(f"Interview kits: {kdir / 'index.html'}")
     print("Next: install the plugin in Claude Code and ask it to plan a hire for your own repo.")
     return 0
 

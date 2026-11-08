@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
   "name": "repo-aware-hiring",
-  "description": "Repo-aware hiring: job descriptions and CV screening grounded in your codebase.",
+  "description": "Repo-aware hiring: job descriptions, CV screening and interview kits grounded in your codebase.",
   "owner": {
     "name": "Shikhar Nilabh",
     "url": "https://github.com/shikhar58"
@@ -10,10 +10,11 @@
     {
       "name": "repo-aware-hiring",
       "source": ".",
-      "description": "Write job descriptions from your codebase, build an approved rubric, and screen CVs with verified evidence and a deterministic ranking. Decision support only.",
+      "description": "Write job descriptions from your codebase, screen CVs with verified evidence, and prepare structured interview kits per candidate. Decision support only.",
       "category": "hiring",
       "tags": [
         "hiring",
+        "interview",
         "job-description",
         "recruiting",
         "rubric",

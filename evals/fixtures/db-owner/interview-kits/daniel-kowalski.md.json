@@ -1,0 +1,65 @@
+{
+  "candidate_id": null,
+  "rubric_version": 1,
+  "questions": [
+    {
+      "id": "p1",
+      "criterion": "pg-prod",
+      "type": "gap_probe",
+      "minutes": 5,
+      "question": "Have you designed or changed the schema of a PostgreSQL database that an application writes to, rather than reading from it for analytics?",
+      "why": "His CV shows PostgreSQL only as a source for pipelines; this must-have is unverified.",
+      "follow_ups": [
+        "What indexes did you add, and why?"
+      ],
+      "listen_for": [
+        "owned an application database"
+      ],
+      "warning_signs": [
+        "only read-replica access"
+      ]
+    },
+    {
+      "id": "p2",
+      "criterion": "migrations",
+      "type": "gap_probe",
+      "minutes": 5,
+      "question": "Tell me about any change you've made to a production database's structure, in any setting. How did you make sure nothing broke?",
+      "why": "Must-have with no evidence on his CV; give him room to show experience he didn't list.",
+      "follow_ups": [
+        "What would you do differently on a table that's being written to constantly?"
+      ],
+      "listen_for": [
+        "any real migration experience",
+        "thinks about locks and rollback"
+      ],
+      "warning_signs": [
+        "no experience, and no sense of the risks"
+      ]
+    },
+    {
+      "id": "p3",
+      "criterion": "pg-prod",
+      "type": "claim_deep_dive",
+      "minutes": 4,
+      "question": "You built pipelines that load from PostgreSQL read replicas. What problems did reading from replicas cause, and how did you handle them?",
+      "evidence": [
+        "Built Airflow pipelines loading data from PostgreSQL read replicas into Snowflake"
+      ],
+      "why": "The closest evidence to the must-have; tests how deep his PostgreSQL knowledge goes.",
+      "follow_ups": [
+        "How did replication lag affect your data?"
+      ],
+      "listen_for": [
+        "replication lag",
+        "long-running query conflicts"
+      ],
+      "warning_signs": [
+        "unaware of replica behaviour"
+      ]
+    }
+  ],
+  "notes_for_interviewer": [
+    "Both must-haves are unverified on his CV: the gap probes decide whether to continue. Data warehouse experience doesn't count toward them (see the brief's anti-goals)."
+  ]
+}

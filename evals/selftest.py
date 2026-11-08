@@ -178,6 +178,43 @@ def test_jd_checker(tmp):
         expect(needle in out, f"warning raised: {what}")
 
 
+def test_interview_kit(role):
+    sys.path.insert(0, str(HERE.parent / "skills" / "interview-kit" / "scripts"))
+    import render_kit  # noqa: E402
+    import validate_kit  # noqa: E402
+
+    print("interview kit")
+    kdir = role / "interviews"
+    expect((kdir / "index.html").exists() and (kdir / "C01.html").exists() and (kdir / "C01.md").exists(),
+           "demo renders interview kits (HTML, Markdown, index)")
+    rc, out = quiet(validate_kit.main, [str(role)])
+    expect(rc == 0 and "0 errors, 0 warnings" in out, "good kits validate with no errors or warnings")
+    html = (kdir / "C01.html").read_text()
+    expect("default-src 'none'" in html and "src=\"http" not in html, "kit HTML makes no network requests")
+    ids = {v: k for k, v in json.loads((role / "candidates.json").read_text()).items()}
+    bad = json.loads((FIXTURE.parent / "interview-bad" / "daniel-kowalski.md.json").read_text())
+    cid = ids["daniel-kowalski.md"]
+    bad["candidate_id"] = cid
+    good = (kdir / f"{cid}.json").read_text()
+    (kdir / f"{cid}.json").write_text(json.dumps(bad))
+    rc, out = quiet(validate_kit.main, [str(role), "--candidates", cid])
+    expect(rc == 1, "bad kit is rejected")
+    for needle, what in [("protected characteristic (age)", "age questions"), ("protected characteristic (family)", "family questions"),
+                         ("national origin", "origin questions"), ("internal detail", "leaked internals"),
+                         ("evidence not found", "invented CV claims"), ("has no gap_probe", "unprobed must-have gaps"),
+                         ("repeats a core question", "repeated core questions"), ("interview is 60", "over-long interviews")]:
+        expect(needle in out, f"kit check catches {what}")
+    (kdir / f"{cid}.json").write_text(good)
+    rubric = json.loads((role / "rubric.json").read_text())
+    core = json.loads((kdir / "core.json").read_text())
+    kit = json.loads(good)
+    evil = '<script>alert(1)</script><img src=x onerror=alert(2)>'
+    kit["questions"][0]["question"] = evil
+    kit["notes_for_interviewer"] = [evil]
+    out = render_kit.build_html(rubric, core, kit, {"file": evil, "score": 1, "gate": "pass", "rank": 1}, evil)
+    expect("<script>alert" not in out and "<img src=x" not in out, "kit HTML escapes all text")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -191,6 +228,7 @@ def test_demo_cleanup(tmp):
     expect(rc == 0 and (role / "report.md").exists(), "demo produces a report without a model")
     expect((role / "round.json").exists(), "round opening date is recorded")
     test_html_report(tmp)
+    test_interview_kit(role)
 
     print("close round")
     rc, _ = quiet(cleanup.main, ["close", str(role)])

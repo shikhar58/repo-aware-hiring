@@ -1,0 +1,71 @@
+{
+  "candidate_id": null,
+  "rubric_version": 1,
+  "questions": [
+    {
+      "id": "p1",
+      "criterion": "query-perf",
+      "type": "claim_deep_dive",
+      "minutes": 5,
+      "question": "You cut p95 latency of account listing from 900 ms to 40 ms. Walk me through how you found the bottleneck and what you changed.",
+      "evidence": [
+        "Cut p95 latency of account listing from 900 ms to 40 ms with EXPLAIN ANALYZE, composite indexes and keyset pagination"
+      ],
+      "why": "Tests whether the result came from her own diagnosis, and how she measures.",
+      "follow_ups": [
+        "What did the plan look like before and after?",
+        "What did keyset pagination break, if anything?"
+      ],
+      "listen_for": [
+        "specific plan nodes or index choices",
+        "before/after measurement"
+      ],
+      "warning_signs": [
+        "vague about her own part"
+      ]
+    },
+    {
+      "id": "p2",
+      "criterion": "migrations",
+      "type": "claim_deep_dive",
+      "minutes": 5,
+      "question": "You added a column to a 200M-row table and rebuilt indexes concurrently. What was the riskiest moment, and how did you protect production?",
+      "evidence": [
+        "added a 200M-row table column and rebuilt indexes with CREATE INDEX CONCURRENTLY"
+      ],
+      "why": "Checks depth on the exact skill the role needs most.",
+      "follow_ups": [
+        "What happens if a concurrent index build fails halfway?"
+      ],
+      "listen_for": [
+        "invalid index cleanup",
+        "lock timeouts",
+        "monitoring during the change"
+      ],
+      "warning_signs": [
+        "no plan for failure"
+      ]
+    },
+    {
+      "id": "p3",
+      "criterion": "pg-ops",
+      "type": "gap_probe",
+      "minutes": 4,
+      "question": "Have you been responsible for backups and restores of a production database? Tell me about the last restore you did or tested.",
+      "why": "Her CV covers pooling and monitoring but not backups or recovery.",
+      "follow_ups": [
+        "How long did the restore take, and was that acceptable?"
+      ],
+      "listen_for": [
+        "has actually restored",
+        "knows recovery time"
+      ],
+      "warning_signs": [
+        "assumes backups work without testing"
+      ]
+    }
+  ],
+  "notes_for_interviewer": [
+    "Strong evidence on migrations and performance: use the time to test depth, and to check backups and recovery, which her CV doesn't mention."
+  ]
+}

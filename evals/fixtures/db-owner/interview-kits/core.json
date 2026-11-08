@@ -1,0 +1,136 @@
+{
+  "rubric_version": 1,
+  "duration_minutes": 60,
+  "stage": "technical deep-dive",
+  "questions": [
+    {
+      "id": "core-pg-prod",
+      "criterion": "pg-prod",
+      "minutes": 6,
+      "question": "Tell me about a PostgreSQL database you were responsible for in production. What did you change in its schema or indexes, and how did you decide?",
+      "follow_ups": [
+        "How did you read the query plan, and what did it show?",
+        "What would you do differently now?"
+      ],
+      "listen_for": [
+        "owned decisions, not just used the database",
+        "reasons tied to query patterns or data size",
+        "reads EXPLAIN output"
+      ],
+      "warning_signs": [
+        "only ever used the database through an ORM someone else configured",
+        "can't explain why an index helped"
+      ]
+    },
+    {
+      "id": "core-migrations",
+      "criterion": "migrations",
+      "minutes": 7,
+      "question": "Tell me about a schema or data change you shipped on a large production table. How did you avoid downtime and lock problems?",
+      "follow_ups": [
+        "How would you roll it back halfway through?",
+        "How did you backfill existing rows?"
+      ],
+      "listen_for": [
+        "expand-contract or backward-compatible steps",
+        "batched backfills",
+        "concurrent index builds",
+        "a rollback plan"
+      ],
+      "warning_signs": [
+        "only ran tool-generated migrations on small or staging data",
+        "no idea how long the change locked the table"
+      ]
+    },
+    {
+      "id": "core-deploy",
+      "criterion": "deploy-safety",
+      "minutes": 5,
+      "question": "Imagine schema migrations run automatically when each application instance starts, and you run several instances. What can go wrong, and how would you change the process?",
+      "follow_ups": [
+        "How would old and new versions of the app run against the same schema during a rollout?"
+      ],
+      "listen_for": [
+        "spots concurrent migration races",
+        "moves migrations to a separate pre-deploy step",
+        "backward-compatible releases"
+      ],
+      "warning_signs": [
+        "doesn't see a problem",
+        "proposes stopping all instances for every change"
+      ]
+    },
+    {
+      "id": "core-query-perf",
+      "criterion": "query-perf",
+      "minutes": 5,
+      "question": "A list endpoint gets slower every week as data grows. It counts all rows and pages with OFFSET. How would you investigate and fix it?",
+      "follow_ups": [
+        "How would you prove the fix worked?"
+      ],
+      "listen_for": [
+        "measures first",
+        "EXPLAIN ANALYZE",
+        "keyset pagination or better indexes",
+        "questions the full count"
+      ],
+      "warning_signs": [
+        "jumps to caching or bigger hardware without measuring"
+      ]
+    },
+    {
+      "id": "core-orm",
+      "criterion": "python-orm",
+      "minutes": 4,
+      "question": "In an ORM you've used in production, how have you dealt with queries that loaded far more data, or ran far more queries, than expected?",
+      "follow_ups": [
+        "How did you find out it was happening?"
+      ],
+      "listen_for": [
+        "N+1 queries",
+        "eager vs lazy loading",
+        "looked at the generated SQL"
+      ],
+      "warning_signs": [
+        "treats the ORM as a black box"
+      ]
+    },
+    {
+      "id": "core-tests",
+      "criterion": "test-isolation",
+      "minutes": 4,
+      "question": "How would you set up tests for database code so that tests can't affect each other, and still run quickly?",
+      "follow_ups": [
+        "How would you test the migrations themselves?"
+      ],
+      "listen_for": [
+        "per-test transactions or rollback",
+        "containers or a real database in CI",
+        "fixtures or factories"
+      ],
+      "warning_signs": [
+        "one shared database with cleanup at the end",
+        "mocks the database entirely for DB logic"
+      ]
+    },
+    {
+      "id": "core-ops",
+      "criterion": "pg-ops",
+      "minutes": 4,
+      "question": "What would you put in place first to make a single production PostgreSQL instance reliable, and why that order?",
+      "follow_ups": [
+        "How would you know a backup actually works?"
+      ],
+      "listen_for": [
+        "backups with tested restores",
+        "connection pooling",
+        "slow-query monitoring",
+        "prioritises by risk"
+      ],
+      "warning_signs": [
+        "backups never restored",
+        "no mention of monitoring"
+      ]
+    }
+  ]
+}

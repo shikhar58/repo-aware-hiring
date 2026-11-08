@@ -74,6 +74,7 @@ Run them with `python3 -I`. They need only the standard library, plus `pdftotext
    shortlist chart, candidates × criteria heatmap, candidate cards, filters; prints to PDF). The HTML makes no
    network requests and escapes all CV text. Reply to the user with the top of the shortlist, the flags, and
    the path to `report.html` (offer to open it if the session can show files). Do not rewrite either report by hand.
+   Then offer, in one line, to prepare interview kits for the shortlisted candidates with `interview-kit`.
 
 ## Score file schema
 

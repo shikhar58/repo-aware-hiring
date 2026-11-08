@@ -12,7 +12,7 @@ sweep   Lists rounds under <hiring_dir> that are still open and were opened more
         With --yes, closes each of them with default options.
 
 Deleted:  extracted/ redacted/ scores/ runs/ prep_report.json candidates.json identities.json ranking.json
-          notes.md report.md report.html eval-report.md golden.json
+          notes.md report.md report.html eval-report.md golden.json interviews/
           (+ cvs/ with --include-cvs; report.md and report.html kept with --keep-report)
 Kept:     brief.md jd.md repo-profile.md rubric.json rubric.md round.json audit.json
 """
@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 
 ALWAYS_DELETE = ["extracted", "redacted", "scores", "runs", "prep_report.json", "candidates.json", "identities.json",
-                 "ranking.json", "notes.md", "report.md", "report.html", "eval-report.md", "golden.json"]
+                 "ranking.json", "notes.md", "report.md", "report.html", "eval-report.md", "golden.json", "interviews"]
 KEEP = ["brief.md", "jd.md", "repo-profile.md", "rubric.json", "rubric.md", "round.json"]
 
 

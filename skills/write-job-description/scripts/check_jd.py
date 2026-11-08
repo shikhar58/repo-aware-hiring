@@ -115,19 +115,11 @@ def internal_terms(role):
     return {t for t in terms if t.lower() not in PUBLIC_TECH and len(t) >= 4}
 
 
-def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("role_dir")
-    ap.add_argument("--jd", default=None, help="default: <role_dir>/jd.md")
-    args = ap.parse_args(argv)
-    role = Path(args.role_dir)
-    jd_path = Path(args.jd) if args.jd else role / "jd.md"
-    if not jd_path.exists():
-        print(f"No job description at {jd_path}")
-        return 2
-    text = jd_path.read_text(encoding="utf-8")
+def find_leaks(text, role):
+    """Possible leaks of internal details in public-facing text (a job posting, or interview questions a
+    candidate will hear). Returns [(line_no, message)]. Shared with the interview-kit validator."""
     lines = text.splitlines()
-    errors, warnings, notes = [], [], []
+    errors = []
 
     def where(pos_text, needle):
         for i, ln in enumerate(lines, 1):
@@ -135,7 +127,6 @@ def main(argv=None):
                 return i
         return "?"
 
-    # ---------------- leaks (errors)
     for i, ln in enumerate(lines, 1):
         for m in PATH_RE.finditer(ln):
             s = m.group(0).strip(".,;:)")
@@ -158,6 +149,31 @@ def main(argv=None):
             if any(ln == line_no and term in f for ln, f in flagged):
                 continue  # already reported as a path on this line
             errors.append((line_no, f"names an internal detail from the repo profile or brief: {term!r}"))
+
+    return errors
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("role_dir")
+    ap.add_argument("--jd", default=None, help="default: <role_dir>/jd.md")
+    args = ap.parse_args(argv)
+    role = Path(args.role_dir)
+    jd_path = Path(args.jd) if args.jd else role / "jd.md"
+    if not jd_path.exists():
+        print(f"No job description at {jd_path}")
+        return 2
+    text = jd_path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    errors, warnings, notes = [], [], []
+
+    def where(pos_text, needle):
+        for i, ln in enumerate(lines, 1):
+            if needle in ln:
+                return i
+        return "?"
+
+    errors.extend(find_leaks(text, role))
 
     # ---------------- inclusive language (warnings)
     for i, ln in enumerate(lines, 1):

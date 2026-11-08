@@ -10,4 +10,6 @@ flowchart TB
     approve --> screen["5 · screen-candidates<br/>redact, score each CV with quotes, validate, rank"]
     cvs[("CVs<br/>PDF · DOCX · MD")] --> screen
     screen --> report(["report.html + report.md<br/>shortlist, heatmap, strengths, gaps, interview probes"])
-    report -.->|role filled| close["6 · close-round<br/>delete candidate data, keep a pseudonymous audit"]
+    report --> kit["6 · interview-kit<br/>same core questions for everyone,<br/>plus questions on each candidate’s own CV"]
+    kit --> card(["Printable kit and scorecard<br/>per candidate"])
+    card -.->|role filled| close["7 · close-round<br/>delete candidate data, keep a pseudonymous audit"]

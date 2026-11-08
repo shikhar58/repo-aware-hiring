@@ -1,0 +1,67 @@
+{
+  "candidate_id": null,
+  "rubric_version": 1,
+  "questions": [
+    {
+      "id": "p1",
+      "criterion": "migrations",
+      "type": "claim_deep_dive",
+      "minutes": 5,
+      "question": "You ran batched backfills on tables with a billion rows. How did you choose the batch size, and how did you know it was safe to continue?",
+      "evidence": [
+        "Wrote goose migrations for production, including batched backfills on tables with 1B rows"
+      ],
+      "why": "Tests the scale claim and her judgement under load.",
+      "follow_ups": [
+        "What would you monitor while it ran?"
+      ],
+      "listen_for": [
+        "throttling",
+        "replication lag or lock monitoring",
+        "resumability"
+      ],
+      "warning_signs": [
+        "fixed batch size with no reasoning"
+      ]
+    },
+    {
+      "id": "p2",
+      "criterion": "python-orm",
+      "type": "gap_probe",
+      "minutes": 5,
+      "question": "Most of our backend is Python with SQLAlchemy. What Python have you written, and how would you get productive in an ORM-based codebase?",
+      "why": "Her CV shows Go with pgx and sqlc, and Python only for scripting; the rubric credits Go as transferable.",
+      "follow_ups": [
+        "What do you expect to miss from sqlc, and what would you watch out for in an ORM?"
+      ],
+      "listen_for": [
+        "realistic plan",
+        "awareness of ORM pitfalls like N+1"
+      ],
+      "warning_signs": [
+        "dismisses the language switch as trivial without specifics"
+      ]
+    },
+    {
+      "id": "p3",
+      "criterion": "pg-ops",
+      "type": "gap_probe",
+      "minutes": 4,
+      "question": "Who ran the PostgreSQL servers in your current team? Which parts of their operation have you done yourself?",
+      "why": "Her CV doesn't show backups, pooling or replication work.",
+      "follow_ups": [
+        "What would you want to learn first if you owned them?"
+      ],
+      "listen_for": [
+        "honest about scope",
+        "hands-on pieces"
+      ],
+      "warning_signs": [
+        "claims operations experience but can't describe any"
+      ]
+    }
+  ],
+  "notes_for_interviewer": [
+    "Go background: judge Python and ORM skills as learnable, per the rubric; focus on depth in migrations and performance."
+  ]
+}

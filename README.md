@@ -17,6 +17,7 @@
   <a href="#how-it-works">How it works</a> ·
   <a href="#write-the-job-description">Job descriptions</a> ·
   <a href="#screen-candidates-against-it">Screening</a> ·
+  <a href="#interview-each-candidate">Interviews</a> ·
   <a href="#why-you-can-trust-the-output">Trust &amp; safety</a> ·
   <a href="docs/example-report.md">Example report</a>
 </p>
@@ -27,7 +28,7 @@ Your job description says *"PostgreSQL experience"*. Your codebase says somethin
 migrations run on every container start, tests share one database, and nobody owns backups.
 That's the person you actually need.
 
-**repo-aware-hiring** is a set of agent skills that reads both and does the two jobs that decide who you hire:
+**repo-aware-hiring** is a set of agent skills that reads both and does the three jobs that decide who you hire:
 
 <table>
 <tr>
@@ -54,9 +55,22 @@ That's the person you actually need.
 
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top">
+
+### 🎯 Interview each candidate
+
+- The **same core questions for everyone** (fair and comparable), built from the real problems in your code
+- Plus **personal questions from each CV**: deep dives into their own claims, and probes for must-haves the CV didn't show
+- What strong answers sound like, warning signs, and a **printable scorecard** that uses the rubric's own levels
+
+[See an interview kit ↓](#interview-each-candidate)
+
+</td>
+</tr>
 </table>
 
-Use either on its own or both together. It runs inside your own coding agent (Claude Code, or any agent that
+Use any of them on its own or all together. It runs inside your own coding agent (Claude Code, or any agent that
 supports Agent Skills), so your code and candidates' data never go to a separate hiring vendor.
 Screening is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
 
@@ -69,11 +83,14 @@ Screening is **decision support**: it ranks evidence and suggests interview ques
   details or put people off with the wrong words.
 - **Screening is inconsistent.** Different reviewers, different moods, different standards. A
   written, approved rubric with quoted evidence makes every decision explainable.
+- **Interviews test the wrong things.** Generic questions and puzzles say little about whether someone can do
+  *this* job. The best signal comes from the same structured questions for everyone, plus a close look at what
+  each candidate says they've done.
 
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/how-it-works.png" alt="Flow: hiring-plan, then repo-profile reads the repo, write-job-description produces a public posting, hiring-rubric uses the same must-haves, you approve, screen-candidates writes the report, close-round deletes candidate data" width="560">
+  <img src="docs/assets/how-it-works.png" alt="Flow: hiring-plan, repo-profile, write-job-description, hiring-rubric with the same must-haves, you approve, screen-candidates writes the report, interview-kit prepares a kit per candidate, close-round deletes candidate data" width="520">
 </p>
 
 You talk to your agent in plain language. A planning session looks like this:
@@ -168,6 +185,34 @@ Download [`docs/example-report.html`](docs/example-report.html) and open it, or 
 [Markdown version](docs/example-report.md). All images on this page are generated from a fresh demo run
 ([`docs/assets/make_assets.py`](docs/assets/make_assets.py)).
 
+## Interview each candidate
+
+After screening, ask for interview kits for your shortlist. Each kit combines two kinds of questions:
+
+| | Core questions | Personal questions |
+|---|---|---|
+| **Who gets them** | Every candidate, in the same order | One candidate |
+| **Built from** | The rubric and the real problems in your code | That candidate's CV and screening result |
+| **Purpose** | Compare candidates fairly on the same footing | Test their own claims; probe must-haves the CV didn't show |
+| **Example** | "Imagine migrations run when each app instance starts, with several instances. What can go wrong?" | "You cut p95 latency from 900 ms to 40 ms. How did you find the bottleneck?" |
+
+<p align="center">
+  <img src="docs/assets/interview-kit.png" alt="Interview kit: personal questions quoting the candidate's CV, with follow-ups, strong-answer signals and warning signs, and a scorecard using the rubric's levels" width="88%">
+</p>
+
+Every kit is a printable page with a time plan, what strong answers include, warning signs, space for notes and a
+0–3 scorecard using the rubric's own level descriptions (download [`docs/example-interview-kit.html`](docs/example-interview-kit.html)
+and open it). Before a kit is used, `validate_kit.py` checks it:
+
+- **Every must-have is covered**, and every must-have the CV didn't show gets a personal probe, so "no evidence"
+  is tested rather than assumed.
+- **Quoted claims are really in the CV.** Questions can't be built on things the candidate never said.
+- **Nothing a candidate hears leaks internals.** The same checks as job postings: no file paths, internal names or
+  security weaknesses.
+- **No questions about protected characteristics** (age, family, nationality, health, religion and so on), without
+  tripping over "race condition" or "health checks".
+- **It fits the time**: core plus personal questions within the interview length.
+
 ## Try it in 2 minutes
 
 No model, no API key, no setup. The demo runs the real pipeline on the fictional CVs (Markdown, PDF
@@ -178,6 +223,7 @@ git clone https://github.com/shikhar58/repo-aware-hiring.git && cd repo-aware-hi
 python3 demo/run_demo.py          # needs pdftotext (poppler-utils) for the PDF CVs
 open hiring/demo/report.html       # opens in your browser
 python3 skills/write-job-description/scripts/check_jd.py hiring/demo   # check the demo job posting
+open hiring/demo/interviews/index.html   # interview kits for three candidates
 ```
 
 <p align="center">
@@ -205,6 +251,7 @@ Then open your repo in Claude Code and say what you're hiring for:
 > Write the job description for db-owner  # a few questions, then a posting to review
 > Build the rubric for db-owner          # review, edit, approve
 > Screen the candidates for db-owner     # put CVs in hiring/db-owner/cvs/ first
+> Prepare interview kits for the top 3   # 60-minute technical interview
 > Close the db-owner round               # when the role is filled
 ```
 
@@ -229,10 +276,11 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Injection defence** | Instructions hidden in CVs (including white text in PDFs, in several languages) are detected, flagged for a human, and ignored. |
 | **Human approval** | No scoring until a named person approves the rubric. Nothing is ever rejected automatically. |
 | **Safe job postings** | `check_jd.py` blocks file paths, internal names from your repo, environment variables, hosts and security weaknesses from public job descriptions. |
+| **Fair interviews** | Interview kits use the same core questions for everyone; `validate_kit.py` blocks questions about protected characteristics, invented CV claims and leaked internals. |
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-58 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+71 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -240,6 +288,7 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | | Generic CV screeners | Hosted coding assessments | **repo-aware-hiring** |
 |---|---|---|---|
 | Writes the job description from your codebase | No | No | **Yes, checked for leaks and biased wording** |
+| Interview questions tailored to each candidate and your code | No | Some | **Yes, structured: shared core plus personal** |
 | Criteria come from your codebase | No: keywords from the JD | Some build tasks from your repo | **Yes: the rubric is built from your repo and mission** |
 | Where code and CVs go | The vendor | The vendor | **Your own agent and model provider** |
 | Each score shows the CV evidence, machine-checked | Varies | Not applicable | **Yes** |
@@ -272,6 +321,15 @@ candidate data, so there's nothing to redact or delete. You can also paste an ex
 It's instructed to describe the work in general terms, and `check_jd.py` blocks file paths, names that appear in your
 repo profile or hiring brief, environment variables, hostnames, IP addresses, credentials and statements of security
 weaknesses. Still read the posting before you publish it; the checker reduces risk, it doesn't replace review.
+</details>
+
+<details>
+<summary><b>Are personalised interview questions fair?</b></summary>
+
+That's why kits are structured: every candidate gets the same core questions in the same order, rated against the
+same anchors, which is what makes interviews comparable and defensible. Personal questions only go deeper into
+each candidate's own CV, and the validator blocks questions about protected characteristics. Interviewers still
+rate the answers themselves.
 </details>
 
 <details>
@@ -324,6 +382,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 | `write-job-description` | Writes a public job posting from the repo and a short Q&A with you; checks it for leaked internals and biased wording, and keeps its must-haves in line with the rubric | `jd.md` |
 | `hiring-rubric` | Turns brief + JD + profile into weighted criteria with observable anchors; waits for approval | `rubric.json` |
 | `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.html`, `report.md` |
+| `interview-kit` | Writes core questions shared by all candidates plus personal questions from each CV, validates them and renders printable kits with scorecards | `interviews/` |
 | `close-round` | Deletes candidate data when the role closes; keeps a pseudonymous audit record; finds overdue rounds | `audit.json` |
 </details>
 
@@ -361,6 +420,7 @@ hiring/db-owner/
 ├── ranking.json
 ├── report.html         # the report to read and share
 ├── report.md           # same content as text
+├── interviews/         # core.json, one kit per candidate (.json/.html/.md), index.html
 ├── round.json          # opened/closed dates (retention)
 └── audit.json          # written when the round is closed
 ```
@@ -386,7 +446,7 @@ Model consistency across separate sessions hasn't been published yet. See
 
 - [ ] Publish multi-session model eval results
 - [ ] Second evaluation fixture on a different stack
-- [ ] `interview-kit`, `take-home-gen`, `take-home-grade` and `debrief` skills
+- [ ] `take-home-gen`, `take-home-grade` and `debrief` skills
 - [ ] Backtesting on past hiring rounds and company-specific calibration
 - [ ] OCR for scanned PDFs
 

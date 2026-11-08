@@ -1,21 +1,23 @@
 {
   "name": "repo-aware-hiring",
-  "version": "0.6.0",
-  "description": "Repo-aware hiring for software engineers: writes job descriptions from your codebase (checked for leaked internals and biased wording), builds a rubric you approve, and screens CVs with verified evidence and a deterministic ranking.",
+  "version": "0.7.0",
+  "description": "Repo-aware hiring for software engineers: writes job descriptions from your codebase, screens CVs with verified evidence and a deterministic ranking, and prepares structured interview kits for each candidate.",
   "author": {
     "name": "Shikhar Nilabh",
     "url": "https://github.com/shikhar58"
   },
   "license": "MIT",
   "keywords": [
-    "hiring",
-    "recruiting",
-    "software-engineering",
-    "screening",
-    "rubric",
     "decision-support",
+    "hiring",
+    "interview",
+    "interview-questions",
     "job-description",
-    "job-posting"
+    "job-posting",
+    "recruiting",
+    "rubric",
+    "screening",
+    "software-engineering"
   ],
   "homepage": "https://github.com/shikhar58/repo-aware-hiring",
   "repository": "https://github.com/shikhar58/repo-aware-hiring"

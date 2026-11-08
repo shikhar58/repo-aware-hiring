@@ -1,0 +1,44 @@
+{
+  "candidate_id": null,
+  "rubric_version": 1,
+  "questions": [
+    {
+      "id": "b1",
+      "criterion": "migrations",
+      "type": "claim_deep_dive",
+      "minutes": 6,
+      "question": "Tell me about a schema or data change you shipped on a large production table. How did you avoid downtime and lock problems?",
+      "evidence": [
+        "Led the zero-downtime migration of a 5TB Oracle cluster"
+      ],
+      "why": "x",
+      "follow_ups": [
+        "Would it work in backend/scripts/prestart.sh?"
+      ],
+      "listen_for": [
+        "x"
+      ],
+      "warning_signs": [
+        "x"
+      ]
+    },
+    {
+      "id": "b2",
+      "criterion": "pg-prod",
+      "type": "gap_probe",
+      "minutes": 20,
+      "question": "Where are you originally from, and do you have children who might affect your hours?",
+      "why": "x",
+      "follow_ups": [
+        "How old were you when you started programming?"
+      ],
+      "listen_for": [
+        "x"
+      ],
+      "warning_signs": [
+        "x"
+      ]
+    }
+  ],
+  "notes_for_interviewer": []
+}
