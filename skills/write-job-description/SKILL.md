@@ -117,18 +117,22 @@ Where a technology matters, name it as an example of the capability, among alter
 ## Nice-to-haves
 2–4 bullets, explicitly optional. The natural place for the rest of the stack, again as examples.
 
-## Backgrounds we welcome
-Transferable experience that counts (e.g. "Django or Rails ORMs count as much as SQLAlchemy").
-
 ## How we hire
-The steps, how long they take, that applications are reviewed by people with AI-assisted screening,
-and how to ask for adjustments or human review.
+The steps and timeline only if the user gave them; otherwise placeholders, never generic text:
+[insert: interview steps and how long they take]
+[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required in some jurisdictions]
 
 ## What we offer
-Benefits from the user, or a clearly marked placeholder.
+[insert: benefits], unless the user gave them.
 
-<Equal opportunity statement from the user, or a placeholder>
+[insert: equal opportunity statement], unless the user gave one.
 ```
+
+The output is a **draft for the hiring manager to finish**, not a final posting. Start the file with
+`<!-- DRAFT: fill every [insert: …] placeholder and review before publishing -->` under the title. Write only what
+the code, the brief or the user's answers support; everything else (pay, location details, hiring steps, timeline,
+benefits, team facts, equal opportunity statement) is an `[insert: …]` placeholder. Optional sections the manager may
+add themselves, such as transferable backgrounds or team context, are left out of the draft unless the user asks.
 
 Writing rules:
 - **No stack section.** Companies rarely want to publish their exact stack, and a list invites keyword-matching
@@ -156,14 +160,14 @@ Run `python3 -I scripts/check_jd.py hiring/<role-slug>` (the script lives next t
 
 ### 5. Hand off
 
-Tell the user where `jd.md` is and that it is ready to post. Offer, in one line, the next step:
+Tell the user where `jd.md` is, that it is a draft, and list the placeholders they need to fill before posting. Offer, in one line, the next step:
 building the screening rubric from it (`hiring-rubric`), or adjusting the existing rubric if the JD changed a must-have.
 
 ## Rules
 
 - The user owns the posting. Present facts and recommendations (pay range, shorter must-have list), then follow
   their decision.
-- Do not invent benefits, salaries, perks or company facts. Use placeholders like `[benefits]` and list them
+- Do not invent benefits, salaries, perks, hiring steps or company facts. Use placeholders like `[insert: benefits]` and list them
   for the user at the end.
 - Do not include protected characteristics or proxies for them (age, "young team", "digital native", gender,
   nationality, "native speaker" unless the job truly requires a language level, which you then state as a level).

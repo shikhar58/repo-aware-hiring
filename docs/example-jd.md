@@ -1,6 +1,8 @@
 # Backend Engineer, Databases
 Remote within EU time zones · Permanent · €70,000–€85,000 (fictional example)
 
+<!-- DRAFT: fill every [insert: …] placeholder and review before publishing -->
+
 ## About the role
 We're looking for an engineer to own the database layer of our product: how data is modelled, how schema
 changes reach production, and how the database behaves as we grow. The team is strong on API design; you'll
@@ -25,20 +27,12 @@ be the person who makes our data safe to change and fast to read.
 - PostgreSQL operations: pooling, replication, backups and monitoring.
 - Python web services (for example FastAPI or Django) shipped in containers such as Docker.
 
-## Backgrounds we welcome
-Experience with Django or Rails ORMs, Hibernate, or Go with pgx counts as much as SQLAlchemy; Flyway, Liquibase or
-goose count as much as Alembic. DBAs who write application code are very welcome.
-
 ## How we hire
-1. A short call with the hiring manager (30 minutes).
-2. A conversation about a database change you've shipped, using your own example (60 minutes).
-3. A practical session on a realistic schema change with an engineer from the team (90 minutes).
+[insert: interview steps and how long they take]
 
-Applications are read by people. We use AI-assisted screening to help us compare CVs against the criteria above;
-it never rejects anyone on its own. If you need adjustments at any stage, or want a person to review your
-application without AI assistance, tell us and we'll arrange it.
+[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required in some jurisdictions]
 
 ## What we offer
-[benefits]
+[insert: benefits]
 
-[equal opportunity statement]
+[insert: equal opportunity statement]

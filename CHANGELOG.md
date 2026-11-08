@@ -3,7 +3,18 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.2] — 2026-11-08
+## [0.9.3] — 2026-11-08
+
+### Changed
+- `write-job-description` produces a **draft for the hiring manager**, marked as one at the top. It writes only
+  what the code, the brief or the manager's answers support; pay, location details, hiring steps, timeline, benefits
+  and the equal opportunity statement are `[insert: …]` placeholders unless the manager gave them. "How we hire" holds
+  no generic text: just placeholders for the steps and for how AI-assisted screening is disclosed.
+- The "Backgrounds we welcome" section is no longer in the draft; managers can add it.
+- `check_jd.py` lists every placeholder (ignoring HTML comments) and accepts a pay-range placeholder instead of
+  warning about a missing range.
+
+ — 2026-11-08
 
 ### Changed
 - Job descriptions no longer have an "Our stack" section. Companies rarely want to publish their exact stack, so the

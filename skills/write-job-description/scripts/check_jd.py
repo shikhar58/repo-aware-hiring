@@ -216,9 +216,11 @@ def main(argv=None):
     if musts and len(musts) > 6:
         warnings.append((musts[0][0], f"{len(musts)} must-haves: keep to 3–5; long lists deter qualified applicants"))
     head = "\n".join(lines[:6])
-    if not CURRENCY_RE.search(head) or re.search(r"on request|competitive", head, re.I):
+    pay_placeholder = re.search(r"\[(?:insert:\s*)?(?:salary|pay)[^\]]*\]", head, re.I)
+    if not pay_placeholder and (not CURRENCY_RE.search(head) or re.search(r"on request|competitive", head, re.I)):
         warnings.append((2, "no pay range near the top: required in some jurisdictions and increases applications"))
-    placeholders = sorted(set(re.findall(r"\[[^\]\n]{2,40}\]", text)))
+    visible = re.sub(r"<!--.*?-->", "", text, flags=re.S)  # the draft note in a comment isn't a placeholder
+    placeholders = sorted(set(re.findall(r"\[[^\]\n]{2,160}\]", visible)))
     placeholders = [p for p in placeholders if not re.match(r"\[[^\]]+\]\(", p)]
     if placeholders:
         notes.append("placeholders to fill before posting: " + ", ".join(placeholders))

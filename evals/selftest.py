@@ -166,7 +166,7 @@ def test_jd_checker(tmp):
         shutil.copy(FIXTURE / name, role / name)
     rc, out = quiet(check_jd.main, [str(role)])
     expect(rc == 0 and "0 errors, 0 warnings" in out, "good JD passes with no errors or warnings")
-    expect("[benefits]" in out, "unfilled placeholders are listed")
+    expect("[insert: benefits]" in out and "[insert: how AI-assisted screening" in out, "unfilled placeholders are listed")
     rc, out = quiet(check_jd.main, [str(role), "--jd", str(FIXTURE.parent / "jd" / "bad-jd.md")])
     expect(rc == 1, "JD with internal details is blocked")
     for needle, what in [("file path", "file paths"), ("environment variable", "env var names"), ("IP address", "IP addresses"),
