@@ -70,8 +70,10 @@ Run them with `python3 -I`. They need only the standard library, plus `pdftotext
 
 7. **Report.** Optionally write `notes.md` with 3–6 bullets on where the job description, brief and
    repo disagree, then `python3 -I scripts/render_report.py hiring/<role-slug> --notes hiring/<role-slug>/notes.md`.
-   Reply to the user with the top of the shortlist, the flags, and the path to `report.md`.
-   Do not rewrite the report by hand.
+   This writes `report.md` (plain text, for diffs and agents) and `report.html` (the one to read and share:
+   shortlist chart, candidates × criteria heatmap, candidate cards, filters; prints to PDF). The HTML makes no
+   network requests and escapes all CV text. Reply to the user with the top of the shortlist, the flags, and
+   the path to `report.html` (offer to open it if the session can show files). Do not rewrite either report by hand.
 
 ## Score file schema
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render report.md from ranking.json and the score files. Deterministic: no model involved.
+"""Render report.md and report.html from ranking.json and the score files. Deterministic: no model involved.
 
 Usage: python3 render_report.py hiring/<role-slug> [--notes FILE]
 
@@ -13,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hiring_lib as H  # noqa: E402
+import report_html  # noqa: E402
 
 DISCLAIMER = """> **Decision support only.** This report ranks CV evidence against an approved rubric.
 > It does not reject or advance anyone. A named human reviewer must read each candidate's
@@ -40,6 +41,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("role_dir")
     ap.add_argument("--notes", default=None)
+    ap.add_argument("--no-html", action="store_true", help="skip report.html")
     args = ap.parse_args(argv)
     role = Path(args.role_dir)
 
@@ -94,6 +96,11 @@ def main(argv=None):
     out += ["", METHOD, ""]
     (role / "report.md").write_text("\n".join(out), encoding="utf-8")
     print(f"Wrote {role / 'report.md'}")
+    if not args.no_html:
+        notes_md = Path(args.notes).read_text(encoding="utf-8") if args.notes and Path(args.notes).exists() else ""
+        html = report_html.build_html(rubric, ranking, scores, notes_md, dt.date.today().isoformat())
+        (role / "report.html").write_text(html, encoding="utf-8")
+        print(f"Wrote {role / 'report.html'} (self-contained; open in any browser, print to PDF to share)")
     return 0
 
 

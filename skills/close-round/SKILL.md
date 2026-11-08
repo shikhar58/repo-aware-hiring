@@ -16,7 +16,7 @@ It deletes only inside the role folder and never follows symlinks.
 2. **Ask the user two questions** before deleting, unless they already answered:
    - Delete the original CVs in `cvs/` too? (`--include-cvs`.) Recommend yes, unless the CVs live
      only here and their policy says to keep them for a period.
-   - Keep `report.md`? (`--keep-report`.) It names candidates and quotes their CVs, so recommend no,
+   - Keep the report (`report.md` and `report.html`)? (`--keep-report`.) It names candidates and quotes their CVs, so recommend no,
      unless they need it for a documented reason.
    Also check that nobody still needs the data, e.g. a candidate who asked for human review or
    for a copy of their data.

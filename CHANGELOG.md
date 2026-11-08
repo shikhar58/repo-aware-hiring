@@ -3,6 +3,22 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
+## [0.5.0] — 2026-11-08
+
+### Added
+- **HTML report.** `render_report.py` now writes `report.html` next to `report.md`: summary tiles, a shortlist
+  chart coloured by must-have status, a candidates × criteria heatmap, the rubric with weights, and a card per
+  candidate with quoted evidence and interview probes. Filters, search, light/dark theme, mobile layout, and
+  clean print-to-PDF. It is a single self-contained file: no network requests (enforced by a content security
+  policy), and all CV-derived text is escaped. `--no-html` skips it.
+- README redesign with visuals generated from the demo (`docs/assets/`), rendered as images so they also
+  show in the GitHub mobile app.
+- 4 new self-test checks (41 total): report.html exists, loads nothing from the network, has the CSP, and
+  cannot be injected with markup from CV text.
+
+### Fixed
+- `close-round` now also deletes `report.html` (`--keep-report` keeps both report files).
+
 ## [0.4.2] — 2026-11-08
 
 First version prepared for public release.

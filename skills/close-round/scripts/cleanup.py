@@ -12,8 +12,8 @@ sweep   Lists rounds under <hiring_dir> that are still open and were opened more
         With --yes, closes each of them with default options.
 
 Deleted:  extracted/ redacted/ scores/ runs/ prep_report.json candidates.json identities.json ranking.json
-          notes.md report.md eval-report.md golden.json
-          (+ cvs/ with --include-cvs; report.md kept with --keep-report)
+          notes.md report.md report.html eval-report.md golden.json
+          (+ cvs/ with --include-cvs; report.md and report.html kept with --keep-report)
 Kept:     brief.md jd.md repo-profile.md rubric.json rubric.md round.json audit.json
 """
 import argparse
@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 
 ALWAYS_DELETE = ["extracted", "redacted", "scores", "runs", "prep_report.json", "candidates.json", "identities.json",
-                 "ranking.json", "notes.md", "report.md", "eval-report.md", "golden.json"]
+                 "ranking.json", "notes.md", "report.md", "report.html", "eval-report.md", "golden.json"]
 KEEP = ["brief.md", "jd.md", "repo-profile.md", "rubric.json", "rubric.md", "round.json"]
 
 
@@ -58,7 +58,7 @@ def looks_like_role(role):
 
 
 def plan(role, keep_report, include_cvs):
-    targets = [t for t in ALWAYS_DELETE if not (keep_report and t == "report.md")]
+    targets = [t for t in ALWAYS_DELETE if not (keep_report and t in ("report.md", "report.html"))]
     if include_cvs:
         targets.append("cvs")
     delete = [role / t for t in targets if (role / t).exists() or (role / t).is_symlink()]
@@ -75,7 +75,7 @@ def build_audit(role, keep_report, include_cvs):
         "rubric_version": None, "rubric_sha256": sha(role / "rubric.json"),
         "brief_sha256": sha(role / "brief.md") if (role / "brief.md").exists() else None,
         "candidates": None, "ranking_sha256": None, "results": [],
-        "retained": {"report_md": keep_report, "cvs": not include_cvs},
+        "retained": {"report": keep_report, "cvs": not include_cvs},
         "note": ("Candidate ids are pseudonymous once candidates.json is deleted. "
                  + ("CVs were retained, so ids can be re-linked to people by re-running prepare_cvs.py."
                     if not include_cvs else "CVs were deleted; ids cannot be linked back to people from this record.")),
@@ -124,7 +124,7 @@ def close(role, keep_report=False, include_cvs=False, yes=False, quiet=False):
         if not include_cvs and (role / "cvs").exists():
             print("Note: cvs/ (the original CVs) is kept. Pass --include-cvs to delete them as well.")
         if keep_report and (role / "report.md").exists():
-            print("Note: report.md is kept and contains candidate file names and quoted CV text.")
+            print("Note: report.md and report.html are kept and contain candidate file names and quoted CV text.")
     if not yes:
         print("\nNothing deleted. Re-run with --yes to close the round.")
         return 3

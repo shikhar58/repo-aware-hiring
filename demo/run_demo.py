@@ -6,7 +6,7 @@ Usage: python3 demo/run_demo.py [target_dir]     (default: ./hiring/demo)
 Copies the db-owner fixture (brief, repo profile, approved rubric, 12 synthetic CVs in
 md/pdf/docx), runs the real pipeline scripts (prepare -> redaction check -> validate -> rank ->
 report) and uses scores recorded during the dry run in place of the model's scoring step.
-Open <target>/report.md afterwards. Requires pdftotext for the PDF CVs.
+Open <target>/report.html in a browser afterwards (report.md has the same content as text). Requires pdftotext for the PDF CVs.
 """
 import json
 import shutil
@@ -70,7 +70,7 @@ def main(argv):
                      "- FastAPI expertise is deliberately not screened for: the team already has it.\n")
     render_report.main([str(target), "--notes", str(notes)])
 
-    print(f"\nDone. Open {target / 'report.md'}")
+    print(f"\nDone. Open {target / 'report.html'} in your browser (text version: report.md)")
     print("Next: install the plugin in Claude Code and ask it to plan a hire for your own repo.")
     return 0
 

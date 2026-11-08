@@ -124,6 +124,35 @@ def test_redaction_regressions(tmp):
     expect("Manual note kept." in path.read_text(), "re-running prepare keeps hand-edited redactions")
 
 
+def test_html_report(tmp):
+    import re as _re
+    sys.path.insert(0, str(HERE.parent / "skills" / "screen-candidates" / "scripts"))
+    import report_html  # noqa: E402
+
+    print("html report")
+    role = tmp / "demo" / "hiring" / "demo"
+    html = (role / "report.html").read_text()
+    expect("<!doctype html>" in html and "C01" in html, "demo writes report.html next to report.md")
+    external = _re.findall(r'(?:src|href)\s*=\s*["\']?\s*(?:https?:)?//|url\(\s*["\']?(?:https?:)?//|@import', html, _re.I)
+    expect(not external, "report.html loads nothing from the network")
+    expect("default-src 'none'" in html, "report.html carries a no-network content security policy")
+    evil = '<script>alert(1)</script><img src=x onerror=alert(2)>"\' onmouseover="x'
+    rubric = json.loads((role / "rubric.json").read_text())
+    ranking = json.loads((role / "ranking.json").read_text())
+    scores = {p.stem: json.loads(p.read_text()) for p in (role / "scores").glob("*.json")}
+    first = ranking["ranked"][0]
+    first["file"] = evil + ".pdf"
+    first["flags"] = [evil]
+    sc = scores[first["candidate_id"]]
+    sc["strengths"] = [evil]
+    sc["interview_probes"] = [evil]
+    sc["flags"] = [evil]
+    sc["criteria"][rubric["criteria"][0]["id"]]["evidence"] = [evil]
+    out = report_html.build_html(rubric, ranking, scores, "- " + evil, "2026-01-01")
+    expect("<script>alert" not in out and "<img src=x" not in out and 'onmouseover="x' not in out,
+           "CV-derived text cannot inject markup into report.html")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -136,6 +165,7 @@ def test_demo_cleanup(tmp):
     rc, _ = quiet(run_demo.main, ["run_demo", str(role)])
     expect(rc == 0 and (role / "report.md").exists(), "demo produces a report without a model")
     expect((role / "round.json").exists(), "round opening date is recorded")
+    test_html_report(tmp)
 
     print("close round")
     rc, _ = quiet(cleanup.main, ["close", str(role)])

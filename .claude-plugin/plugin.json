@@ -1,6 +1,6 @@
 {
   "name": "repo-aware-hiring",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Repo-aware decision support for software engineer hiring: profiles your codebase, builds an evidence-based rubric from a planned brief and the job description, and screens CVs against it with verified evidence and a deterministic ranking.",
   "author": {
     "name": "Shikhar Nilabh",

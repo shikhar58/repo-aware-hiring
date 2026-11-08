@@ -87,8 +87,23 @@ questions that point at your actual code.
   <img src="docs/assets/candidate-card.svg" alt="Candidate card: criterion levels with quoted evidence and a repo-grounded interview probe" width="88%">
 </p>
 
-The full rendered report is in [`docs/example-report.md`](docs/example-report.md). All images on this
-page are generated from a fresh demo run by [`docs/assets/make_assets.py`](docs/assets/make_assets.py).
+### The report you open
+
+Each screening writes **`report.html`**: one self-contained file you open in any browser and share as a PDF.
+It has summary tiles, the shortlist chart, a candidates × criteria heatmap for comparing everyone at a glance,
+the rubric, and a card for every candidate, with filters, search and a light/dark theme.
+
+<p align="center">
+  <img src="docs/assets/html-report.png" alt="HTML report: summary tiles, shortlist bar chart and a candidates by criteria heatmap" width="88%">
+</p>
+
+It contains candidate data, so it is built to be safe: it makes **no network requests** (enforced by a content
+security policy; no CDN scripts, fonts or images) and **escapes all CV text**, so a malicious CV can't run code in
+the report. A plain-text `report.md` is written alongside it for diffs and agents.
+
+Download [`docs/example-report.html`](docs/example-report.html) and open it, or read the
+[Markdown version](docs/example-report.md). All images on this page are generated from a fresh demo run
+([`docs/assets/make_assets.py`](docs/assets/make_assets.py)).
 
 ## Try it in 2 minutes
 
@@ -98,7 +113,7 @@ and DOCX) and loads scores recorded during a dry run in place of the model.
 ```bash
 git clone https://github.com/shikhar58/repo-aware-hiring.git && cd repo-aware-hiring
 python3 demo/run_demo.py          # needs pdftotext (poppler-utils) for the PDF CVs
-open hiring/demo/report.md        # or any Markdown viewer
+open hiring/demo/report.html       # opens in your browser
 ```
 
 <p align="center">
@@ -148,9 +163,10 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Bias tests** | The eval suite checks that swapping a candidate's name, gender or national origin produces identical redacted text, and that a university change or a career break doesn't move the score. |
 | **Injection defence** | Instructions hidden in CVs (including white text in PDFs, in several languages) are detected, flagged for a human, and ignored. |
 | **Human approval** | No scoring until a named person approves the rubric. Nothing is ever rejected automatically. |
-| **Retention** | `close-round` deletes candidate data when a role closes and keeps only a pseudonymous audit record. |
+| **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
+| **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-37 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+41 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -224,7 +240,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 | `hiring-plan` | Asks follow-up questions one at a time, investigates the relevant part of the repo, proposes 2–3 role designs, writes an approved brief | `brief.md` |
 | `repo-profile` | Samples the codebase in the brief's scope: stack, architecture, conventions, gaps, hard problems | `repo-profile.md` |
 | `hiring-rubric` | Turns brief + JD + profile into weighted criteria with observable anchors; waits for approval | `rubric.json` |
-| `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.md` |
+| `screen-candidates` | Redacts CVs, scores each one alone with verbatim evidence, validates, ranks and renders the report | `scores/`, `ranking.json`, `report.html`, `report.md` |
 | `close-round` | Deletes candidate data when the role closes; keeps a pseudonymous audit record; finds overdue rounds | `audit.json` |
 </details>
 
@@ -238,7 +254,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 | `check_redaction.py` | Block scoring if a name is unconfirmed, or if names, contact details, age, nationality or links remain |
 | `validate_scores.py` | Schema and consistency checks; every evidence quote must appear in the CV; injection CVs must be flagged |
 | `rank.py` | Weighted totals, must-have gates, ties; refuses invalid scores |
-| `render_report.py` | Builds `report.md` from the data |
+| `render_report.py` | Builds `report.html` (charts, heatmap, cards; self-contained) and `report.md` from the data |
 </details>
 
 <details>
@@ -260,7 +276,8 @@ hiring/db-owner/
 ├── prep_report.json    # extraction problems, injection hits, code links (for humans)
 ├── scores/             # one file per candidate
 ├── ranking.json
-├── report.md
+├── report.html         # the report to read and share
+├── report.md           # same content as text
 ├── round.json          # opened/closed dates (retention)
 └── audit.json          # written when the round is closed
 ```

@@ -29,7 +29,8 @@ Rubric v1 · approved by Dry-run hiring manager · 2026-11-08 · 12 candidates
 
 ## Rubric gaps worth noticing
 
-_None recorded._
+- The job is defined by the brief's mission; the codebase is small, so criteria come from the gaps it shows (migrations at app start, no test isolation, no backups).
+- FastAPI expertise is deliberately not screened for: the team already has it.
 
 ## Candidate detail
 
