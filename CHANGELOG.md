@@ -3,7 +3,13 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.13.1] — 2026-11-09
+## [0.13.2] — 2026-11-09
+
+### Removed
+- README "Status and roadmap" section. The beta status stays in the badges, and what has been verified is linked
+  from "Going further".
+
+ — 2026-11-09
 
 ### Changed
 - README: the comparison posting is now an ordinary, realistic one (6 warnings) instead of a caricature.

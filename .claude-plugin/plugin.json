@@ -1,7 +1,7 @@
 {
   "name": "repo-aware-hiring",
   "displayName": "Repo-Aware Hiring",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "Hiring for software engineers, grounded in your codebase: maps the code first (one repo or many), drafts job descriptions, screens CVs with quote-verified evidence for a qualified person to review, and prepares structured interview kits. Decision support only: it never rejects anyone.",
   "author": {
     "name": "Shikhar Nilabh",

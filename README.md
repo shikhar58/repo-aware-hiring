@@ -504,18 +504,6 @@ Redaction patterns cover English, French, German, Spanish, Italian, Dutch and Po
 CVs in other languages work, but rely on the agent's manual redaction review.
 </details>
 
-## Status and roadmap
-
-**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 144 deterministic checks
-in CI. Next: publishing model-consistency results across separate sessions. See
-[what has and hasn't been verified](docs/DRY_RUN.md).
-
-- [ ] Publish multi-session model eval results
-- [ ] Second evaluation fixture on a different stack
-- [ ] `take-home-gen`, `take-home-grade` and `debrief` skills
-- [ ] Backtesting on past hiring rounds and company-specific calibration
-- [ ] OCR for scanned PDFs
-
 ## Support the project
 
 - ⭐ **Star the repo** if it's useful: it helps other teams find it.
