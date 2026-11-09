@@ -3,7 +3,17 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.13.2] — 2026-11-09
+## [0.13.3] — 2026-11-09
+
+### Fixed
+- The demo failed on machines without `pdftotext` (including a stock Mac). It now skips the two PDF CVs, says which
+  ones and how to include them, and finishes with the other ten.
+
+### Changed
+- Python 3.9 is supported (the demo and every self-test pass on it), so the Python that comes with Apple's developer
+  tools works. CI now also runs on 3.9.
+
+ — 2026-11-09
 
 ### Removed
 - README "Status and roadmap" section. The beta status stays in the badges, and what has been verified is linked

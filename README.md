@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml"><img src="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml/badge.svg" alt="selftest"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5eead4" alt="MIT license"></a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-7dd3fc" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/python-3.9%2B-7dd3fc" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/Agent%20Skills-any%20coding%20agent-fbbf24" alt="Agent Skills for any coding agent">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-fbbf24" alt="Claude Code plugin">
   <img src="https://img.shields.io/badge/dependencies-none-94a3b8" alt="No dependencies">
@@ -123,7 +123,7 @@ Then open your repo and ask for a posting:
 ```
 
 The first run maps your codebase (once per repo, reused for every role), then asks a few questions, one at a time.
-Every question can be answered your own way or skipped. Requires Python 3.10+ (standard library only).
+Every question can be answered your own way or skipped. Requires Python 3.9+ (standard library only).
 
 <details>
 <summary><b>The full hiring round, step by step</b></summary>
@@ -147,7 +147,7 @@ during a dry run in place of the model:
 
 ```bash
 git clone https://github.com/shikhar58/repo-aware-hiring.git && cd repo-aware-hiring
-python3 demo/run_demo.py          # needs pdftotext (poppler-utils) for the PDF CVs
+python3 demo/run_demo.py          # PDF CVs need pdftotext (poppler); skipped without it
 open hiring/demo/report.html      # the screening report
 open hiring/demo/interviews/index.html   # interview kits for three candidates
 ```

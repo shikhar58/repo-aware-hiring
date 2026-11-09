@@ -6,7 +6,7 @@ Usage: python3 demo/run_demo.py [target_dir]     (default: ./hiring/demo)
 Copies the db-owner fixture (brief, repo profile, approved rubric, 12 synthetic CVs in
 md/pdf/docx), runs the real pipeline scripts (prepare -> redaction check -> validate -> rank ->
 report) and uses scores recorded during the dry run in place of the model's scoring step.
-Open <target>/report.html in a browser afterwards (report.md has the same content as text). Requires pdftotext for the PDF CVs.
+Open <target>/report.html in a browser afterwards (report.md has the same content as text). Uses pdftotext for the two PDF CVs, and skips them if it isn't installed.
 """
 import json
 import shutil
@@ -39,10 +39,16 @@ def main(argv):
         return 1
     target.mkdir(parents=True, exist_ok=True)
 
-    step(1, "Copy brief, repo profile, approved rubric and 12 synthetic CVs")
+    have_pdf = shutil.which("pdftotext") is not None
+    skipped = [] if have_pdf else sorted(p.name for p in (FIXTURE / "cvs").glob("*.pdf"))
+    step(1, f"Copy brief, repo profile, approved rubric and {12 - len(skipped)} synthetic CVs")
     for name in ("brief.md", "repo-profile.md", "rubric.json", "jd.md"):
         shutil.copy(FIXTURE / name, target / name)
-    shutil.copytree(FIXTURE / "cvs", target / "cvs")
+    shutil.copytree(FIXTURE / "cvs", target / "cvs", ignore=None if have_pdf else shutil.ignore_patterns("*.pdf"))
+    if skipped:
+        print(f"  pdftotext isn't installed, so the {len(skipped)} PDF CVs are skipped ({', '.join(skipped)}), including "
+              "the one with a hidden prompt injection.\n  To include them, install poppler (macOS: brew install poppler; "
+              "Debian/Ubuntu: sudo apt install poppler-utils) and run the demo again.")
 
     step(2, "Extract, redact and scan CVs for prompt injection (prepare_cvs.py)")
     if prepare_cvs.main(["prepare_cvs", str(target)]) != 0:
@@ -90,7 +96,7 @@ def main(argv):
 
     print(f"\nDone. Open {target / 'report.html'} in your browser (text version: report.md)")
     print(f"Interview kits: {kdir / 'index.html'}")
-    print("Next: install the plugin in Claude Code and ask it to plan a hire for your own repo.")
+    print("Next: install the skills in your coding agent and ask it to write a job description for your own repo.")
     return 0
 
 

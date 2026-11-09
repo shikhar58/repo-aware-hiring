@@ -88,6 +88,6 @@ if [ "$remove" -eq 0 ]; then
   echo
   echo "Next: open your coding agent in your project and ask, for example:"
   echo "  Write a job description for someone to own the database layer"
-  command -v python3 >/dev/null 2>&1 || echo "Note: the skills need python3 (3.10 or later) on your PATH." >&2
+  command -v python3 >/dev/null 2>&1 || echo "Note: the skills need python3 (3.9 or later) on your PATH." >&2
 fi
 exit $status
