@@ -31,7 +31,8 @@ Your job description says *"PostgreSQL experience"*. Your codebase says somethin
 migrations run on every container start, tests share one database, and nobody owns backups.
 That's the person you actually need.
 
-**repo-aware-hiring** is a set of agent skills that reads both and does the three jobs that decide who you hire:
+**repo-aware-hiring** is a set of agent skills that reads your codebase, works out who you actually need, and does
+the three jobs that decide who you hire:
 
 <table>
 <tr>
