@@ -16,9 +16,31 @@ import hiring_lib as H  # noqa: E402
 import report_html  # noqa: E402
 
 DISCLAIMER = """> **Decision support only.** This report ranks CV evidence against an approved rubric.
-> It does not reject or advance anyone. A named human reviewer must read each candidate's
-> evidence before any decision. "No evidence" means the CV does not show it, not that the
-> candidate lacks it: use the interview probes."""
+> It does not reject or advance anyone. A qualified person must review each candidate's
+> evidence, can change any result, and is responsible for the decision. Candidates who are the
+> subject of a decision must be told that AI was used. "No evidence" means the CV does not show
+> it, not that the candidate lacks it: use the interview probes."""
+
+
+def oversight(role):
+    """Reviewer and candidate-disclosure status from the role's decisions log (screen stage)."""
+    out = {"reviewer": None, "disclosure": None}
+    path = Path(role) / "decisions.json"
+    if path.exists():
+        try:
+            for d in H.load_json(path):
+                if d.get("key") in out and d.get("value") not in (None, ""):
+                    out[d["key"]] = d["value"] if isinstance(d["value"], str) else str(d["value"])
+        except (ValueError, TypeError, AttributeError):
+            pass
+    return out
+
+
+def oversight_lines(ov):
+    return ["**Human review.** Reviewer: " + (ov["reviewer"] or "not yet recorded (record a qualified reviewer before "
+                                                               "any decision)") + ".",
+            "",
+            "**Candidates told AI was used:** " + (ov["disclosure"] or "not confirmed (required before any decision)") + "."]
 
 METHOD = """## Method
 
@@ -57,7 +79,7 @@ def main(argv=None):
            + (f" · Focus: {rubric['focus_version']}" if rubric.get("focus_version") else ""),
            *([f"Scope: " + ", ".join(f"{k} {float(v):.0%}" for k, v in rubric["scope"].items())]
              if isinstance(rubric.get("scope"), dict) and rubric["scope"] else []),
-           "", DISCLAIMER, "",
+           "", DISCLAIMER, "", *oversight_lines(oversight(role)), "",
            "## Shortlist", "",
            "| Rank | Candidate | File | Score /100 | Must-haves | Confidence | Flags |",
            "|---|---|---|---|---|---|---|"]
@@ -102,7 +124,7 @@ def main(argv=None):
     print(f"Wrote {role / 'report.md'}")
     if not args.no_html:
         notes_md = Path(args.notes).read_text(encoding="utf-8") if args.notes and Path(args.notes).exists() else ""
-        html = report_html.build_html(rubric, ranking, scores, notes_md, dt.date.today().isoformat())
+        html = report_html.build_html(rubric, ranking, scores, notes_md, dt.date.today().isoformat(), oversight(role))
         (role / "report.html").write_text(html, encoding="utf-8")
         print(f"Wrote {role / 'report.html'} (self-contained; open in any browser, print to PDF to share)")
     return 0

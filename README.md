@@ -56,8 +56,9 @@ with or endorsed by Ollama.*
 > Must have 5+ years of Python and C++, experience with LLMs, PyTorch and CUDA, a CS degree from a top university,
 > and be a native English speaker. Competitive salary.
 
-Run through the checker ([as a full posting](evals/fixtures/jd/generic/jd.md)), it gets 9 warnings: hype words,
-years of experience, degree and school demands, "native speaker", six must-haves, no pay range. And it says nothing
+Run through the checker ([as a full posting](evals/fixtures/jd/generic/jd.md)), it gets 10 warnings: hype words,
+years of experience, degree and school demands, "native speaker", six must-haves, no pay range, no notice that AI
+helps screen. And it says nothing
 about the actual job.
 
 **Drafted from Ollama's code** for an engineer on its inference engine, after four questions (the area, the title,
@@ -197,7 +198,7 @@ private workspace outside your repos.
   <img src="docs/assets/privacy.png" alt="Your repos and your coding agent, inside the tools you already use, produce internal maps, rubric and scores; check_jd and validate_kit block paths, internal names, secrets and weaknesses; only the job posting and interview questions, the work and not the code, reach the candidate" width="440">
 </p>
 
-<sub>Your agent does send code and redacted CVs to its model provider, as it does for any other task. The leak
+<sub>Full details in the [privacy policy](PRIVACY.md). Your agent does send code and redacted CVs to its model provider, as it does for any other task. The leak
 checks catch paths, internal names, settings, hosts and secrets, but they are checks, not guarantees: read the
 posting and the questions before you share them.</sub>
 
@@ -343,14 +344,17 @@ checked by a script, and each check blocks the next step until it passes.
 - **Redaction before scoring.** Names, contact details, age, nationality, gender and similar fields are removed in
   seven languages, and every name is confirmed before scoring starts.
 - **Evidence or zero.** Every score quotes the CV, and a script rejects any quote that isn't really there.
-- **People decide.** No scoring until a named person approves the rubric. Nothing is ever rejected automatically.
+- **People decide.** No scoring until a named person approves the rubric, and the report names the qualified person
+  who reviews it. Nothing is ever rejected automatically. Candidates are told AI was used: the posting draft has a
+  place for the notice and the report flags it until it's confirmed. This is what
+  [Anthropic's Usage Policy requires for hiring](docs/COMPLIANCE.md#anthropics-usage-policy) from 12 November 2026.
 - **Bias and injection tests.** Swapping a name, gender or national origin produces identical input; hidden
   instructions in CVs are flagged and ignored.
 - **Safe to publish and share.** Postings and interview questions are checked for leaked internals; the report file
   makes no network requests.
 - **Retention.** Candidate data is deleted when the role closes; a pseudonymous audit record stays.
 
-136 deterministic checks run in CI on every push. [All safeguards in detail →](docs/SAFEGUARDS.md)
+139 deterministic checks run in CI on every push. [All safeguards in detail →](docs/SAFEGUARDS.md)
 
 ## How it compares
 
@@ -478,7 +482,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 
 ## Status and roadmap
 
-**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 136 deterministic checks
+**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 139 deterministic checks
 in CI. Next: publishing model-consistency results across separate sessions. See
 [what has and hasn't been verified](docs/DRY_RUN.md).
 

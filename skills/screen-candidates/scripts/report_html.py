@@ -200,7 +200,7 @@ JS = """
 """
 
 
-def build_html(rubric, ranking, scores, notes_md="", date=""):
+def build_html(rubric, ranking, scores, notes_md="", date="", oversight=None):
     crit = rubric["criteria"]
     rows = ranking["ranked"] + ranking["below_the_line"]
     n = len(rows)
@@ -227,9 +227,14 @@ def build_html(rubric, ranking, scores, notes_md="", date=""):
                 if isinstance(rubric.get("scope"), dict) and rubric["scope"] else "")
              + '</div></div>'
              '<button class="btn" id="theme" type="button" title="Switch between light and dark">Light / dark</button></div>')
+    ov = oversight or {}
     h.append('<div class="callout"><strong>Decision support only.</strong> This report ranks CV evidence against an '
-             'approved rubric. It does not reject or advance anyone. A named person reads the evidence and decides. '
-             '“No evidence” means the CV doesn’t show it, not that the person can’t do it: use the interview probes.</div>')
+             'approved rubric. It does not reject or advance anyone. A qualified person must review each candidate’s '
+             'evidence, can change any result, and is responsible for the decision. Candidates who are the subject of '
+             'a decision must be told that AI was used. “No evidence” means the CV doesn’t show it, not that the '
+             'person can’t do it: use the interview probes.<br><strong>Reviewer:</strong> '
+             + e(ov.get("reviewer") or "not yet recorded") + ' · <strong>Candidates told AI was used:</strong> '
+             + e(ov.get("disclosure") or "not confirmed") + '</div>')
 
     h.append('<div class="tiles">'
              f'<div class="tile"><b>{n}</b><span>candidates screened</span></div>'

@@ -1,11 +1,16 @@
 # Screening report — Backend Engineer, Database Owner
 
-Rubric v1 · approved by Dry-run hiring manager · 2026-11-08 · 12 candidates
+Rubric v1 · approved by Dry-run hiring manager · 2026-11-09 · 12 candidates
 
 > **Decision support only.** This report ranks CV evidence against an approved rubric.
-> It does not reject or advance anyone. A named human reviewer must read each candidate's
-> evidence before any decision. "No evidence" means the CV does not show it, not that the
-> candidate lacks it: use the interview probes.
+> It does not reject or advance anyone. A qualified person must review each candidate's
+> evidence, can change any result, and is responsible for the decision. Candidates who are the
+> subject of a decision must be told that AI was used. "No evidence" means the CV does not show
+> it, not that the candidate lacks it: use the interview probes.
+
+**Human review.** Reviewer: not yet recorded (record a qualified reviewer before any decision).
+
+**Candidates told AI was used:** not confirmed (required before any decision).
 
 ## Shortlist
 

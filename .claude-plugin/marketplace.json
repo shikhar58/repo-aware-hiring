@@ -10,7 +10,7 @@
     {
       "name": "repo-aware-hiring",
       "source": ".",
-      "description": "Write job descriptions from your codebase (one repo or many), screen CVs with verified evidence, and prepare structured interview kits per candidate. Decision support only.",
+      "description": "Hiring for software engineers, grounded in your codebase: maps the code first (one repo or many), drafts job descriptions, screens CVs with quote-verified evidence for a qualified person to review, and prepares structured interview kits. Decision support only: it never rejects anyone.",
       "category": "hiring",
       "tags": [
         "hiring",

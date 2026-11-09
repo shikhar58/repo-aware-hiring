@@ -3,7 +3,27 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.10.2] — 2026-11-09
+## [0.11.0] — 2026-11-09
+
+Aligned with Anthropic's plugin directory requirements and its Usage Policy, which from 12 November 2026 treats
+screening and ranking candidates as a high-risk use.
+
+### Added
+- **Human review and candidate notice.** `screen-candidates` asks who the qualified reviewer is and whether
+  candidates were told AI is used, and records both. The report shows the reviewer and the notice status, or says
+  "not yet recorded" / "not confirmed". The disclaimer now says a qualified person must review each candidate, can
+  change any result and is responsible for the decision.
+- `check_jd.py` warns when a posting doesn't tell candidates that AI helps screen them; the placeholder explains why
+  the notice is required.
+- `PRIVACY.md`, and an Anthropic Usage Policy section in `docs/COMPLIANCE.md`.
+- Directory listing fields in `plugin.json`: `displayName`, `icon`, `documentationUrl`, `supportUrl`,
+  `privacyPolicyUrl`.
+
+### Changed
+- Plugin and marketplace descriptions describe the plugin as decision support with human review.
+- The README's typical posting now gets 10 warnings, including the missing AI notice.
+
+ — 2026-11-09
 
 ### Added
 - Issue templates: "Tell us about your hiring round" (feedback) and a bug report; both remind people not to paste

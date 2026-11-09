@@ -125,7 +125,7 @@ Where a technology matters, name it as an example of the capability, among alter
 ## How we hire
 The steps and timeline only if the user gave them; otherwise placeholders, never generic text:
 [insert: interview steps and how long they take]
-[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required in some jurisdictions]
+[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required when AI helps screen (Anthropic's Usage Policy, and the law in some places)]
 
 ## What we offer
 [insert: benefits], unless the user gave them.

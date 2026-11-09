@@ -153,6 +153,12 @@ def test_html_report(tmp):
     out = report_html.build_html(rubric, ranking, scores, "- " + evil, "2026-01-01")
     expect("<script>alert" not in out and "<img src=x" not in out and 'onmouseover="x' not in out,
            "CV-derived text cannot inject markup into report.html")
+    expect("Reviewer:</strong> not yet recorded" in out and "told AI was used:</strong> not confirmed" in out,
+           "the report says when no reviewer or candidate notice is recorded")
+    out2 = report_html.build_html(rubric, ranking, scores, "", "2026-01-01",
+                                  {"reviewer": "A. Lead, engineering manager", "disclosure": "in the posting"})
+    expect("A. Lead, engineering manager" in out2 and "in the posting" in out2,
+           "the report shows the recorded reviewer and how candidates were told")
 
 
 def test_jd_checker(tmp):
@@ -167,7 +173,8 @@ def test_jd_checker(tmp):
     rc, out = quiet(check_jd.main, [str(role)])
     expect(rc == 0 and "0 errors, 0 warnings" in out, "good JD passes with no errors or warnings")
     rc_g, out_g = quiet(check_jd.main, [str(HERE / "fixtures" / "jd" / "generic")])
-    expect(out_g.count("warn ") == 9, "the README's typical posting gets exactly the 9 warnings it claims")
+    expect(out_g.count("warn ") == 10, "the README's typical posting gets exactly the 10 warnings it claims")
+    expect("no notice that AI is used in screening" in out_g, "a posting with no AI-screening notice is flagged")
     expect("[insert: benefits]" in out and "[insert: how AI-assisted screening" in out, "unfilled placeholders are listed")
     rc, out = quiet(check_jd.main, [str(role), "--jd", str(FIXTURE.parent / "jd" / "bad-jd.md")])
     expect(rc == 1, "JD with internal details is blocked")

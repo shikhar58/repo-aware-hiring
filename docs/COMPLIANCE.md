@@ -6,7 +6,8 @@ automated hiring decisions.
 ## Design commitments
 
 - **Human in the loop.** The rubric must be approved by a named person before scoring, and the
-  report states that a human reviews every candidate. Nothing is rejected or advanced automatically.
+  report names the qualified person who reviews the results (or says none is recorded yet). Nothing is rejected or
+  advanced automatically.
 - **Redaction before scoring.** Names, contact details, profile and code links, age, nationality,
   photos and marital status are removed before the model scores a CV. A script blocks scoring
   until no such details remain, and the eval suite checks that name, gender and origin swaps
@@ -25,6 +26,22 @@ automated hiring decisions.
 Start with a few roles where your team still reads every CV and compares its own shortlist with the
 report before trusting the ranking. Keep humans reading CVs even then. There is no mode in which the
 tool rejects candidates.
+
+## Anthropic's Usage Policy
+
+When this plugin runs on Claude, Anthropic's [Usage Policy](https://www.anthropic.com/aup) applies. From
+12 November 2026 it treats employment, including "screening, ranking, advancing, or rejecting candidates; hiring", as a
+**high-risk** use, for internal tools as well as customer-facing ones. Two requirements follow:
+
+| Requirement | How the plugin supports it | What you must do |
+|---|---|---|
+| A qualified person meaningfully reviews each recommendation, has authority to change it, and stays responsible for the decision | Nothing is rejected or advanced automatically; the rubric needs a named approver; every score quotes the CV; `screen-candidates` asks who the qualified reviewer is and the report shows them, or says "not yet recorded" | Name a reviewer with the training or experience to judge the evidence, and have them read it before any decision |
+| People who are the subject of a decision are clearly told AI was used | The job description draft has a placeholder for the notice and `check_jd.py` warns when a posting has none; `screen-candidates` asks whether candidates were told and the report says "not confirmed" until they are | Tell candidates, in the posting or separately, before any decision |
+
+Drafting a job description or a codebase map is "internal drafting" that the policy excludes; screening and
+ranking are not. The policy also prohibits discrimination on protected characteristics, inferring them from
+biometric data, and inferring emotions: the plugin redacts protected details before scoring and its interview checks
+block questions about them. Read the policy itself: this summary is not legal advice.
 
 ## Your obligations as a deployer (not legal advice)
 

@@ -207,6 +207,12 @@ def main(argv=None):
              "nice": "Nice-to-haves", "hire": "How we hire"}
     if missing:
         warnings.append(("-", "missing sections: " + ", ".join(names[k] for k in missing)))
+    ai = r"(?:\bAI\b|artificial intelligence|automated)"
+    act = r"(?:screen|review|assess|evaluat|rank|shortlist|applica|CVs?\b|r[ée]sum[ée]|decision)"
+    if not re.search(rf"{ai}[^.\n\]]{{0,80}}{act}|{act}\w*[^.\n\]]{{0,80}}{ai}", text, re.I):
+        warnings.append(("-", "no notice that AI is used in screening: candidates must be told when AI helps decide "
+                              "about them (Anthropic's Usage Policy from 12 Nov 2026, and the law in some places). Say "
+                              "so in How we hire, or keep the [insert: …] placeholder"))
     for i, ln in enumerate(lines, 1):
         if re.match(r"^#{2,3}\s+.*\b(?:(?:our|the|tech(?:nology)?)\s+stack|technologies(?:\s+we\s+use)?|tools\s+we\s+use|"
                     r"what\s+we\s+(?:use|build\s+with))\b", ln, re.I):
@@ -231,7 +237,7 @@ def main(argv=None):
     if not pay_placeholder and (not CURRENCY_RE.search(head) or re.search(r"on request|competitive", head, re.I)):
         warnings.append((2, "no pay range near the top: required in some jurisdictions and increases applications"))
     visible = re.sub(r"<!--.*?-->", "", text, flags=re.S)  # the draft note in a comment isn't a placeholder
-    placeholders = sorted(set(re.findall(r"\[[^\]\n]{2,160}\]", visible)))
+    placeholders = sorted(set(re.findall(r"\[[^\]\n]{2,300}\]", visible)))
     placeholders = [p for p in placeholders if not re.match(r"\[[^\]]+\]\(", p)]
     if placeholders:
         notes.append("placeholders to fill before posting: " + ", ".join(placeholders))

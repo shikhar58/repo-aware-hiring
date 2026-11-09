@@ -50,7 +50,7 @@ open models run well in Ollama soon after their release, on Apple Silicon and NV
 ### How we hire
 [insert: interview steps and how long they take]
 
-[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required in some jurisdictions]
+[insert: how AI-assisted screening is used and how to ask for adjustments or a human-only review; required when AI helps screen (Anthropic's Usage Policy, and the law in some places)]
 
 ### What we offer
 [insert: benefits]

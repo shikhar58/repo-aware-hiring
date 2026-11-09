@@ -26,6 +26,6 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-136 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+139 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](../evals/README.md) for the full harness, including multi-session model evals.
 

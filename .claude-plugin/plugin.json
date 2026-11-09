@@ -1,7 +1,8 @@
 {
   "name": "repo-aware-hiring",
-  "version": "0.10.2",
-  "description": "Repo-aware hiring for software engineers: maps your codebase (or several repos and how they connect) first, then writes job descriptions, screens CVs with verified evidence, and prepares structured interview kits, with a focus prompt and planning checkpoints at every stage.",
+  "displayName": "Repo-Aware Hiring",
+  "version": "0.11.0",
+  "description": "Hiring for software engineers, grounded in your codebase: maps the code first (one repo or many), drafts job descriptions, screens CVs with quote-verified evidence for a qualified person to review, and prepares structured interview kits. Decision support only: it never rejects anyone.",
   "author": {
     "name": "Shikhar Nilabh",
     "url": "https://github.com/shikhar58"
@@ -23,5 +24,9 @@
     "software-engineering"
   ],
   "homepage": "https://github.com/shikhar58/repo-aware-hiring",
-  "repository": "https://github.com/shikhar58/repo-aware-hiring"
+  "repository": "https://github.com/shikhar58/repo-aware-hiring",
+  "icon": "./docs/assets/icon.png",
+  "documentationUrl": "https://github.com/shikhar58/repo-aware-hiring#readme",
+  "supportUrl": "https://github.com/shikhar58/repo-aware-hiring/issues",
+  "privacyPolicyUrl": "https://github.com/shikhar58/repo-aware-hiring/blob/main/PRIVACY.md"
 }
