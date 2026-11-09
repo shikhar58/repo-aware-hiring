@@ -3,7 +3,14 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.13.0] — 2026-11-09
+## [0.13.1] — 2026-11-09
+
+### Changed
+- README: the comparison posting is now an ordinary, realistic one (6 warnings) instead of a caricature.
+- The tagline "Candidates see the work, never the code" is now "Candidates learn precisely what the role requires,
+  without your codebase being revealed", in the README, privacy diagram, walk-through and social card.
+
+ — 2026-11-09
 
 ### Added
 - `scripts/install.sh`: installs the skills by copying them, with no network access or Node:

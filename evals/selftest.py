@@ -173,7 +173,7 @@ def test_jd_checker(tmp):
     rc, out = quiet(check_jd.main, [str(role)])
     expect(rc == 0 and "0 errors, 0 warnings" in out, "good JD passes with no errors or warnings")
     rc_g, out_g = quiet(check_jd.main, [str(HERE / "fixtures" / "jd" / "generic")])
-    expect(out_g.count("warn ") == 10, "the README's typical posting gets exactly the 10 warnings it claims")
+    expect(out_g.count("warn ") == 6, "the README's typical posting gets exactly the 6 warnings it claims")
     expect("no notice that AI is used in screening" in out_g, "a posting with no AI-screening notice is flagged")
     expect("[insert: benefits]" in out and "[insert: how AI-assisted screening" in out, "unfilled placeholders are listed")
     rc, out = quiet(check_jd.main, [str(role), "--jd", str(FIXTURE.parent / "jd" / "bad-jd.md")])

@@ -28,7 +28,7 @@ LINES = [
     ("> B", AMBER, 5.4),
     ("● Recorded. Pay, location: skipped", MUTED, 6.2),
     ("  → [insert: …] placeholders", MUTED, 6.2),
-    ("● Drafting: the work, not the code …", TEXT, 8.0),
+    ("● Drafting: what the role requires …", TEXT, 8.0),
     ("✓ check_jd: 0 leaked internals", TEAL, 9.8),
     ("✓ jd.md: a draft for you to finish", TEAL, 10.8),
 ]

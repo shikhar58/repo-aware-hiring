@@ -36,7 +36,7 @@ need, and **drafts the job description for that person**: specific about the kin
 and yours to finish. When applications arrive, it can also screen CVs and résumés against the same requirements and
 write tailored technical interview questions for each candidate.
 
-> **Candidates see the work, never the code.** And your code goes nowhere it doesn't already go: everything runs
+> **Candidates learn precisely what the role requires, without your codebase being revealed.** And your code goes nowhere it doesn't already go: everything runs
 > inside the coding agent your team already uses. [How that works ↓](#your-code-stays-private)
 
 **Built for** engineering managers, tech leads and founders hiring software engineers into an existing codebase.
@@ -54,14 +54,13 @@ with or endorsed by Ollama.*
 
 **A typical posting** (made up for comparison):
 
-> We're looking for a rockstar engineer to join our fast-paced team and build cutting-edge AI.
-> Must have 5+ years of Python and C++, experience with LLMs, PyTorch and CUDA, a CS degree from a top university,
-> and be a native English speaker. Competitive salary.
+> We're looking for a passionate engineer to join our fast-paced team and work on cutting-edge AI. You have 5+ years
+> of experience with Python and C++, hands-on experience with LLMs, PyTorch and CUDA, a degree in Computer Science or
+> a related field, and excellent communication skills. Competitive salary and great benefits.
 
-Run through the checker ([as a full posting](evals/fixtures/jd/generic/jd.md)), it gets 10 warnings: hype words,
-years of experience, degree and school demands, "native speaker", six must-haves, no pay range, no notice that AI
-helps screen. And it says nothing
-about the actual job.
+Nothing in it is unusual, and the checker ([run on the full posting](evals/fixtures/jd/generic/jd.md)) still gives 6
+warnings: a vague phrase, years of experience, a degree as a must-have, no pay range, no notice that AI helps screen,
+and missing sections. More importantly, it says nothing about the actual job.
 
 **Drafted from Ollama's code** for an engineer on its inference engine, after four questions (the area, the title,
 a one-line focus on new model support, and what success looks like):
@@ -204,7 +203,7 @@ microservices**? It maps each one and how they connect. Tell it **what to focus 
 
 ## Your code stays private
 
-**Candidates see the work, never the code.** The skills read your repository and turn it into a job description and
+**Candidates learn precisely what the role requires, without your codebase being revealed.** The skills read your repository and turn it into a job description and
 interview questions about your real problems. Before anything is shared, internal names, file paths, settings,
 secrets and weaknesses are checked out of it: `check_jd.py` for the posting, `validate_kit.py` for the interview
 questions. The codebase map's risks section is marked internal and never published. So an interview can be about
@@ -217,7 +216,7 @@ upload, no new account and no telemetry. Maps, rubrics and CV scores stay in a g
 private workspace outside your repos.
 
 <p align="center">
-  <img src="docs/assets/privacy.png" alt="Your repos and your coding agent, inside the tools you already use, produce internal maps, rubric and scores; check_jd and validate_kit block paths, internal names, secrets and weaknesses; only the job posting and interview questions, the work and not the code, reach the candidate" width="440">
+  <img src="docs/assets/privacy.png" alt="Your repos and your coding agent, inside the tools you already use, produce internal maps, rubric and scores; check_jd and validate_kit block paths, internal names, secrets and weaknesses; only the job posting and interview questions, describing what the role requires and not the code, reach the candidate" width="440">
 </p>
 
 <sub>Full details in the [privacy policy](PRIVACY.md). Your agent does send code and redacted CVs to its model provider, as it does for any other task. The leak
