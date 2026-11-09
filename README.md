@@ -40,7 +40,8 @@ the three jobs that decide who you hire:
 
 ### ✍️ Write the job description
 
-- Asks you a few questions, reads the repo, and writes a posting that describes **your real work**, not buzzwords
+- Asks you a few questions, reads the repo, and drafts a posting that describes **the kind of work the hire will do**,
+  in public terms, not buzzwords
 - Translates internal findings into public language; a checker **blocks leaked file paths, internal names and security weaknesses**
 - Flags wording that puts good people off: gender-coded words, years-of-experience demands, long must-have lists
 
@@ -253,7 +254,7 @@ It drafts the posting section by section for your approval, then checks it befor
   <img src="docs/assets/jd.svg" alt="Repo findings such as file paths and missing backups translated into public job-posting language, and checker output blocking leaks and flagging biased wording" width="88%">
 </p>
 
-- **Specific, because it's grounded in the code.** The real problems in plain words, with your stack hinted through the
+- **Specific, because it's grounded in the code.** The kind of work the hire will do, in public terms, with your stack hinted through the
   work and the requirements rather than listed, so you don't publish an inventory of your technology.
 - **Safe to publish.** File paths, internal names from your repo, environment variables, hosts, credentials and
   security weaknesses are errors that block publishing.
