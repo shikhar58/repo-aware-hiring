@@ -1,0 +1,17 @@
+%%{init: {"flowchart": {"wrappingWidth": 400}} }%%
+flowchart TB
+    subgraph T["Inside the tools you already use"]
+        repo[("Your repo or repos")]
+        agent["Your coding agent<br/>same model provider and agreements as today<br/>no hiring vendor · no upload · no telemetry"]:::model
+        internal["Kept internal<br/>codebase map · risks · rubric · CV scores"]:::code
+        repo --> agent --> internal
+    end
+    internal --> gate{{"check_jd · validate_kit<br/>block paths, internal names, secrets, weaknesses"}}:::gate
+    gate -- "the work, not the code" --> shared["Job posting · interview questions"]:::share
+    shared --> cand(["Candidate"])
+
+    classDef model fill:#1e3a8a,stroke:#7dd3fc,color:#f8fafc
+    classDef code fill:#134e4a,stroke:#5eead4,color:#f8fafc
+    classDef gate fill:#78350f,stroke:#fbbf24,color:#fffbeb
+    classDef share fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    style T fill:#f8fafc,stroke:#94a3b8,color:#334155

@@ -20,6 +20,7 @@
   <a href="#write-the-job-description">Job descriptions</a> ·
   <a href="#screen-candidates-against-it">Screening</a> ·
   <a href="#interview-each-candidate">Interviews</a> ·
+  <a href="#your-code-stays-private">Privacy</a> ·
   <a href="#why-you-can-trust-the-output">Trust &amp; safety</a> ·
   <a href="docs/example-report.md">Example report</a>
 </p>
@@ -76,8 +77,12 @@ All three start from the same place: a **full map of your codebase** (services, 
 CI/CD, deployment, tests), checked for completeness and kept current, so nothing is based on a quick glance.
 Hiring for **several repos or microservices**? It maps each one and how they connect. Tell it **what to focus on**
 in a sentence, and it asks you only the decisions that matter, at the stage they matter.
-Use any of them on its own or all together. It runs inside your own coding agent (Claude Code, or any agent that
-supports Agent Skills), so your code and candidates' data never go to a separate hiring vendor.
+Use any of them on its own or all together.
+
+> **Candidates see the work, never the code.** And your code goes nowhere it doesn't already go: everything runs
+> inside the coding agent your team already uses (Claude Code, or any agent that supports Agent Skills).
+> [How that works ↓](#your-code-stays-private)
+
 Screening is **decision support**: it ranks evidence and suggests interview questions. It never rejects anyone.
 
 ## Why
@@ -369,6 +374,28 @@ Then open your repo in Claude Code and say what you're hiring for:
 > Close the db-owner round               # when the role is filled
 ```
 
+## Your code stays private
+
+**Candidates see the work, never the code.** The skills read your repository and turn it into a job description and
+interview questions about your real problems. Before anything is shared, internal names, file paths, settings,
+secrets and weaknesses are checked out of it: `check_jd.py` for the posting, `validate_kit.py` for the interview
+questions. The codebase map's risks section is marked internal and never published. So an interview can be about
+the actual work, a race in your payment retries or a migration on a large table, without showing the candidate a
+single line of code.
+
+**Your code goes nowhere it doesn't already go.** repo-aware-hiring is a set of skills for the coding agent your
+team already uses, under the same model provider, accounts and agreements. There's no hiring vendor to approve, no
+upload, no new account and no telemetry. Maps, rubrics and CV scores stay in a git-ignored `hiring/` folder, or a
+private workspace outside your repos.
+
+<p align="center">
+  <img src="docs/assets/privacy.png" alt="Your repos and your coding agent, inside the tools you already use, produce internal maps, rubric and scores; check_jd and validate_kit block paths, internal names, secrets and weaknesses; only the job posting and interview questions, the work and not the code, reach the candidate" width="440">
+</p>
+
+<sub>Your agent does send code and redacted CVs to its model provider, as it does for any other task. The leak
+checks catch paths, internal names, settings, hosts and secrets, but they are checks, not guarantees: read the
+posting and the questions before you share them.</sub>
+
 ## Why you can trust the output
 
 The model does what it's good at: understanding code and CVs. Everything that can be checked by a
@@ -395,7 +422,7 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | **Safe report file** | `report.html` makes no network requests and escapes all CV text, so it can be opened and shared without leaking data or running injected code. |
 | **Retention** | `close-round` deletes candidate data, including both reports, when a role closes and keeps only a pseudonymous audit record. |
 
-126 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
+134 deterministic checks run in CI on every push (`python3 evals/selftest.py`). See
 [`evals/`](evals/README.md) for the full harness, including multi-session model evals.
 
 ## How it compares
@@ -406,6 +433,8 @@ script *is* checked by a script, and each check blocks the next step until it pa
 | Interview questions tailored to each candidate and your code | No | Some | **Yes, structured: shared core plus personal** |
 | Criteria come from your codebase | No: keywords from the JD | Some build tasks from your repo | **Yes: the rubric is built from your repo and mission** |
 | Where code and CVs go | The vendor | The vendor | **Your own agent and model provider** |
+| Who sees your code | The vendor | The vendor | **No one new** |
+| What candidates see | A generic posting | Often a copy of your code, or a task built from it | **A description of the work, checked for leaks** |
 | Each score shows the CV evidence, machine-checked | Varies | Not applicable | **Yes** |
 | Bias and injection tests you can run yourself | Varies | Varies | **Yes, in the repo** |
 | Price and license | Subscription | Subscription | **Free and MIT-licensed; you pay only for your own model usage** |

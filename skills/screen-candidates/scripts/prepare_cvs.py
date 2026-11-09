@@ -89,6 +89,11 @@ def main(argv):
 
     identities = H.load_identities(role)
     old_report = H.load_json(role / "prep_report.json") if (role / "prep_report.json").exists() else {}
+    if role.resolve().parent.name == "hiring" and not (role.resolve().parent / ".gitignore").exists():
+        (role.resolve().parent / ".gitignore").write_text(
+            "# Created by repo-aware-hiring. This folder holds candidate data and internal maps:\n"
+            "# never commit it. Delete this file only if you really mean to version something here.\n*\n",
+            encoding="utf-8")
     (role / "extracted").mkdir(exist_ok=True)
     (role / "redacted").mkdir(exist_ok=True)
     report = {}

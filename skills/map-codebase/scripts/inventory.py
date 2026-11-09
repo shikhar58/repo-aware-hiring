@@ -253,6 +253,21 @@ def match_signals(tokens_text):
     return found
 
 
+HIRING_GITIGNORE = ("# Created by repo-aware-hiring. This folder holds candidate data and internal maps:\n"
+                    "# never commit it. Delete this file only if you really mean to version something here.\n*\n")
+
+
+def ensure_private(hiring_dir):
+    """Make <repo>/hiring/ ignore itself, so CVs and maps can't be committed by accident."""
+    hiring_dir = Path(hiring_dir)
+    gi = hiring_dir / ".gitignore"
+    if hiring_dir.name == "hiring" and not gi.exists():
+        hiring_dir.mkdir(parents=True, exist_ok=True)
+        gi.write_text(HIRING_GITIGNORE, encoding="utf-8")
+        return True
+    return False
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("repo")
@@ -260,6 +275,8 @@ def main(argv=None):
     args = ap.parse_args(argv)
     root = Path(args.repo).resolve()
     out_path = Path(args.out) if args.out else root / "hiring" / "_repo" / "inventory.json"
+    if out_path.resolve().parent.parent == (root / "hiring").resolve():
+        ensure_private(root / "hiring")
 
     loc = Counter()
     files_by_lang = Counter()

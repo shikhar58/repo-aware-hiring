@@ -4,6 +4,6 @@
 # Needs Node.js; uses @mermaid-js/mermaid-cli via npx.
 set -euo pipefail
 cd "$(dirname "$0")"
-for n in how-it-works safeguards system-map; do
+for n in how-it-works safeguards system-map privacy; do
   npx -y @mermaid-js/mermaid-cli@11 -i "$n.mmd" -o "$n.png" -b white -s 2 -w 900
 done

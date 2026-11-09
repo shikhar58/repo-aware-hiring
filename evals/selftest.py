@@ -247,6 +247,8 @@ def test_codebase_map(tmp):
     map_path.write_text(good)
     rc, out = quiet(check_map.main, [str(repo)])
     expect(rc == 0, "complete, current map passes the gate")
+    gi = repo / "hiring" / ".gitignore"
+    expect(gi.exists() and gi.read_text().strip().endswith("*"), "the hiring/ folder ignores itself so CVs can't be committed")
     sys.path.insert(0, str(HERE.parent / "skills" / "hiring-workspace" / "scripts"))
     import check_ready  # noqa: E402
     rc, out = quiet(check_ready.main, [str(repo), "--role", "backend"])

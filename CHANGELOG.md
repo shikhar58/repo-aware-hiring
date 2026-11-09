@@ -3,7 +3,19 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.5] — 2026-11-08
+## [0.9.6] — 2026-11-09
+
+### Added
+- README: **"Your code stays private"** section with a diagram. Candidates see the work, never the code, and your
+  code goes nowhere it doesn't already go, because everything runs inside the coding agent your team already uses.
+  Also a tagline under the intro and two comparison rows ("Who sees your code", "What candidates see").
+
+### Fixed
+- In single-repo mode nothing kept `hiring/` out of git, so CVs could be committed by accident. The first step that
+  creates it (the inventory, or `prepare_cvs.py`) now writes `hiring/.gitignore` ignoring everything inside,
+  without touching the repo's own `.gitignore`.
+
+ — 2026-11-08
 
 ### Changed
 - **No pre-selected answers, and every question can be skipped.** Questions list their options with nothing chosen
