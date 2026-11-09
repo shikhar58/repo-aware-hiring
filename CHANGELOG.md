@@ -3,7 +3,16 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.12.0] — 2026-11-09
+## [0.13.0] — 2026-11-09
+
+### Added
+- `scripts/install.sh`: installs the skills by copying them, with no network access or Node:
+  `--agents` (Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode and others, into `.agents/skills/`), `--claude`
+  (`.claude/skills/`), `--global` for every project, `--dir PATH`, and `--remove`. It updates its own earlier
+  installs and never overwrites a different skill with the same name. Five new self-test checks.
+- README: the script as a third install option.
+
+ — 2026-11-09
 
 ### Changed
 - **Agent-neutral skills.** Every `SKILL.md` refers to scripts by paths relative to its own folder (and

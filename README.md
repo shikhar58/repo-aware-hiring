@@ -105,8 +105,17 @@ It installs into the coding agent you already use.
 npx skills add shikhar58/repo-aware-hiring --skill '*'
 ```
 
-This puts the nine skills side by side in your agent's skills folder (for most agents, `.agents/skills/`). To do it
-by hand, copy the `skills/` folder of this repo there instead.
+This puts the nine skills side by side in your agent's skills folder (for most agents, `.agents/skills/`).
+
+**Without Node**, from a clone (it only copies files):
+
+```bash
+git clone https://github.com/shikhar58/repo-aware-hiring.git ~/repo-aware-hiring
+cd your-project
+~/repo-aware-hiring/scripts/install.sh --agents     # or --claude; add --global for every project
+```
+
+`--remove` uninstalls, and the script never overwrites a different skill that has the same name.
 
 Then open your repo and ask for a posting:
 
@@ -367,7 +376,7 @@ checked by a script, and each check blocks the next step until it passes.
   makes no network requests.
 - **Retention.** Candidate data is deleted when the role closes; a pseudonymous audit record stays.
 
-139 deterministic checks run in CI on every push. [All safeguards in detail →](docs/SAFEGUARDS.md)
+144 deterministic checks run in CI on every push. [All safeguards in detail →](docs/SAFEGUARDS.md)
 
 ## How it compares
 
@@ -498,7 +507,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 
 ## Status and roadmap
 
-**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 139 deterministic checks
+**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 144 deterministic checks
 in CI. Next: publishing model-consistency results across separate sessions. See
 [what has and hasn't been verified](docs/DRY_RUN.md).
 

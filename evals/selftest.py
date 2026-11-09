@@ -484,6 +484,41 @@ def test_workspace(tmp):
            and "'billing'" not in out, "check_jd blocks internal repo and package names, not plain words")
 
 
+def test_install_script(tmp):
+    import os
+    import subprocess
+    print("install script")
+    script = HERE.parent / "scripts" / "install.sh"
+    proj, home = tmp / "inst-proj", tmp / "inst-home"
+    proj.mkdir()
+    home.mkdir()
+    env = {**os.environ, "HOME": str(home)}
+
+    def run(*args):
+        r = subprocess.run(["bash", str(script), *args], cwd=proj, env=env, capture_output=True, text=True)
+        return r.returncode, r.stdout + r.stderr
+
+    names = sorted(p.parent.name for p in (HERE.parent / "skills").glob("*/SKILL.md"))
+    rc, out = run("--agents")
+    installed = sorted(p.parent.name for p in (proj / ".agents" / "skills").glob("*/SKILL.md"))
+    expect(rc == 0 and installed == names, "install.sh --agents copies every skill into .agents/skills")
+    rc, out = run("--claude", "--global")
+    expect(rc == 0 and len(list((home / ".claude" / "skills").glob("*/SKILL.md"))) == len(names),
+           "install.sh --claude --global installs into ~/.claude/skills")
+    r = subprocess.run([sys.executable, "-I", str(proj / ".agents" / "skills" / "write-job-description" / ".." /
+                                                    "hiring-workspace" / "scripts" / "check_ready.py"), str(proj)],
+                       capture_output=True, text=True)
+    expect("Mode: single repo" in r.stdout, "installed skills reach each other's scripts by relative path")
+    own = proj / ".claude" / "skills" / "map-codebase"
+    own.mkdir(parents=True)
+    (own / "SKILL.md").write_text("mine")
+    rc, out = run("--claude")
+    expect(rc == 1 and (own / "SKILL.md").read_text() == "mine" and "skip map-codebase" in out,
+           "install.sh never overwrites a different skill with the same name")
+    rc, out = run("--agents", "--remove")
+    expect(rc == 0 and not list((proj / ".agents" / "skills").glob("*/SKILL.md")), "install.sh --remove uninstalls")
+
+
 def test_demo_cleanup(tmp):
     root = HERE.parent
     sys.path.insert(0, str(root / "demo"))
@@ -598,6 +633,7 @@ def main():
         test_codebase_map(tmp)
         test_workspace(tmp)
         test_question_style()
+        test_install_script(tmp)
         test_demo_cleanup(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
