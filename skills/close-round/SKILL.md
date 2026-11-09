@@ -5,8 +5,7 @@ description: Close a hiring round and delete candidate personal data (extracted 
 
 # Close Round
 
-Script: `scripts/cleanup.py` next to this file
-(`${CLAUDE_PLUGIN_ROOT}/skills/close-round/scripts/cleanup.py` when installed). Run with `python3 -I`.
+Script: `scripts/cleanup.py` next to this file. Run with `python3 -I`. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it.
 It deletes only inside the role folder and never follows symlinks.
 
 In a multi-repo workspace the role folder is `<workspace>/roles/<role-slug>`; the sweep takes `<workspace>/roles`.

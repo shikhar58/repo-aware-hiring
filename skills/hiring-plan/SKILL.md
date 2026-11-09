@@ -12,9 +12,8 @@ repo, what success looks like, and the role shape the user chose. Every later sk
 
 ## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage plan`
-(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
-multi-repo workspace.
+Run `python3 -I ../hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage plan`. It works on one repo and on a
+multi-repo workspace. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it.
 - **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
   it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
   continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.

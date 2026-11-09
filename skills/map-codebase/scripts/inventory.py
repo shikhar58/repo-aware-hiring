@@ -123,8 +123,10 @@ def read(p, limit=MAX_READ):
 
 def git_head(root):
     try:
-        out = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10)
-        return out.stdout.strip() or None
+        out = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "-q", "HEAD"], capture_output=True,
+                             text=True, timeout=10)
+        head = out.stdout.strip()
+        return head if out.returncode == 0 and re.fullmatch(r"[0-9a-f]{7,64}", head) else None  # None: no commits yet
     except (OSError, subprocess.SubprocessError):
         return None
 

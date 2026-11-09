@@ -28,3 +28,14 @@ jobs:
         run: python3 -I evals/selftest.py
       - name: Demo
         run: python3 -I demo/run_demo.py "$RUNNER_TEMP/demo"
+
+  skills:
+    # Every skill must pass the Agent Skills reference validator, so it loads in any agent that supports the standard.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate every skill (skills-ref 0.1.5)
+        run: |
+          for d in skills/*/; do npx -y skills-ref@0.1.5 validate "$d"; done

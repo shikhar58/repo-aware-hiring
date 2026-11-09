@@ -3,7 +3,24 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.11.0] — 2026-11-09
+## [0.12.0] — 2026-11-09
+
+### Changed
+- **Agent-neutral skills.** Every `SKILL.md` refers to scripts by paths relative to its own folder (and
+  `../<skill>/` for a sibling skill) instead of Claude Code's `${CLAUDE_PLUGIN_ROOT}`, and says where shared scripts
+  live. The skills work in any agent that supports the Agent Skills standard; Claude Code can still install them
+  as a plugin.
+- README: presents the skills for any coding agent, with install instructions for Claude Code and for Codex, Cursor,
+  Gemini CLI, GitHub Copilot and others (`npx skills add shikhar58/repo-aware-hiring --skill '*'`). The social preview
+  card matches.
+
+### Added
+- CI job that validates every skill with the Agent Skills reference validator (`skills-ref` 0.1.5).
+
+### Fixed
+- In a repository with no commits yet, the inventory recorded the commit as "HEAD" instead of none.
+
+ — 2026-11-09
 
 Aligned with Anthropic's plugin directory requirements and its Usage Policy, which from 12 November 2026 treats
 screening and ranking candidates as a high-risk use.

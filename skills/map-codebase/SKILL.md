@@ -13,8 +13,7 @@ Output (repo-level, shared by all roles; keep `hiring/` git-ignored):
 - `hiring/_repo/inventory.json` — the deterministic checklist
 - `hiring/_repo/codebase-map.md` — the map
 
-Scripts are in `scripts/` next to this file (`${CLAUDE_PLUGIN_ROOT}/skills/map-codebase/scripts` when installed).
-Run them with `python3 -I`.
+Scripts are in `scripts/` next to this file. Run them with `python3 -I`. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it.
 
 ## Procedure
 

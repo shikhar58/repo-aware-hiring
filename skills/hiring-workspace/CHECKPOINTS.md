@@ -1,5 +1,8 @@
 # Planning checkpoints
 
+Scripts named here (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`) are in the hiring-workspace
+skill's `scripts/` folder: `../hiring-workspace/scripts/` from any other skill.
+
 Every stage starts with a short planning checkpoint, so the hiring manager steers the work where their knowledge
 matters, and nothing they already answered is asked again. Each skill's own `## Planning checkpoint` section
 lists the decisions for its stage; this file says how to run one.

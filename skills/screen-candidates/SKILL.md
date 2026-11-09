@@ -6,15 +6,13 @@ description: Screen a folder of software engineer CVs against an approved, repo-
 # Screen Candidates
 
 The pipeline is mostly deterministic scripts; the model's jobs are confirming names, reviewing the
-redaction and step 4 (scoring). Scripts live in `scripts/` next to this file
-(`${CLAUDE_PLUGIN_ROOT}/skills/screen-candidates/scripts` when installed as a plugin).
-Run them with `python3 -I`. They need only the standard library, plus `pdftotext`
+redaction and step 4 (scoring). Scripts live in `scripts/` next to this file.
+Run them with `python3 -I`. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it. They need only the standard library, plus `pdftotext`
 (poppler-utils) for PDF CVs.
 
 ## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage screen`
-(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+Run `python3 -I ../hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage screen`. It works on one repo and on a
 multi-repo workspace.
 - **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
   it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not

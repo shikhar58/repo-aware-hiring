@@ -10,9 +10,8 @@ the repo, safe because it reveals nothing internal, and fair because it asks onl
 
 ## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage jd`
-(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
-multi-repo workspace.
+Run `python3 -I ../hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage jd`. It works on one repo and on a
+multi-repo workspace. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it.
 - **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
   it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
   continue on a missing or stale map: everything below depends on understanding the whole system, not a sample of it.
@@ -157,8 +156,7 @@ Writing rules:
 
 ### 4. Check it
 
-Run `python3 -I scripts/check_jd.py hiring/<role-slug>` (the script lives next to this file;
-`${CLAUDE_PLUGIN_ROOT}/skills/write-job-description/scripts/check_jd.py` when installed).
+Run `python3 -I scripts/check_jd.py hiring/<role-slug>` (the script lives next to this file).
 - **Errors** (exit code 1) are possible leaks of internal details: fix every one, then re-run.
 - **Warnings** are inclusive-language, structure and consistency issues. Fix them or tell the user why one is
   intentional. Show the user what you changed.

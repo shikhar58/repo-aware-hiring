@@ -18,8 +18,7 @@ Several repos? A **workspace** keeps everything in one private folder outside al
   roles/<role>/           focus.md, decisions.json, and everything the other skills write for that role
 ```
 
-Scripts are in `scripts/` next to this file (`${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts`). Run them with
-`python3 -I`. Planning checkpoints follow [CHECKPOINTS.md](CHECKPOINTS.md).
+Scripts are in `scripts/` next to this file. Run them with `python3 -I`. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in this skill's `scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it. Planning checkpoints follow [CHECKPOINTS.md](CHECKPOINTS.md).
 
 ## 1. Checkpoint `workspace`: which repos, which matter most
 

@@ -6,6 +6,7 @@
   <a href="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml"><img src="https://github.com/shikhar58/repo-aware-hiring/actions/workflows/selftest.yml/badge.svg" alt="selftest"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5eead4" alt="MIT license"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-7dd3fc" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/Agent%20Skills-any%20coding%20agent-fbbf24" alt="Agent Skills for any coding agent">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-fbbf24" alt="Claude Code plugin">
   <img src="https://img.shields.io/badge/dependencies-none-94a3b8" alt="No dependencies">
   <img src="https://img.shields.io/badge/status-beta-f87171" alt="Beta">
@@ -29,8 +30,9 @@ Your job description says *"PostgreSQL experience"*. Your codebase says somethin
 migrations run on every container start, tests share one database, and nobody owns backups.
 That's the person you actually need.
 
-**repo-aware-hiring** is a Claude Code plugin, a set of agent skills, that reads your codebase, works out who you
-actually need, and **drafts the job description for that person**: specific about the kind of work, checked for leaks,
+**repo-aware-hiring** is a set of agent skills for your coding agent (Claude Code, Codex, Cursor, Gemini CLI,
+GitHub Copilot or any other agent that supports Agent Skills) that reads your codebase, works out who you actually
+need, and **drafts the job description for that person**: specific about the kind of work, checked for leaks,
 and yours to finish. When applications arrive, it can also screen CVs and résumés against the same requirements and
 write tailored technical interview questions for each candidate.
 
@@ -88,12 +90,23 @@ guesses. [Read the full draft →](docs/example-ollama-jd.md)
 
 ## Get started
 
-In Claude Code:
+It installs into the coding agent you already use.
+
+**Claude Code**, as a plugin:
 
 ```text
 /plugin marketplace add shikhar58/repo-aware-hiring
 /plugin install repo-aware-hiring@repo-aware-hiring
 ```
+
+**Codex, Cursor, Gemini CLI, GitHub Copilot and other agents**, from your repo's folder:
+
+```bash
+npx skills add shikhar58/repo-aware-hiring --skill '*'
+```
+
+This puts the nine skills side by side in your agent's skills folder (for most agents, `.agents/skills/`). To do it
+by hand, copy the `skills/` folder of this repo there instead.
 
 Then open your repo and ask for a posting:
 
@@ -117,7 +130,7 @@ Every question can be answered your own way or skipped. Requires Python 3.10+ (s
 > Close the db-owner round               # when the role is filled
 ```
 
-From a shell instead: `claude plugin marketplace add shikhar58/repo-aware-hiring`, then
+In Claude Code from a shell instead: `claude plugin marketplace add shikhar58/repo-aware-hiring`, then
 `claude plugin install repo-aware-hiring@repo-aware-hiring`. Screening PDF CVs needs `pdftotext` (poppler-utils).
 </details>
 
@@ -451,9 +464,12 @@ Read [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) and involve your legal team. Thi
 <details>
 <summary><b>Which agents does it work with?</b></summary>
 
-It's built for and tested with Claude Code. The skills use the open Agent Skills format (a `SKILL.md` plus plain
-Python scripts), so other agents that load skills may be able to run them, but only Claude Code has been tested so far.
-If you try another agent, please [tell us how it went](https://github.com/shikhar58/repo-aware-hiring/issues/new?template=feedback.yml).
+Any coding agent that supports the open [Agent Skills](https://agentskills.io) standard and can run shell commands:
+Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot and others. Each skill is a folder with a `SKILL.md` and plain
+Python scripts (standard library only), referenced by relative paths, and every skill passes the standard's reference
+validator in CI. Claude Code users can also install it as a plugin. The planning questions use your agent's
+multiple-choice question tool when it has one, and plain text otherwise. Tell us how it works in your agent:
+[share feedback](https://github.com/shikhar58/repo-aware-hiring/issues/new?template=feedback.yml).
 </details>
 
 <details>

@@ -11,8 +11,7 @@ Produce, for one role:
 - `hiring/<role-slug>/interviews/<candidate-id>.json`: personal questions for that candidate.
 - Rendered kits `interviews/<candidate-id>.html` (printable scorecard) and `.md`, via `render_kit.py`.
 
-Scripts are in `scripts/` next to this file (`${CLAUDE_PLUGIN_ROOT}/skills/interview-kit/scripts` when installed).
-Run them with `python3 -I`.
+Scripts are in `scripts/` next to this file. Run them with `python3 -I`. Paths in this file are relative to this skill's folder (the folder that holds this `SKILL.md`); skills are installed side by side, so `../<other-skill>/` reaches a sibling skill. Shared scripts named without a path (`check_ready.py`, `decisions.py`, `focus.py`, `trace_usage.py`, `workspace.py`) are in `../hiring-workspace/scripts/`; `check_map.py` and `inventory.py` are in `../map-codebase/scripts/`; any other script is in `../<skill>/scripts/` of the skill that owns it.
 
 ## Why this structure
 
@@ -23,8 +22,7 @@ They never replace the core questions.
 
 ## Before anything else: readiness, focus and decisions
 
-Run `python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage interview`
-(or the same script relative to this skill: `../hiring-workspace/scripts/check_ready.py`). It works on one repo and on a
+Run `python3 -I ../hiring-workspace/scripts/check_ready.py <repo-or-workspace> --role <role-slug> --stage interview`. It works on one repo and on a
 multi-repo workspace.
 - **NOT READY**: fix what it names and re-run. A missing or stale map → the `map-codebase` skill (or update the sections
   it lists); a missing or stale system map → the `hiring-workspace` skill; a rejected focus → edit `focus.md`. Do not
