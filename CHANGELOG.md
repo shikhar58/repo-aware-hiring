@@ -3,7 +3,23 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.9.6] — 2026-11-09
+## [0.10.0] — 2026-11-09
+
+### Changed
+- **README rewritten for new users.** It leads with the job description (the easiest place to start), says who it
+  is for and who it isn't for, shows a before/after on mem0's public code (an unofficial example), and puts install
+  and the demo near the top. An animated walk-through shows a real session. It is about 500 lines instead of 660.
+- In-depth material moved to `docs/GUIDE.md` (codebase map, several repos, focus prompt, questions and decisions),
+  `docs/REFERENCE.md` (skills, scripts, files, design principles) and `docs/SAFEGUARDS.md`.
+- New example: `docs/example-mem0-jd.md`, the full draft posting.
+
+### Fixed
+- `check_jd.py` now flags a degree listed under must-haves (even without "required" next to it), school pedigree
+  ("top university", "IIT", "Ivy League"), and must-have lists longer than 5, as the README says. Previously it
+  allowed six.
+- The sample planning conversation no longer has the agent recommend a role design.
+
+ — 2026-11-09
 
 ### Added
 - README: **"Your code stays private"** section with a diagram. Candidates see the work, never the code, and your

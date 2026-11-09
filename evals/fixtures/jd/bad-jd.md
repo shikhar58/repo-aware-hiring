@@ -22,6 +22,7 @@ Python 3.12, FastAPI, SQLModel, PostgreSQL 16, Docker.
 - Kafka, Spark and Airflow.
 - React and TypeScript.
 - AWS, GCP and Azure certifications.
+- Graduate of a top university.
 
 ## Nice-to-haves
 - Digital natives who are a great culture fit.

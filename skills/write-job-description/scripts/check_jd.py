@@ -213,8 +213,19 @@ def main(argv=None):
             warnings.append((i, "stack section publishes your exact stack: hint the technologies inside What you'll work on, "
                                 "Must-haves and Nice-to-haves instead (keep it only if the hiring manager decided to publish it)"))
     musts = bullets(secs.get("must", []))
-    if musts and len(musts) > 6:
+    if musts and len(musts) > 5:
         warnings.append((musts[0][0], f"{len(musts)} must-haves: keep to 3–5; long lists deter qualified applicants"))
+    flagged = {ln for ln, _ in warnings if isinstance(ln, int)}
+    for ln, item in musts:
+        if ln in flagged:
+            continue
+        if re.search(r"\b(?:bachelor'?s?|master'?s?|ph\.?d|degree|diploma)\b", item, re.I):
+            warnings.append((ln, f"degree as a must-have: describe the knowledge needed instead, or move it to "
+                                 f"nice-to-haves: {item.strip()[:60]!r}"))
+        if re.search(r"\b(?:top|elite|leading|prestigious|tier[- ]?(?:1|one)|good|ivy league|russell group)\b[^.\n]{0,20}"
+                     r"\b(?:universit\w*|college|school|institute)s?\b|\bIITs?\b|\boxbridge\b", item, re.I):
+            warnings.append((ln, f"school pedigree screens out capable people without predicting the work: "
+                                 f"{item.strip()[:60]!r}"))
     head = "\n".join(lines[:6])
     pay_placeholder = re.search(r"\[(?:insert:\s*)?(?:salary|pay)[^\]]*\]", head, re.I)
     if not pay_placeholder and (not CURRENCY_RE.search(head) or re.search(r"on request|competitive", head, re.I)):

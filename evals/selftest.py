@@ -166,6 +166,8 @@ def test_jd_checker(tmp):
         shutil.copy(FIXTURE / name, role / name)
     rc, out = quiet(check_jd.main, [str(role)])
     expect(rc == 0 and "0 errors, 0 warnings" in out, "good JD passes with no errors or warnings")
+    rc_g, out_g = quiet(check_jd.main, [str(HERE / "fixtures" / "jd" / "generic")])
+    expect(out_g.count("warn ") == 9, "the README's typical posting gets exactly the 9 warnings it claims")
     expect("[insert: benefits]" in out and "[insert: how AI-assisted screening" in out, "unfilled placeholders are listed")
     rc, out = quiet(check_jd.main, [str(role), "--jd", str(FIXTURE.parent / "jd" / "bad-jd.md")])
     expect(rc == 1, "JD with internal details is blocked")
@@ -175,9 +177,10 @@ def test_jd_checker(tmp):
         expect(needle in out, f"leak caught: {what}")
     for needle, what in [("gendered pronoun", "gendered pronouns"), ("age-coded", "age-coded words"),
                          ("years-of-experience", "years-of-experience demands"), ("native speaker", "native-speaker demands"),
-                         ("works hard and plays hard", "exclusionary phrases"), ("7 must-haves", "long must-have lists"),
+                         ("works hard and plays hard", "exclusionary phrases"), ("8 must-haves", "long must-have lists"),
                          ("no pay range", "missing pay range"), ("rubric must-have not in the JD", "drift from the rubric"),
-                         ("publishes your exact stack", "a stack section")]:
+                         ("publishes your exact stack", "a stack section"),
+                         ("school pedigree", "a top-university demand")]:
         expect(needle in out, f"warning raised: {what}")
 
 
