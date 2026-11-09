@@ -46,43 +46,44 @@ interview for each candidate.
 
 ## Before and after
 
-We pointed it at [mem0](https://github.com/mem0ai/mem0), a public memory layer for AI agents: about 230,000 lines of
-Python and TypeScript in 25 packages. *Unofficial example: not a real opening, not affiliated with or endorsed by
-Mem0.*
+We pointed it at [Ollama](https://github.com/ollama/ollama), the popular tool for running open language models
+locally: about 380,000 lines of Go plus native GPU code. *Unofficial example: not a real job opening, not affiliated
+with or endorsed by Ollama.*
 
 **A typical posting** (made up for comparison):
 
 > We're looking for a rockstar engineer to join our fast-paced team and build cutting-edge AI.
-> Must have 5+ years of Python, experience with vector databases, LLMs and RAG, a CS degree from a top university,
+> Must have 5+ years of Python and C++, experience with LLMs, PyTorch and CUDA, a CS degree from a top university,
 > and be a native English speaker. Competitive salary.
 
 Run through the checker ([as a full posting](evals/fixtures/jd/generic/jd.md)), it gets 9 warnings: hype words,
 years of experience, degree and school demands, "native speaker", six must-haves, no pay range. And it says nothing
 about the actual job.
 
-**Drafted from mem0's code**, after three questions:
+**Drafted from Ollama's code** for an engineer on its inference engine, after four questions (the area, the title,
+a one-line focus on new model support, and what success looks like):
 
-> **Senior Software Engineer, Memory Retrieval**
+> **Senior Software Engineer, Inference Engine**
 >
 > **What you'll work on**
 >
-> - Improve how we fuse dense vector similarity, BM25-style keyword search and entity matching into one ranking,
->   and prove each change with benchmarks before it ships.
-> - Make search quality consistent across the more than twenty vector databases we support, from dedicated vector
->   engines to Postgres-based and Elasticsearch-style search.
-> - Build the evaluation tooling that turns retrieval tuning from judgement calls into measured decisions.
+> - Implement new model architectures in our Go inference engine, from attention variants and mixture-of-experts
+>   routing to hybrid models with recurrent, state-space layers, and prove each one matches its reference
+>   implementation.
+> - Take each model the whole way: tokenizer, prompt format, tool-call and reasoning output, quantised weights and
+>   the right cache strategy, so it doesn't just run but behaves the way its authors intended.
+> - Keep models consistent across our two engines, including the one built on llama.cpp.
 >
 > **Must-haves**
 >
-> - You've built and tuned a search or retrieval system that real users depended on, and can explain how you
->   measured whether it got better.
-> - You understand ranking: how keyword scoring such as BM25, dense embeddings and rerankers such as cross-encoders
->   work, and the trade-offs in combining them.
+> - You've implemented transformer models from a paper or a reference implementation (for example in PyTorch, JAX,
+>   MLX or llama.cpp) and can show how you verified the output matched.
+> - You can debug numerical problems: tracing a quality regression to a layer, a tokenizer or a quantisation choice.
 
-Every line traces back to the code: the hybrid search, the 26 vector-store adapters, the hand-tuned ranking
-constants. No file paths, internal names or weaknesses made it into the posting, and the stack is hinted, not listed.
-Questions you skip become `[insert: …]` placeholders rather than guesses.
-[Read the full draft →](docs/example-mem0-jd.md)
+Every line traces back to the code: about 30 model architectures registered in the engine, per-model prompt
+renderers and output parsers, two engines side by side. No file paths, internal names or weaknesses made it into the
+posting, and the stack is hinted, not listed. Questions you skip become `[insert: …]` placeholders rather than
+guesses. [Read the full draft →](docs/example-ollama-jd.md)
 
 ## Get started
 
@@ -476,7 +477,7 @@ CVs in other languages work, but rely on the agent's manual redaction review.
 
 ## Status and roadmap
 
-**Beta.** Tested end to end on a demo repo and on a 230,000-line monorepo (mem0), with 136 deterministic checks
+**Beta.** Tested end to end on a demo repo and on two large open-source codebases (Ollama and mem0), with 136 deterministic checks
 in CI. Next: publishing model-consistency results across separate sessions. See
 [what has and hasn't been verified](docs/DRY_RUN.md).
 

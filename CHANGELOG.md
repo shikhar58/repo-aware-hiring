@@ -3,7 +3,14 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.10.0] — 2026-11-09
+## [0.10.1] — 2026-11-09
+
+### Changed
+- The README's before/after now uses Ollama (about 380,000 lines of Go): a posting for a Senior Software Engineer,
+  Inference Engine, drafted with a focus on new model support. Full draft in `docs/example-ollama-jd.md`; the mem0
+  example page is removed. The comparison posting and the animated walk-through match the new example.
+
+ — 2026-11-09
 
 ### Changed
 - **README rewritten for new users.** It leads with the job description (the easiest place to start), says who it
