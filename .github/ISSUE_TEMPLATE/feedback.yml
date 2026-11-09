@@ -1,0 +1,50 @@
+name: Tell us about your hiring round
+description: Share how repo-aware-hiring worked for you. What helped, what didn't, what's missing.
+title: "[Feedback] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying repo-aware-hiring. Please **don't paste candidate data, CV text, internal code or anything
+        from your codebase map**: describe your experience in general terms.
+  - type: dropdown
+    id: used
+    attributes:
+      label: Which parts did you use?
+      multiple: true
+      options:
+        - Job description
+        - Codebase map
+        - Several repos (workspace)
+        - Rubric and CV screening
+        - Interview kits
+        - The demo only
+  - type: input
+    id: agent
+    attributes:
+      label: Which agent did you use?
+      placeholder: Claude Code, or another agent that supports Agent Skills
+  - type: dropdown
+    id: repo_size
+    attributes:
+      label: Roughly how big is the codebase?
+      options:
+        - Under 10,000 lines
+        - 10,000–100,000 lines
+        - 100,000–1,000,000 lines
+        - Over 1,000,000 lines
+        - Several repos
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked well?
+  - type: textarea
+    id: didnt
+    attributes:
+      label: What didn't work, or what was missing?
+  - type: textarea
+    id: else
+    attributes:
+      label: Anything else?
+      description: For example, would you use it again for the next role?

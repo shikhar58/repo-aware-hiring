@@ -3,7 +3,20 @@
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/);
 before 1.0, minor versions may change file formats.
 
-## [0.10.1] — 2026-11-09
+## [0.10.2] — 2026-11-09
+
+### Added
+- Issue templates: "Tell us about your hiring round" (feedback) and a bug report; both remind people not to paste
+  candidate data or internal code. Security reports go to SECURITY.md.
+- README "Support the project" section, and a 1280×640 social preview image (`docs/assets/social-preview.png`).
+
+### Changed
+- README says plainly that it is built for and tested with Claude Code; other agents that load Agent Skills may work
+  but are untested. The inventory speed claim is now measured: about two seconds on Ollama's 380,000 lines of Go.
+- The intro names what people search for: Claude Code plugin, job descriptions, CV and résumé screening, technical
+  interview questions.
+
+ — 2026-11-09
 
 ### Changed
 - The README's before/after now uses Ollama (about 380,000 lines of Go): a posting for a Senior Software Engineer,

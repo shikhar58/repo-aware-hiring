@@ -29,10 +29,10 @@ Your job description says *"PostgreSQL experience"*. Your codebase says somethin
 migrations run on every container start, tests share one database, and nobody owns backups.
 That's the person you actually need.
 
-**repo-aware-hiring** is a set of agent skills that reads your codebase, works out who you actually need, and
-**drafts the job description for that person**: specific about the kind of work, checked for leaks, and yours to
-finish. When applications arrive, it can also screen CVs against the same requirements and prepare a tailored
-interview for each candidate.
+**repo-aware-hiring** is a Claude Code plugin, a set of agent skills, that reads your codebase, works out who you
+actually need, and **drafts the job description for that person**: specific about the kind of work, checked for leaks,
+and yours to finish. When applications arrive, it can also screen CVs and résumés against the same requirements and
+write tailored technical interview questions for each candidate.
 
 > **Candidates see the work, never the code.** And your code goes nowhere it doesn't already go: everything runs
 > inside the coding agent your team already uses. [How that works ↓](#your-code-stays-private)
@@ -447,8 +447,9 @@ Read [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) and involve your legal team. Thi
 <details>
 <summary><b>Which agents does it work with?</b></summary>
 
-It's packaged as a Claude Code plugin. The skills follow the Agent Skills format (a `SKILL.md` plus
-scripts), so other agents that support skills can use them too; the scripts are plain Python.
+It's built for and tested with Claude Code. The skills use the open Agent Skills format (a `SKILL.md` plus plain
+Python scripts), so other agents that load skills may be able to run them, but only Claude Code has been tested so far.
+If you try another agent, please [tell us how it went](https://github.com/shikhar58/repo-aware-hiring/issues/new?template=feedback.yml).
 </details>
 
 <details>
@@ -462,7 +463,7 @@ packages, deployed images, service calls) from the code, so the system map doesn
 <details>
 <summary><b>What if my repo is huge, or a monorepo?</b></summary>
 
-The inventory script scans the whole tree in seconds and lists every package, service, pipeline and deployment file,
+The inventory script scans the whole tree in about two seconds, even on Ollama's 380,000 lines of Go, and lists every package, service, pipeline and deployment file,
 so the map covers all of them at least at the "what it is and how it connects" level. The agent then goes deep on the
 areas you're hiring for, and `repo-profile` adds detail for each role. Ignored folders (`node_modules`, build output,
 virtualenvs) are skipped.
@@ -486,6 +487,14 @@ in CI. Next: publishing model-consistency results across separate sessions. See
 - [ ] `take-home-gen`, `take-home-grade` and `debrief` skills
 - [ ] Backtesting on past hiring rounds and company-specific calibration
 - [ ] OCR for scanned PDFs
+
+## Support the project
+
+- ⭐ **Star the repo** if it's useful: it helps other teams find it.
+- 💬 **Tell us about your hiring round**: what worked, what didn't, which agent you used.
+  [Share feedback](https://github.com/shikhar58/repo-aware-hiring/issues/new?template=feedback.yml): early users'
+  stories shape what gets built next.
+- 🐛 Found a bug? [Report it](https://github.com/shikhar58/repo-aware-hiring/issues/new?template=bug_report.yml).
 
 ## Contributing
 
