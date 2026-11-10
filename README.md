@@ -31,9 +31,10 @@ migrations run on every container start, tests share one database, and nobody ow
 That's the person you actually need.
 
 **repo-aware-hiring** is a set of agent skills for your coding agent (Claude Code, Codex, Cursor, Gemini CLI,
-GitHub Copilot or any other agent that supports Agent Skills) that reads your codebase, works out who you actually
-need, and **drafts the job description for that person**: specific about the kind of work, checked for leaks,
-and yours to finish. When applications arrive, it can also screen CVs and résumés against the same requirements and
+GitHub Copilot or any other agent that supports Agent Skills) that **drafts the job description from two things:
+your codebase and your goals.** The code shows what the work really involves. A few short questions capture what
+only you know, like what the hire should achieve in their first year. Anything you skip stays a placeholder for you
+to fill in, never a guess. When applications arrive, it can also screen CVs and résumés against the same requirements and
 write tailored technical interview questions for each candidate.
 
 > **Candidates learn precisely what the role requires, without your codebase being revealed.** And your code goes nowhere it doesn't already go: everything runs
@@ -41,6 +42,8 @@ write tailored technical interview questions for each candidate.
 
 **Built for** engineering managers, tech leads and founders hiring software engineers into an existing codebase.
 **Not a fit** for high-volume or non-engineering hiring, or for a team that doesn't have a codebase yet.
+
+<p align="center"><em>The code tells it what the work involves; you tell it what success looks like.</em></p>
 
 <p align="center">
   <img src="docs/assets/walkthrough.svg" width="520" alt="Animated example: the agent reads the codebase map, asks a multiple-choice question with write-your-own and skip options, records a skip as none, and drafts a job description that passes the leak check">
